@@ -1208,12 +1208,10 @@ GuiConfig::GuiConfig()
 
 void GuiConfig::Init()
 {
-
-	conf = new wxFileConfig();
-
 	fs::path programFullPath = wxStandardPaths::Get().GetExecutablePath().ToStdString();
 	std::string programDir(Path::Combine(programFullPath.parent_path(), "settings/PCSX2_ui.ini"));
-	conf->SetPath(programDir);
+		
+	conf = new wxFileConfig("", " ", programDir );
 
 	isInit = true;
 
