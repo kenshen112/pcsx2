@@ -442,6 +442,7 @@ std::string GuiConfig::FullpathToMcd(uint slot) const
 // ------------------------------------------------------------------------
 bool GuiConfig::SaveMemcards(wxConfigBase* conf)
 {
+	conf->SetPath(wxsFormat(L"/%s", L"MemcardOptions"));
 
 	for (uint slot = 0; slot < 2; ++slot)
 	{
@@ -457,13 +458,19 @@ bool GuiConfig::SaveMemcards(wxConfigBase* conf)
 		conf->Write(wxString(fmt::format("Multitap{}_Slot{}_Enable", mtport, mtslot)), Mcd[slot].Enabled);
 		conf->Write(wxString(fmt::format("Multitap{}_Slot{}_Filename", mtport, mtslot)), Mcd[slot].Filename.GetFullName());
 	}
-
-
 	return true;
 }
 
+void GuiConfig::LoadMemcards(wxConfigBase* conf)
+{
+
+}
+
+
 bool GuiConfig::SaveRootItems(wxConfigBase* base)
 {
+	conf->SetPath(wxsFormat(L"/%s", L"RootOptions"));
+
 	if (base->Write("RecentIsoCount", RecentIsoCount) &&
 		base->Write("Listbook_ImageSize", Listbook_ImageSize) &&
 		base->Write("Toolbar_ImageSize", Toolbar_ImageSize) &&
@@ -561,6 +568,8 @@ bool FolderOptions::Save(wxConfigBase* conf) // conf write = write to config fil
 	//  --> on load, these relative paths will be expanded relative to the exe folder.
 	bool rel = true;
 
+	conf->SetPath(wxsFormat(L"/%s", L"FolderOptions"));
+
 	if (conf->Write("UseDefaultBios", UseDefaultBios) &&
 		conf->Write("UseDefaultSavestates", UseDefaultSavestates) &&
 		conf->Write("UseDefaultMemoryCards", UseDefaultMemoryCards) &&
@@ -596,6 +605,35 @@ bool FolderOptions::Save(wxConfigBase* conf) // conf write = write to config fil
 	return false;
 }
 
+void FolderOptions::Load(wxConfigBase* conf)
+{
+
+     	bool rel;
+
+        conf->Read("UseDefaultBios", UseDefaultBios);
+		conf->Read("UseDefaultSavestates", UseDefaultSavestates);
+		conf->Read("UseDefaultMemoryCards", UseDefaultMemoryCards);
+		conf->Read("UseDefaultLogs", UseDefaultLogs);
+		conf->Read("UseDefaultLangs", UseDefaultLangs);
+		conf->Read("UseDefaultPluginsFolder", UseDefaultPluginsFolder);
+		conf->Read("UseDefaultCheats", UseDefaultCheats);
+		conf->Read("UseDefaultCheatsWS", UseDefaultCheatsWS);
+
+		conf->Read(Bios, rel);
+		conf->Read(Snapshots, rel);
+		conf->Read(Savestates, rel);
+		conf->Read(MemoryCards, rel);
+		conf->Read(Logs, rel);
+		conf->Read(Langs, rel);
+		conf->Read(Cheats, rel);
+		conf->Read(CheatsWS, rel);
+		conf->Read(PluginsFolder, wxString(Path::Combine(InstallFolder, "plugins")));
+
+		conf->Read(RunIso.wstring(), rel);
+		conf->Read(RunELF.wstring(), rel);
+	
+}
+
 #ifndef DISABLE_RECORDING
 InputRecordingOptions::InputRecordingOptions()
 	: VirtualPadPosition(wxDefaultPosition)
@@ -604,6 +642,8 @@ InputRecordingOptions::InputRecordingOptions()
 
 bool InputRecordingOptions::Save(wxConfigBase* conf)
 {
+	conf->SetPath(wxsFormat(L"/%s", L"InputRecordingOptions"));
+
 	if (conf->Write("VirtualPadPositionX", VirtualPadPosition.x) &&
 		conf->Write("VirtualPadPositionY", VirtualPadPosition.y))
 	{
@@ -631,7 +671,8 @@ FramerateOptions::FramerateOptions()
 
 bool FramerateOptions::Save(wxConfigBase* conf)
 {
-	//ScopedIniVurboScalar );
+	conf->SetPath(wxsFormat(L"/%s", L"FramerateOptions"));
+
 	if (conf->Write("SlomoScalar", SlomoScalar))
 	{
 		return true;
@@ -640,6 +681,11 @@ bool FramerateOptions::Save(wxConfigBase* conf)
 	{
 		return false;
 	}
+}
+
+void FramerateOptions::Load(wxConfigBase* conf)
+{
+	conf->Read("SlomoScalar", SlomoScalar);
 }
 
 void FramerateOptions::SanityCheck()
@@ -671,6 +717,8 @@ UiTemplateOptions::UiTemplateOptions()
 
 bool UiTemplateOptions::Save(wxConfigBase* conf)
 {
+	conf->SetPath(wxsFormat(L"/%s", L"UiTemplateOptions"));
+
 	if (conf->Write("LimiterUnlimited", wxString(LimiterUnlimited)) &&
 		conf->Write("LimiterTurbo", wxString(LimiterTurbo)) &&
 		conf->Write("LimiterSlowmo", wxString(LimiterSlowmo)) &&
@@ -747,6 +795,8 @@ ConsoleLogOptions::ConsoleLogOptions()
 
 bool ConsoleLogOptions::Save(wxConfigBase* conf)
 {
+	conf->SetPath(wxsFormat(L"/%s", L"ConsoleLogOptions"));
+
 	if (conf->Write("Theme", Theme) &&
 		conf->Write("FontSize", FontSize) &&
 		conf->Write("IsVisible", Visible) &&
@@ -802,6 +852,8 @@ GSWindowOptions::GSWindowOptions()
 
 bool GSWindowOptions::Save(wxConfigBase* conf)
 {
+	conf->SetPath(wxsFormat(L"/%s", L"GSWindowOptions"));
+
 	if (conf->Write("Zoom", Zoom) &&
 		conf->Write("OffsetX", OffsetX) &&
 		conf->Write("OffsetY", OffsetY) &&
@@ -905,6 +957,7 @@ bool FilenameOptions::Save(wxConfigBase* conf)
 	if (needRelativeName)
 	{
 		wxString bios_filename = Bios;
+		conf->SetPath(wxsFormat(L"/%s", L"FileNameOptions"));
 		conf->Write(L"BIOS", bios_filename);
 	}
 	else
@@ -1214,8 +1267,6 @@ void GuiConfig::Init()
 	conf = new wxFileConfig("", " ", programDir );
 
 	isInit = true;
-
-	Console.WriteLn(L"Path: " + conf->GetPath());
 }
 
 void GuiConfig::Load()
@@ -1226,10 +1277,13 @@ void GuiConfig::Load()
 	}
 
 	console.Load(conf);
+	Folders.Load(conf);
+	LoadMemcards(conf);
 	gsWindow.Load(conf);
+	Framerate.Load(conf);
+	Templates.Load(conf);
 	BaseFilenames.Load(conf);
-	Templates.Save(conf);
-
+	//inputRecording.Load(conf);
 	conf->Read("MainGuiPositionX", MainGuiPosition.x);
 	conf->Read("MainGuiPositionY", MainGuiPosition.y);
 	conf->Read("SysSettingsTabName", SysSettingsTabName);
@@ -1250,13 +1304,14 @@ void GuiConfig::Save()
 		Init();
 	}
 
-	if (Input.Save(conf) &&
+	if (inputRecording.Save(conf) &&
 		Folders.Save(conf) &&
 		console.Save(conf) &&
 		gsWindow.Save(conf) &&
 		Templates.Save(conf) &&
 		Framerate.Save(conf) &&
 		BaseFilenames.Save(conf) &&
+		SaveMemcards(conf) && 
 
 		conf->Write("MainGuiPositionX", MainGuiPosition.x) &&
 		conf->Write("MainGuiPositionY", MainGuiPosition.y) &&

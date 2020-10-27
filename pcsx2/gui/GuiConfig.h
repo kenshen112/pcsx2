@@ -289,7 +289,6 @@ private:
 
 public:	
 	ConsoleLogOptions console;
-	InputRecordingOptions Input;	
 	GSWindowOptions gsWindow;
 	wxPoint	MainGuiPosition;
 
