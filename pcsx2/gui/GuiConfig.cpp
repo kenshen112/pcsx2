@@ -935,7 +935,8 @@ const std::string& FilenameOptions::operator[](PluginsEnum_t pluginidx) const
 bool FilenameOptions::Save(wxConfigBase* conf)
 {
 
-	static const std::string pc("Please Configure");
+	static const std::string pc("Please Configure");	
+	conf->SetPath(wxsFormat(L"/%s", L"FilenameOptions"));
 
 	//when saving in portable mode, we just save the non-full-path filename
 	//  --> on load they'll be initialized with default (relative) paths (works both for plugins and bios)
@@ -957,11 +958,10 @@ bool FilenameOptions::Save(wxConfigBase* conf)
 	if (needRelativeName)
 	{
 		wxString bios_filename = Bios;
-		conf->SetPath(wxsFormat(L"/%s", L"FileNameOptions"));
 		conf->Write(L"BIOS", bios_filename);
 	}
 	else
-		conf->Write(L"BIOS", wxString(pc));
+		conf->Write(L"BIOS", wxString(Bios));
 
 	return true;
 }
@@ -1126,7 +1126,7 @@ static void LoadUiSettings(wxConfigBase* conf)
 #if defined(_WIN32)
 	if (!folderUtils.DoesExist(g_Conf->gui->Folders.RunDisc))
 	{
-		//g_Conf->gui->Folders.RunDisc.Clear();
+		g_Conf->gui->Folders.RunDisc.clear();
 	}
 #else
 	if (!folderUtils.DoesExist(g_Conf->gui->Folders.RunDisc))
@@ -1141,6 +1141,8 @@ void AppLoadSettings()
 {
 	if (wxGetApp().Rpc_TryInvoke(AppLoadSettings))
 		return;
+	
+	g_Conf->gui->Load();
 }
 
 static void SaveUiSettings()
@@ -1209,7 +1211,6 @@ void AppSaveSettings()
 	isPosted = false;
 }
 
-
 // Returns the current application configuration file.  This is preferred over using
 // wxConfigBase::GetAppConfig(), since it defaults to *not* creating a config file
 // automatically (which is typically highly undesired behavior in our system)
@@ -1217,7 +1218,6 @@ wxConfigBase* GetAppConfig()
 {
 	return wxConfigBase::Get(false);
 }
-
 
 GuiConfig::GuiConfig()
 	: MainGuiPosition(wxDefaultPosition)
@@ -1311,7 +1311,7 @@ void GuiConfig::Save()
 		Templates.Save(conf) &&
 		Framerate.Save(conf) &&
 		BaseFilenames.Save(conf) &&
-		SaveMemcards(conf) && 
+		SaveMemcards(conf) &&
 
 		conf->Write("MainGuiPositionX", MainGuiPosition.x) &&
 		conf->Write("MainGuiPositionY", MainGuiPosition.y) &&
@@ -1324,6 +1324,7 @@ void GuiConfig::Save()
 		conf->Write("LanguageCode", LanguageCode))
 	{
 		conf->Flush();
+		delete conf;
 	}
 	else
 	{
@@ -1333,4 +1334,5 @@ void GuiConfig::Save()
 
 GuiConfig::~GuiConfig()
 {
+	delete conf;
 }
