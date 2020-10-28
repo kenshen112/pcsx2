@@ -469,7 +469,7 @@ void GuiConfig::LoadMemcards(wxConfigBase* conf)
 
 bool GuiConfig::SaveRootItems(wxConfigBase* base)
 {
-	conf->SetPath(wxsFormat(L"/%s", L"RootOptions"));
+	conf->SetPath(L"RootOptions");
 
 	if (base->Write("RecentIsoCount", RecentIsoCount) &&
 		base->Write("Listbook_ImageSize", Listbook_ImageSize) &&
@@ -568,7 +568,7 @@ bool FolderOptions::Save(wxConfigBase* conf) // conf write = write to config fil
 	//  --> on load, these relative paths will be expanded relative to the exe folder.
 	bool rel = true;
 
-	conf->SetPath(wxsFormat(L"/%s", L"FolderOptions"));
+	conf->SetPath(L"FolderOptions");
 
 	if (conf->Write("UseDefaultBios", UseDefaultBios) &&
 		conf->Write("UseDefaultSavestates", UseDefaultSavestates) &&
@@ -642,7 +642,7 @@ InputRecordingOptions::InputRecordingOptions()
 
 bool InputRecordingOptions::Save(wxConfigBase* conf)
 {
-	conf->SetPath(wxsFormat(L"/%s", L"InputRecordingOptions"));
+	conf->SetPath(L"InputRecordingOptions");
 
 	if (conf->Write("VirtualPadPositionX", VirtualPadPosition.x) &&
 		conf->Write("VirtualPadPositionY", VirtualPadPosition.y))
@@ -671,7 +671,7 @@ FramerateOptions::FramerateOptions()
 
 bool FramerateOptions::Save(wxConfigBase* conf)
 {
-	conf->SetPath(wxsFormat(L"/%s", L"FramerateOptions"));
+	conf->SetPath(L"FramerateOptions");
 
 	if (conf->Write("SlomoScalar", SlomoScalar))
 	{
@@ -717,7 +717,7 @@ UiTemplateOptions::UiTemplateOptions()
 
 bool UiTemplateOptions::Save(wxConfigBase* conf)
 {
-	conf->SetPath(wxsFormat(L"/%s", L"UiTemplateOptions"));
+	conf->SetPath(L"UiTemplateOptions");
 
 	if (conf->Write("LimiterUnlimited", wxString(LimiterUnlimited)) &&
 		conf->Write("LimiterTurbo", wxString(LimiterTurbo)) &&
@@ -795,7 +795,7 @@ ConsoleLogOptions::ConsoleLogOptions()
 
 bool ConsoleLogOptions::Save(wxConfigBase* conf)
 {
-	conf->SetPath(wxsFormat(L"/%s", L"ConsoleLogOptions"));
+	conf->SetPath(L"ConsoleLogOptions");
 
 	if (conf->Write("Theme", Theme) &&
 		conf->Write("FontSize", FontSize) &&
@@ -852,7 +852,7 @@ GSWindowOptions::GSWindowOptions()
 
 bool GSWindowOptions::Save(wxConfigBase* conf)
 {
-	conf->SetPath(wxsFormat(L"/%s", L"GSWindowOptions"));
+	conf->SetPath(L"GSWindowOptions");
 
 	if (conf->Write("Zoom", Zoom) &&
 		conf->Write("OffsetX", OffsetX) &&
@@ -936,7 +936,7 @@ bool FilenameOptions::Save(wxConfigBase* conf)
 {
 
 	static const std::string pc("Please Configure");	
-	conf->SetPath(wxsFormat(L"/%s", L"FilenameOptions"));
+	conf->SetPath(wxsFormat(L"FilenameOptions"));
 
 	//when saving in portable mode, we just save the non-full-path filename
 	//  --> on load they'll be initialized with default (relative) paths (works both for plugins and bios)
@@ -1324,7 +1324,6 @@ void GuiConfig::Save()
 		conf->Write("LanguageCode", LanguageCode))
 	{
 		conf->Flush();
-		delete conf;
 	}
 	else
 	{
@@ -1334,5 +1333,4 @@ void GuiConfig::Save()
 
 GuiConfig::~GuiConfig()
 {
-	delete conf;
 }
