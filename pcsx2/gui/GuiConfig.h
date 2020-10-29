@@ -223,7 +223,7 @@ struct GSWindowOptions
 struct FilenameOptions
 {
 	wxString Bios;
-	wxString Plugins[PluginId_Count];
+	std::string Plugins[PluginId_Count];
 
 	bool Save(wxConfigBase* conf);
 	void Load(wxConfigBase* conf);

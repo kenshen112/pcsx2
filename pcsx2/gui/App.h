@@ -417,7 +417,7 @@ public:
 	bool HasPluginsOverride() const
 	{
 		for (int i = 0; i < PluginId_Count; ++i)
-			if (g_Conf->gui->BaseFilenames.Plugins[i].ToStdString().c_str() != nullptr)
+			if (g_Conf->gui->BaseFilenames.Plugins[i].c_str() != nullptr)
 				return true;
 
 		return false;

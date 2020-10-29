@@ -444,6 +444,7 @@ bool Pcsx2App::OnInit()
 
 	g_Conf = std::make_unique<GlobalConfig>();
 	g_Conf->emulator->load();
+	g_Conf->gui->Load();
 
 	wxInitAllImageHandlers();
 

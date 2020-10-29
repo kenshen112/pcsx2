@@ -929,7 +929,7 @@ void GSWindowOptions::SanityCheck()
 const std::string& FilenameOptions::operator[](PluginsEnum_t pluginidx) const
 {
 	IndexBoundsAssumeDev("Filename[Plugin]", pluginidx, PluginId_Count);
-	return Plugins[pluginidx].ToStdString();
+	return Plugins[pluginidx];
 }
 
 bool FilenameOptions::Save(wxConfigBase* conf)
