@@ -155,7 +155,7 @@ wxWindowID pxIssueConfirmation( wxDialogWithHelpers& confirmDlg, const MsgButton
 
 wxWindowID pxIssueConfirmation( wxDialogWithHelpers& confirmDlg, const MsgButtons& buttons, const wxString& disablerKey )
 {
-	wxConfigBase* cfg = GetAppConfig();
+	auto cfg = GetAppConfig();
 
 	if( cfg != NULL )
 	{

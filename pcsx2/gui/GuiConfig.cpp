@@ -440,9 +440,9 @@ std::string GuiConfig::FullpathToMcd(uint slot) const
 }
 
 // ------------------------------------------------------------------------
-bool GuiConfig::SaveMemcards(wxConfigBase* conf)
+bool GuiConfig::SaveMemcards(std::shared_ptr<wxConfigBase> conf)
 {
-	conf->SetPath(wxsFormat(L"/%s", L"MemcardOptions"));
+	conf->SetPath(L"MemcardOptions");
 
 	for (uint slot = 0; slot < 2; ++slot)
 	{
@@ -461,13 +461,13 @@ bool GuiConfig::SaveMemcards(wxConfigBase* conf)
 	return true;
 }
 
-void GuiConfig::LoadMemcards(wxConfigBase* conf)
+void GuiConfig::LoadMemcards(std::shared_ptr<wxConfigBase> conf)
 {
 
 }
 
 
-bool GuiConfig::SaveRootItems(wxConfigBase* base)
+bool GuiConfig::SaveRootItems(std::shared_ptr<wxConfigBase> base)
 {
 	conf->SetPath(L"RootOptions");
 
@@ -507,7 +507,7 @@ bool GuiConfig::SaveRootItems(wxConfigBase* base)
 }
 
 // ------------------------------------------------------------------------
-bool GuiConfig::Save(wxConfigBase* conf)
+bool GuiConfig::Save(std::shared_ptr<wxConfigBase> conf)
 {
 	SaveRootItems(conf);
 	SaveMemcards(conf);
@@ -561,14 +561,14 @@ FolderOptions::FolderOptions()
 	//bitset = 0xffffffff;
 }
 
-bool FolderOptions::Save(wxConfigBase* conf) // conf write = write to config file
+bool FolderOptions::Save(std::shared_ptr<wxConfigBase> conf) // conf write = write to config file
 {
 
 	//when saving in portable mode, we save relative paths if possible
 	//  --> on load, these relative paths will be expanded relative to the exe folder.
 	bool rel = true;
 
-	conf->SetPath(L"FolderOptions");
+	g_Conf->gui->SetCategory("FolderOptions");
 
 	if (conf->Write("UseDefaultBios", UseDefaultBios) &&
 		conf->Write("UseDefaultSavestates", UseDefaultSavestates) &&
@@ -605,10 +605,12 @@ bool FolderOptions::Save(wxConfigBase* conf) // conf write = write to config fil
 	return false;
 }
 
-void FolderOptions::Load(wxConfigBase* conf)
+void FolderOptions::Load(std::shared_ptr<wxConfigBase> conf)
 {
 
      	bool rel;
+
+	    g_Conf->gui->SetCategory("FolderOptions");
 
         conf->Read("UseDefaultBios", UseDefaultBios);
 		conf->Read("UseDefaultSavestates", UseDefaultSavestates);
@@ -640,9 +642,11 @@ InputRecordingOptions::InputRecordingOptions()
 {
 }
 
-bool InputRecordingOptions::Save(wxConfigBase* conf)
+bool InputRecordingOptions::Save(std::shared_ptr<wxConfigBase> conf)
 {
-	conf->SetPath(L"InputRecordingOptions");
+	g_Conf->gui->Init();
+
+	g_Conf->gui->SetCategory("InputRecordingOptions");
 
 	if (conf->Write("VirtualPadPositionX", VirtualPadPosition.x) &&
 		conf->Write("VirtualPadPositionY", VirtualPadPosition.y))
@@ -669,9 +673,9 @@ FramerateOptions::FramerateOptions()
 }
 
 
-bool FramerateOptions::Save(wxConfigBase* conf)
+bool FramerateOptions::Save(std::shared_ptr<wxConfigBase> conf)
 {
-	conf->SetPath(L"FramerateOptions");
+	g_Conf->gui->SetCategory("FramerateOptions");
 
 	if (conf->Write("SlomoScalar", SlomoScalar))
 	{
@@ -683,7 +687,7 @@ bool FramerateOptions::Save(wxConfigBase* conf)
 	}
 }
 
-void FramerateOptions::Load(wxConfigBase* conf)
+void FramerateOptions::Load(std::shared_ptr<wxConfigBase> conf)
 {
 	conf->Read("SlomoScalar", SlomoScalar);
 }
@@ -715,22 +719,22 @@ UiTemplateOptions::UiTemplateOptions()
 #endif
 }
 
-bool UiTemplateOptions::Save(wxConfigBase* conf)
+bool UiTemplateOptions::Save(std::shared_ptr<wxConfigBase> conf)
 {
-	conf->SetPath(L"UiTemplateOptions");
+	g_Conf->gui->SetCategory("UiTemplateOptions");
 
-	if (conf->Write("LimiterUnlimited", wxString(LimiterUnlimited)) &&
-		conf->Write("LimiterTurbo", wxString(LimiterTurbo)) &&
-		conf->Write("LimiterSlowmo", wxString(LimiterSlowmo)) &&
-		conf->Write("LimiterNormal", wxString(LimiterNormal)) &&
-		conf->Write("OutputFrame", wxString(OutputFrame)) &&
-		conf->Write("OutputField", wxString(OutputField)) &&
-		conf->Write("OutputProgressive", wxString(OutputProgressive)) &&
-		conf->Write("OutputInterlaced", wxString(OutputInterlaced)) &&
-		conf->Write("Paused", wxString(Paused)) &&
-		conf->Write("TitleTemplate", wxString(TitleTemplate)) &&
+	if (conf->Write(L"LimiterUnlimited", wxString(LimiterUnlimited)) &&
+		conf->Write(L"LimiterTurbo", wxString(LimiterTurbo)) &&
+		conf->Write(L"LimiterSlowmo", wxString(LimiterSlowmo)) &&
+		conf->Write(L"LimiterNormal", wxString(LimiterNormal)) &&
+		conf->Write(L"OutputFrame", wxString(OutputFrame)) &&
+		conf->Write(L"OutputField", wxString(OutputField)) &&
+		conf->Write(L"OutputProgressive", wxString(OutputProgressive)) &&
+		conf->Write(L"OutputInterlaced", wxString(OutputInterlaced)) &&
+		conf->Write(L"Paused", wxString(Paused)) &&
+		conf->Write(L"TitleTemplate", wxString(TitleTemplate)) &&
 #ifndef DISABLE_RECORDING
-		conf->Write("RecordingTemplate", wxString(RecordingTemplate)))
+		conf->Write(L"RecordingTemplate", wxString(RecordingTemplate)))
 #endif
 	{
 		return true;
@@ -742,20 +746,22 @@ bool UiTemplateOptions::Save(wxConfigBase* conf)
 	}
 }
 
-void UiTemplateOptions::Load(wxConfigBase* conf)
+void UiTemplateOptions::Load(std::shared_ptr<wxConfigBase> conf)
 {
-	conf->Read("LimiterUnlimited", LimiterUnlimited);
-	conf->Read("LimiterTurbo", LimiterTurbo);
-	conf->Read("LimiterSlowmo", LimiterSlowmo);
-	conf->Read("LimiterNormal", LimiterNormal);
-	conf->Read("OutputFrame", OutputFrame);
-	conf->Read("OutputField", OutputField);
-	conf->Read("OutputProgressive", OutputProgressive);
-	conf->Read("OutputInterlaced", OutputInterlaced);
-	conf->Read("Paused", Paused);
-	conf->Read("TitleTemplate", TitleTemplate);
+	g_Conf->gui->SetCategory("UiTemplateOptions");
+
+	conf->Read(L"LimiterUnlimited", LimiterUnlimited);
+	conf->Read(L"LimiterTurbo", LimiterTurbo);
+	conf->Read(L"LimiterSlowmo", LimiterSlowmo);
+	conf->Read(L"LimiterNormal", LimiterNormal);
+	conf->Read(L"OutputFrame", OutputFrame);
+	conf->Read(L"OutputField", OutputField);
+	conf->Read(L"OutputProgressive", OutputProgressive);
+	conf->Read(L"OutputInterlaced", OutputInterlaced);
+	conf->Read(L"Paused", Paused);
+	conf->Read(L"TitleTemplate", TitleTemplate);
 #ifndef DISABLE_RECORDING
-	conf->Read("RecordingTemplate", RecordingTemplate);
+	conf->Read(L"RecordingTemplate", RecordingTemplate);
 #endif
 }
 
@@ -793,18 +799,19 @@ ConsoleLogOptions::ConsoleLogOptions()
 	FontSize = 8;
 }
 
-bool ConsoleLogOptions::Save(wxConfigBase* conf)
+bool ConsoleLogOptions::Save(std::shared_ptr<wxConfigBase> conf)
 {
-	conf->SetPath(L"ConsoleLogOptions");
 
-	if (conf->Write("Theme", Theme) &&
-		conf->Write("FontSize", FontSize) &&
-		conf->Write("IsVisible", Visible) &&
-		conf->Write("Autodock", AutoDock) &&
-		conf->Write("DisplaySizeX", DisplaySize.x) &&
-		conf->Write("DisplaySizeY", DisplaySize.y) &&
-		conf->Write("DisplayPositionX", DisplayPosition.x) &&
-		conf->Write("DisplayPositionY", DisplayPosition.y))
+	g_Conf->gui->SetCategory("ConsoleLogOptions");
+
+	if (conf->Write(L"Theme", Theme) &&
+		conf->Write(L"FontSize", FontSize) &&
+		conf->Write(L"IsVisible", Visible) &&
+		conf->Write(L"Autodock", AutoDock) &&
+		conf->Write(L"DisplaySizeX", DisplaySize.x) &&
+		conf->Write(L"DisplaySizeY", DisplaySize.y) &&
+		conf->Write(L"DisplayPositionX", DisplayPosition.x) &&
+		conf->Write(L"DisplayPositionY", DisplayPosition.y))
 	{
 		return true;
 	}
@@ -814,16 +821,18 @@ bool ConsoleLogOptions::Save(wxConfigBase* conf)
 	}
 }
 
-void ConsoleLogOptions::Load(wxConfigBase* conf)
+void ConsoleLogOptions::Load(std::shared_ptr<wxConfigBase> conf)
 {
-	conf->Read("Theme", Theme);
-	conf->Read("FontSize", FontSize);
-	conf->Read("IsVisible", Visible);
-	conf->Read("Autodock", AutoDock);
-	conf->ReadObject("DisplaySizeX", DisplaySize.x);
-	conf->ReadObject("DisplaySizeY", DisplaySize.y);
-	conf->ReadObject("DisplayPositionX", DisplayPosition.x);
-	conf->ReadObject("DisplayPositionY", DisplayPosition.y);
+	g_Conf->gui->SetCategory("ConsoleLogOptions");
+
+	conf->Read(L"Theme", Theme);
+	conf->Read(L"FontSize", FontSize);
+	conf->Read(L"IsVisible", Visible);
+	conf->Read(L"Autodock", AutoDock);
+	conf->ReadObject(L"DisplaySizeX", DisplaySize.x);
+	conf->ReadObject(L"DisplaySizeY", DisplaySize.y);
+	conf->ReadObject(L"DisplayPositionX", DisplayPosition.x);
+	conf->ReadObject(L"DisplayPositionY", DisplayPosition.y);
 }
 
 GSWindowOptions::GSWindowOptions()
@@ -850,29 +859,29 @@ GSWindowOptions::GSWindowOptions()
 	IsToggleFullscreenOnDoubleClick = true;
 }
 
-bool GSWindowOptions::Save(wxConfigBase* conf)
+bool GSWindowOptions::Save(std::shared_ptr<wxConfigBase> conf)
 {
-	conf->SetPath(L"GSWindowOptions");
+	g_Conf->gui->SetCategory("GSWindowOptions");
 
-	if (conf->Write("Zoom", Zoom) &&
-		conf->Write("OffsetX", OffsetX) &&
-		conf->Write("OffsetY", OffsetY) &&
-		conf->Write("StretchY", StretchY) &&
-		conf->Write("WindowPosX", WindowPos.x) &&
-		conf->Write("WindowPosY", WindowPos.y) &&
-		conf->Write("WindowSizeX", WindowSize.x) &&
-		conf->Write("WindowSizeY", WindowSize.y) &&
-		conf->Write("CloseOnEsc", CloseOnEsc) &&
-		conf->Write("AspectRatio", (int)AspectRatio) &&
-		conf->Write("IsMaximized", IsMaximized) &&
-		conf->Write("IsFullscreen", IsFullscreen) &&
-		conf->Write("AlwaysHideMouse", AlwaysHideMouse) &&
-		conf->Write("DisableScreenSaver", DisableScreenSaver) &&
-		conf->Write("DefaultToFullScreen", DefaultToFullscreen) &&
-		conf->Write("DisableResizeBorders", DisableResizeBorders) &&
-		conf->Write("FMVAspectRatioSwitch", (int)FMVAspectRatioSwitch) &&
-		conf->Write("EnableVsyncWindowFlag", EnableVsyncWindowFlag) &&
-		conf->Write("IsToggleFullscreenOnDoubleClick", IsToggleFullscreenOnDoubleClick))
+	if (conf->Write(L"Zoom", Zoom) &&
+		conf->Write(L"OffsetX", OffsetX) &&
+		conf->Write(L"OffsetY", OffsetY) &&
+		conf->Write(L"StretchY", StretchY) &&
+		conf->Write(L"WindowPosX", WindowPos.x) &&
+		conf->Write(L"WindowPosY", WindowPos.y) &&
+		conf->Write(L"WindowSizeX", WindowSize.x) &&
+		conf->Write(L"WindowSizeY", WindowSize.y) &&
+		conf->Write(L"CloseOnEsc", CloseOnEsc) &&
+		conf->Write(L"AspectRatio", (int)AspectRatio) &&
+		conf->Write(L"IsMaximized", IsMaximized) &&
+		conf->Write(L"IsFullscreen", IsFullscreen) &&
+		conf->Write(L"AlwaysHideMouse", AlwaysHideMouse) &&
+		conf->Write(L"DisableScreenSaver", DisableScreenSaver) &&
+		conf->Write(L"DefaultToFullScreen", DefaultToFullscreen) &&
+		conf->Write(L"DisableResizeBorders", DisableResizeBorders) &&
+		conf->Write(L"FMVAspectRatioSwitch", (int)FMVAspectRatioSwitch) &&
+		conf->Write(L"EnableVsyncWindowFlag", EnableVsyncWindowFlag) &&
+		conf->Write(L"IsToggleFullscreenOnDoubleClick", IsToggleFullscreenOnDoubleClick))
 	{
 		return true;
 	}
@@ -882,27 +891,29 @@ bool GSWindowOptions::Save(wxConfigBase* conf)
 	}
 }
 
-void GSWindowOptions::Load(wxConfigBase* conf)
+void GSWindowOptions::Load(std::shared_ptr<wxConfigBase> conf)
 {
-	conf->Read("Zoom", Zoom);
-	conf->Read("OffsetX", OffsetX);
-	conf->Read("OffsetY", OffsetY);
-	conf->Read("StretchY", StretchY);
-	conf->ReadObject("WindowPosX", WindowPos.x);
-	conf->ReadObject("WindowPosY", WindowPos.y);
-	conf->ReadObject("WindowSizeX", WindowSize.x);
-	conf->ReadObject("WindowSizeY", WindowSize.y);
-	conf->Read("CloseOnEsc", CloseOnEsc);
-	conf->Read("AspectRatio", (int)AspectRatio);
-	conf->Read("IsMaximized", IsMaximized);
-	conf->Read("IsFullscreen", IsFullscreen);
-	conf->Read("AlwaysHideMouse", AlwaysHideMouse);
-	conf->Read("DisableScreenSaver", DisableScreenSaver);
-	conf->Read("DefaultToFullScreen", DefaultToFullscreen);
-	conf->Read("DisableResizeBorders", DisableResizeBorders);
-	conf->Read("FMVAspectRatioSwitch", (int)FMVAspectRatioSwitch);
-	conf->Read("EnableVsyncWindowFlag", EnableVsyncWindowFlag);
-	conf->Read("IsToggleFullscreenOnDoubleClick", IsToggleFullscreenOnDoubleClick);
+	g_Conf->gui->SetCategory("GSWindowOptions");
+
+	conf->Read(L"Zoom", Zoom);
+	conf->Read(L"OffsetX", OffsetX);
+	conf->Read(L"OffsetY", OffsetY);
+	conf->Read(L"StretchY", StretchY);
+	conf->Read(L"WindowPosX", WindowPos.x);
+	conf->Read(L"WindowPosY", WindowPos.y);
+	conf->Read(L"WindowSizeX", WindowSize.x);
+	conf->Read(L"WindowSizeY", WindowSize.y);
+	conf->Read(L"CloseOnEsc", CloseOnEsc);
+	conf->Read(L"AspectRatio", (int)AspectRatio);
+	conf->Read(L"IsMaximized", IsMaximized);
+	conf->Read(L"IsFullscreen", IsFullscreen);
+	conf->Read(L"AlwaysHideMouse", AlwaysHideMouse);
+	conf->Read(L"DisableScreenSaver", DisableScreenSaver);
+	conf->Read(L"DefaultToFullScreen", DefaultToFullscreen);
+	conf->Read(L"DisableResizeBorders", DisableResizeBorders);
+	conf->Read(L"FMVAspectRatioSwitch", (int)FMVAspectRatioSwitch);
+	conf->Read(L"EnableVsyncWindowFlag", EnableVsyncWindowFlag);
+	conf->Read(L"IsToggleFullscreenOnDoubleClick", IsToggleFullscreenOnDoubleClick);
 }
 
 void GSWindowOptions::SanityCheck()
@@ -932,7 +943,7 @@ const std::string& FilenameOptions::operator[](PluginsEnum_t pluginidx) const
 	return Plugins[pluginidx];
 }
 
-bool FilenameOptions::Save(wxConfigBase* conf)
+bool FilenameOptions::Save(std::shared_ptr<wxConfigBase> conf)
 {
 
 	static const std::string pc("Please Configure");	
@@ -966,9 +977,10 @@ bool FilenameOptions::Save(wxConfigBase* conf)
 	return true;
 }
 
-void FilenameOptions::Load(wxConfigBase* conf)
+void FilenameOptions::Load(std::shared_ptr<wxConfigBase> conf)
 {
-	conf->Read("BIOS", Bios);
+	g_Conf->gui->SetCategory("FilenameOptions");
+	conf->Read(L"BIOS", Bios);
 }
 
 void RelocateLogfile()
@@ -1214,9 +1226,9 @@ void AppSaveSettings()
 // Returns the current application configuration file.  This is preferred over using
 // wxConfigBase::GetAppConfig(), since it defaults to *not* creating a config file
 // automatically (which is typically highly undesired behavior in our system)
-wxConfigBase* GetAppConfig()
+std::shared_ptr<wxConfigBase> GetAppConfig()
 {
-	return wxConfigBase::Get(false);
+	return nullptr;
 }
 
 GuiConfig::GuiConfig()
@@ -1259,14 +1271,26 @@ GuiConfig::GuiConfig()
 	GzipIsoIndexTemplate = "$(f).pindex.tmp";
 }
 
-void GuiConfig::Init()
+std::shared_ptr<wxConfigBase> GuiConfig::Init()
 {
 	fs::path programFullPath = wxStandardPaths::Get().GetExecutablePath().ToStdString();
 	std::string programDir(Path::Combine(programFullPath.parent_path(), "settings/PCSX2_ui.ini"));
-		
-	conf = new wxFileConfig("", " ", programDir );
+
+    if (conf == nullptr)
+	{
+        conf = std::make_shared<wxFileConfig>(L"", L"", programDir, L"", wxCONFIG_USE_LOCAL_FILE );
+	}
 
 	isInit = true;
+	return conf;
+}
+
+void GuiConfig::SetCategory(std::string cat)
+{
+	Init();
+
+	conf->SetPath(wxsFormat(L"/%s", cat));
+
 }
 
 void GuiConfig::Load()
@@ -1276,34 +1300,38 @@ void GuiConfig::Load()
 		Init();
 	}
 
-	console.Load(conf);
-	Folders.Load(conf);
-	LoadMemcards(conf);
-	gsWindow.Load(conf);
-	Framerate.Load(conf);
-	Templates.Load(conf);
-	BaseFilenames.Load(conf);
-	//inputRecording.Load(conf);
-	conf->Read("MainGuiPositionX", MainGuiPosition.x);
-	conf->Read("MainGuiPositionY", MainGuiPosition.y);
-	conf->Read("SysSettingsTabName", SysSettingsTabName);
-	conf->Read("McdSettingsTabName", McdSettingsTabName);
-	conf->Read("ComponentsTabName", ComponentsTabName);
-	conf->Read("AppSettingsTabName", AppSettingsTabName);
-	conf->Read("GameDatabaseTabName", GameDatabaseTabName);
-	conf->Read("LanguageId", (int)LanguageId);
-	conf->Read("LanguageCode", LanguageCode);
+	fs::path programFullPath = wxStandardPaths::Get().GetExecutablePath().ToStdString();
+	std::string programDir(Path::Combine(programFullPath.parent_path(), "settings/PCSX2_ui.ini"));
+
+
+	if (folderUtils.DoesExist(programDir))
+	{
+	    console.Load(conf);
+	    Folders.Load(conf);
+     	LoadMemcards(conf);
+ 	    gsWindow.Load(conf);
+	    Framerate.Load(conf);
+	    Templates.Load(conf);
+	    BaseFilenames.Load(conf);
+	    //inputRecording.Load(conf);
+	    conf->Read("MainGuiPositionX", MainGuiPosition.x);
+	    conf->Read("MainGuiPositionY", MainGuiPosition.y);
+	    conf->Read("SysSettingsTabName", SysSettingsTabName);
+	    conf->Read("McdSettingsTabName", McdSettingsTabName);
+	    conf->Read("ComponentsTabName", ComponentsTabName);
+	    conf->Read("AppSettingsTabName", AppSettingsTabName);
+	    conf->Read("GameDatabaseTabName", GameDatabaseTabName);
+	    conf->Read("LanguageId", (int)LanguageId);
+	    conf->Read("LanguageCode", LanguageCode);
+    }
 }
 
 
 void GuiConfig::Save()
 {
 
-	if (!isInit)
-	{
-		Init();
-	}
-
+	Init();
+	
 	if (inputRecording.Save(conf) &&
 		Folders.Save(conf) &&
 		console.Save(conf) &&

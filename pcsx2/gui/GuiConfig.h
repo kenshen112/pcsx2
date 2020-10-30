@@ -131,8 +131,8 @@ struct ConsoleLogOptions
 	wxString Theme;
 
 	ConsoleLogOptions();
-	bool Save(wxConfigBase* conf);
-	void Load(wxConfigBase* conf);
+	bool Save(std::shared_ptr<wxConfigBase> conf);
+	void Load(std::shared_ptr<wxConfigBase> conf);
 };
 
 	// ------------------------------------------------------------------------
@@ -163,8 +163,8 @@ struct ConsoleLogOptions
 	fs::path RunDisc;		// last used location for Disc loading.
 
 	FolderOptions();
-	bool Save(wxConfigBase* conf);
-	void Load(wxConfigBase* conf);
+	bool Save(std::shared_ptr<wxConfigBase> conf);
+	void Load(std::shared_ptr<wxConfigBase> conf);
 	void ApplyDefaults();
 
 	void Set( FoldersEnum_t folderidx, const std::string& src, bool useDefault );
@@ -181,7 +181,8 @@ struct ConsoleLogOptions
 		wxPoint		VirtualPadPosition;
 
 		InputRecordingOptions();
-		bool Save( wxConfigBase* conf);
+		bool Save(std::shared_ptr<wxConfigBase> conf);
+		void Load(std::shared_ptr<wxConfigBase> conf);
 	};
 #endif
 // ------------------------------------------------------------------------
@@ -214,8 +215,8 @@ struct GSWindowOptions
 
 	GSWindowOptions();
 
-	bool Save(wxConfigBase* conf);
-	void Load(wxConfigBase* conf);
+	bool Save(std::shared_ptr<wxConfigBase> conf);
+	void Load(std::shared_ptr<wxConfigBase> conf);
 	void SanityCheck();
 };
 
@@ -225,8 +226,8 @@ struct FilenameOptions
 	wxString Bios;
 	std::string Plugins[PluginId_Count];
 
-	bool Save(wxConfigBase* conf);
-	void Load(wxConfigBase* conf);
+	bool Save(std::shared_ptr<wxConfigBase> conf);
+	void Load(std::shared_ptr<wxConfigBase> conf);
 
 	const std::string& operator[](PluginsEnum_t pluginidx) const;
 };
@@ -252,8 +253,8 @@ struct FramerateOptions
 
 	FramerateOptions();
 
-	bool Save(wxConfigBase* conf);
-	void Load(wxConfigBase* conf);
+	bool Save(std::shared_ptr<wxConfigBase> conf);
+	void Load(std::shared_ptr<wxConfigBase> conf);
 	void SanityCheck();
 };
 
@@ -261,8 +262,8 @@ struct UiTemplateOptions
 {
 	UiTemplateOptions();
 			
-	bool Save(wxConfigBase* conf);
-	void Load(wxConfigBase* conf);
+	bool Save(std::shared_ptr<wxConfigBase> conf);
+	void Load(std::shared_ptr<wxConfigBase> conf);
 
 	std::string LimiterUnlimited;
 	std::string LimiterTurbo;
@@ -284,7 +285,7 @@ class GuiConfig
 
 private:
 	// The Configurator
-    wxConfigBase* conf;
+   std::shared_ptr<wxConfigBase> conf;
 	bool isInit = false;
 
 public:	
@@ -313,12 +314,12 @@ public:
 
 	bool FullpathMatchTest( PluginsEnum_t pluginId, const wxString& cmpto );
 
-	bool Save(wxConfigBase* conf);
-	void Load(wxConfigBase* conf);
-	bool SaveRootItems(wxConfigBase* conf);
-	void LoadRootItems(wxConfigBase* conf);
-	bool SaveMemcards(wxConfigBase* conf);
-	void LoadMemcards(wxConfigBase* conf);
+	bool Save(std::shared_ptr<wxConfigBase> conf);
+	void Load(std::shared_ptr<wxConfigBase> conf);
+	bool SaveRootItems(std::shared_ptr<wxConfigBase> conf);
+	void LoadRootItems(std::shared_ptr<wxConfigBase> conf);
+	bool SaveMemcards(std::shared_ptr<wxConfigBase> conf);
+	void LoadMemcards(std::shared_ptr<wxConfigBase> conf);
 
 	static int  GetMaxPresetIndex();
     static bool isOkGetPresetTextAndColor(int n, std::string& label, wxColor& c);
@@ -393,9 +394,10 @@ public:
 	wxString	LanguageCode;
 
 	GuiConfig();
-	void Init();
+	std::shared_ptr<wxConfigBase> Init();
 	void Load();
 	void Save();
+	void SetCategory(std::string cat);
 	~GuiConfig();
 };
 
@@ -409,7 +411,7 @@ extern wxFileConfig App_LoadSaveInstallSettings( );
 //extern void App_SaveInstallSettings( YAML::Node yaml );
 //extern void App_LoadInstallSettings( YAML::Node yaml );
 
-extern wxFileConfig ConLog_LoadSaveSettings(wxConfigBase* conf);
+extern wxFileConfig ConLog_LoadSaveSettings(std::shared_ptr<wxConfigBase> conf);
 extern wxFileConfig SysTraceLog_LoadSaveSettings();
 
 
@@ -417,4 +419,4 @@ extern wxFileConfig SysTraceLog_LoadSaveSettings();
 // extern bool OpenFileConfig( std::string filename );
 extern void RelocateLogfile();
 extern void AppConfig_OnChangedSettingsFolder( bool overwrite =  false );
-extern wxConfigBase* GetAppConfig();
+extern std::shared_ptr<wxConfigBase> GetAppConfig();
