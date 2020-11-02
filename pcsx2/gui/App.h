@@ -606,12 +606,12 @@ public:
 	void CleanupRestartable();
 	void CleanupResources();
 	void WipeUserModeSettings();
-	bool TestUserPermissionsRights( const wxDirName& testFolder, wxString& createFailedStr, wxString& accessFailedStr );
+	bool TestUserPermissionsRights(const std::string& testFolder);
 	void EstablishAppUserMode();
 	void ForceFirstTimeWizardOnNextRun();
 
-	wxConfigBase* OpenInstallSettingsFile();
-	wxConfigBase* TestForPortableInstall();
+	bool OpenInstallSettingsFile();
+	bool TestForPortableInstall();
 
 	bool HasPendingSaves() const;
 	void StartPendingSave();
