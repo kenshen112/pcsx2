@@ -382,18 +382,10 @@ bool InputRecording::Play(wxWindow* parent, wxString filename)
 		savestate = inputRecordingData.GetFilename() + "_SaveState.p2s";
 		if (!wxFileExists(savestate))
 		{
-			wxFileDialog loadStateDialog(parent, _("Select the savestate that will accompany this recording"), L"", L"",
-										 L"Savestate files (*.p2s)|*.p2s", wxFD_OPEN);
-			if (loadStateDialog.ShowModal() == wxID_CANCEL)
-			{
-				inputRec::consoleLog(fmt::format("Could not locate savestate file at location - {}", savestate));
-				inputRec::log("Savestate load failed");
-				inputRecordingData.Close();
-				return false;
-			}
-
-			savestate = loadStateDialog.GetPath();
-			inputRec::consoleLog(fmt::format("Base savestate set to {}", savestate));
+			inputRec::consoleLog(fmt::format("Could not locate savestate file at location - {}_SaveState.p2s",
+											 inputRecordingData.GetFilename().c_str()));
+			inputRecordingData.Close();
+			return false;
 		}
 		state = InputRecordingMode::Replaying;
 		initialLoad = true;

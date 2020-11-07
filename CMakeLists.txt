@@ -43,6 +43,9 @@ if(NOT NO_TRANSLATION)
     endif()
 endif()
 
+# 3rdpary Libraries
+add_subdirectory(3rdparty/cubeb EXCLUDE_FROM_ALL)
+
 # make common
 if(common_libs)
     add_subdirectory(common/src/Utilities)

@@ -32,8 +32,6 @@ if(GCC_VERSION VERSION_EQUAL "8.0" OR GCC_VERSION VERSION_GREATER "8.0")
     )
 endif()
 
-
-
 if ("${PGO}" STREQUAL "generate")
     set(pcsx2FinalFlags -fprofile-generate)
 elseif("${PGO}" STREQUAL "use")
@@ -254,6 +252,7 @@ set(pcsx2SPU2Sources
 	SPU2/RegTable.cpp
 	SPU2/Reverb.cpp
 	SPU2/SndOut.cpp
+	SPU2/SndOut_Cubeb.cpp
 	SPU2/SndOut_SDL.cpp
 	SPU2/spu2freeze.cpp
 	SPU2/spu2sys.cpp
@@ -1024,7 +1023,6 @@ if(Linux)
 		
 	set(Platform_Libs
 		${LIBUDEV_LIBRARIES}
-		${X11_LIBRARIES}
 		)
 endif()
 
@@ -1058,7 +1056,8 @@ set(pcsx2FinalSources
 set(pcsx2FinalLibs
     Utilities
     x86emitter
-    fmt::fmt
+	fmt::fmt
+	cubeb
     ${wxWidgets_LIBRARIES}
     ${GTK2_LIBRARIES}
     ${ZLIB_LIBRARIES}
@@ -1066,7 +1065,7 @@ set(pcsx2FinalLibs
     ${GCOV_LIBRARIES}
     ${ALSA_LIBRARIES}
     ${SOUNDTOUCH_LIBRARIES}
-    ${SDL2_LIBRARIES}
+	${SDL2_LIBRARIES}
     ${PCAP_LIBRARY}
     ${LIBSAMPLERATE_LIBRARIES}
     ${LIBXML2_LIBRARIES}
@@ -1083,6 +1082,21 @@ endif()
 
 if(BUILTIN_GS)
     set(pcsx2FinalLibs "${pcsx2FinalLibs} GSdx")
+endif()
+if(BUILTIN_PAD)
+    set(pcsx2FinalLibs "${pcsx2FinalLibs} onepad-1.2.0")
+endif()
+if(BUILTIN_USB)
+    set(pcsx2FinalLibs "${pcsx2FinalLibs} USBnull-0.7.0")
+endif()
+if(BUILTIN_FW)
+    set(pcsx2FinalLibs "${pcsx2FinalLibs} FWnull-0.7.0")
+endif()
+if(BUILTIN_DEV)
+    set(pcsx2FinalLibs "${pcsx2FinalLibs} dev9null-0.5.0")
+endif()
+if(BUILTIN_CDVD)
+    set(pcsx2FinalLibs "${pcsx2FinalLibs} CDVDnull")
 endif()
 
 # additonal include directories

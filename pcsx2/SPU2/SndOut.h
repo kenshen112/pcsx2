@@ -676,6 +676,8 @@ extern SndOutModule* const SDLOut;
 extern SndOutModule* AlsaOut;
 #endif
 
+extern SndOutModule* CubebOut;
+
 extern SndOutModule* mods[];
 
 // =====================================================================================================
