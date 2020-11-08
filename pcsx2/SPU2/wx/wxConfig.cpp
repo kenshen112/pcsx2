@@ -365,9 +365,12 @@ Dialog::Dialog()
 	module_entries.Add("PortAudio (Cross-platform)");
 #endif
 	module_entries.Add("SDL Audio (Recommended for PulseAudio)");
+
+    module_entries.Add("Cubeb (FireFox Audio)");
 	m_module_select = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, module_entries);
 	module_box->Add(m_module_select, wxSizerFlags().Centre());
 
+	
 #ifdef SPU2X_PORTAUDIO
 	// Portaudio
 	m_portaudio_box = new wxBoxSizer(wxVERTICAL);
@@ -387,6 +390,13 @@ Dialog::Dialog()
 	m_portaudio_select = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, portaudio_entries);
 	m_portaudio_box->Add(m_portaudio_select, wxSizerFlags().Centre());
 #endif
+
+    //Cubeb
+    m_cubeb_box = new wxBoxSizer(wxVERTICAL);
+	m_cubeb_text = new wxStaticText(this, wxID_ANY, "Cubeb API");
+	m_cubeb_box->Add(m_cubeb_text, wxSizerFlags().Centre());
+    wxArrayString cubebEntries;
+    m_cubeb_select = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, cubebEntries);
 
 	// SDL
 	m_sdl_box = new wxBoxSizer(wxVERTICAL);
@@ -432,27 +442,36 @@ Dialog::~Dialog()
 void Dialog::Reconfigure()
 {
 	const int mod = m_module_select->GetCurrentSelection();
-	bool show_portaudio = false, show_sdl = false;
+	bool show_portaudio = false, show_sdl = false, show_cubeb;
 
 	switch (mod)
 	{
 		case 0:
 			show_portaudio = false;
+			show_cubeb = false;
 			show_sdl = false;
 			break;
 
 		case 1:
 			show_portaudio = true;
+			show_cubeb = false;
 			show_sdl = false;
 			break;
 
 		case 2:
 			show_portaudio = false;
+			show_cubeb = false;
 			show_sdl = true;
 			break;
-
+		
+		case 3:	
+            show_portaudio = false;
+			show_cubeb = true;
+			show_sdl = false;
+            break;
 		default:
 			show_portaudio = false;
+			show_cubeb = false;
 			show_sdl = false;
 			break;
 	}
@@ -483,6 +502,8 @@ void Dialog::Load()
 	m_sync_panel->Load();
 	m_debug_panel->Load();
 
+	m_cubeb_select->SetSelection(CubebOutputAPI);
+
 	Reconfigure();
 }
 
@@ -502,6 +523,9 @@ void Dialog::Save()
 
 	SdlOutputAPI = m_sdl_select->GetSelection();
 	SDLOut->SetApiSettings(m_sdl_select->GetStringSelection());
+
+    CubebOutputAPI = m_cubeb_select->GetSelection();
+    CubebOut->SetApiSettings(m_cubeb_select->GetStringSelection());
 
 	m_mixer_panel->Save();
 	m_sync_panel->Save();

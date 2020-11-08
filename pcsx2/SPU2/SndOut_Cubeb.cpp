@@ -7,21 +7,50 @@ class SndCubeb : public SndOutModule
 {
 	//////////////////////////////////////////////////////////////////////////////////////////
 	// Instance vars
+	private:
+
 	int rv;
+	int volume = 50;
+    u32 channels;
 	u32 rate;
 	u32 latency_frames;
 	u64 ts;
 
 	bool started;
+	
 	cubeb* api;
 	cubeb_stream* stream;
+	cubeb_stream_params outParams;
 	//////////////////////////////////////////////////////////////////////////////////////////
 
+    public:
+
+	static long DataCallback(cubeb_stream * stm, void * user, const void * input_buffer, void * output_buffer, long nframes)
+	{
+      const float * in  = (float*)input_buffer;
+      float * out = (float*)output_buffer;
+
+      for (int i = 0; i < nframes; ++i) 
+	  {
+          for (int c = 0; c < 2; ++c) 
+		  {
+            out[2 * i + c] = in[i];
+          }
+      }
+      return nframes;
+	}
+
+	static void StateCallback(cubeb_stream * stm, void * user, cubeb_state state)
+	{
+        printf("state=%d\n", state);
+	}
 
 	s32 Init() override
 	{
-		cubeb_init(&api, "PCSX2", NULL);                       // The inital startup of the underlying cubeb struct
-		rv = cubeb_get_preferred_sample_rate(api, &rate); // Sample rate
+		std::cout << "CUBEB AUDIO" << std::endl;
+
+		cubeb_init(&api, "PCSX2", NULL); // The inital startup of the underlying cubeb struct
+		rv = cubeb_get_preferred_sample_rate(api, &rate);
 
 		if (rv != CUBEB_OK)
 		{
@@ -29,11 +58,25 @@ class SndCubeb : public SndOutModule
 			return rv;
 		}
 
-		//cubeb_stream_init(stream, "PCSX2 Audio", nullptr, nullptr);
+		started = true; 
+
+        outParams.channels = channels;
+		outParams.rate = rate;
+
+		rv = cubeb_get_min_latency(api, &outParams, &latency_frames);
+
+		cubeb_stream_set_volume(stream, volume);
+		cubeb_stream_init(api, &stream, "PCSX2 Audio", nullptr, nullptr, nullptr, &outParams, latency_frames, DataCallback, StateCallback, this);
+		cubeb_stream_start(stream);
 	}
 
 	s32 Test() const override { return 0; }
 
+
+	void Play()
+	{
+		cubeb_stream_start(stream);
+	}
 
 	int GetEmptySampleCount() override { return 0; }
 
@@ -58,12 +101,18 @@ class SndCubeb : public SndOutModule
 
 	const wchar_t* GetLongName() const override
 	{
-		return L"Cubeb";
+		return L"Cubeb (Cross-platform)";
 	}
 
 	void Close() override
 	{
+		//delete api;
 	}
 } static cuOut;
+
+int cuOutCallback()
+{
+	cuOut.Play();
+}
 
 SndOutModule* CubebOut = &cuOut;

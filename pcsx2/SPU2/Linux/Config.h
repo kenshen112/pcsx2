@@ -85,6 +85,7 @@ extern int SynchMode;
 extern u32 OutputAPI;
 #endif
 extern u32 SdlOutputAPI;
+extern u32 CubebOutputAPI;
 
 #ifdef PCSX2_DEVBUILD
 const int LATENCY_MAX = 3000;

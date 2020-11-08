@@ -70,6 +70,7 @@ int SynchMode = 0; // Time Stretch, Async or Disabled
 u32 OutputAPI = 0;
 #endif
 u32 SdlOutputAPI = 0;
+u32 CubebOutputAPI = 0;
 
 int numSpeakers = 0;
 int dplLevel = 0;
@@ -115,6 +116,7 @@ void ReadSettings()
 	CfgReadStr(L"OUTPUT", L"Output_Module", temp, SDLOut->GetIdent());
 #else
 	CfgReadStr(L"OUTPUT", L"Output_Module", temp, PortaudioOut->GetIdent());
+    CfgReadStr(L"OUTPUT", L"Output_Module", temp, CubebOut->GetIdent());
 #endif
 	OutputModule = FindOutputModuleById(temp.c_str()); // find the driver index of this module
 
@@ -136,6 +138,7 @@ void ReadSettings()
 
 #if defined(__unix__) || defined(__APPLE__)
 	CfgReadStr(L"SDL", L"HostApi", temp, L"pulseaudio");
+	CfgReadStr(L"Cubeb", L"HostApi", temp, L"pulseaudio");
 	SdlOutputAPI = 0;
 #if SDL_MAJOR_VERSION >= 2
 	// YES It sucks ...
@@ -145,6 +148,8 @@ void ReadSettings()
 			SdlOutputAPI = i;
 	}
 #endif
+#else
+CfgReadStr(L"Cubeb", L"HostApi", temp);
 #endif
 
 	SndOutLatencyMS = CfgReadInt(L"OUTPUT", L"Latency", 100);
@@ -157,6 +162,7 @@ void ReadSettings()
 #if defined(__unix__) || defined(__APPLE__)
 	SDLOut->ReadSettings();
 #endif
+    CubebOut->ReadSettings();
 	SoundtouchCfg::ReadSettings();
 	DebugConfig::ReadSettings();
 
@@ -212,6 +218,7 @@ void WriteSettings()
 #if defined(__unix__) || defined(__APPLE__)
 	SDLOut->WriteSettings();
 #endif
+    CubebOut->WriteSettings();
 	SoundtouchCfg::WriteSettings();
 	DebugConfig::WriteSettings();
 }
