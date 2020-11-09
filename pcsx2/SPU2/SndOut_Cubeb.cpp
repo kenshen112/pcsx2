@@ -49,7 +49,10 @@ class SndCubeb : public SndOutModule
 	{
 		std::cout << "CUBEB AUDIO" << std::endl;
 
-		cubeb_init(&api, "PCSX2", NULL); // The inital startup of the underlying cubeb struct
+		if (cubeb_init(&api, "PCSX2", NULL) != CUBEB_OK) // The inital startup of the underlying cubeb struct
+		{
+			DevCon.Error("INIT FAILED!");
+		}
 		rv = cubeb_get_preferred_sample_rate(api, &rate);
 
 		if (rv != CUBEB_OK)
@@ -60,13 +63,18 @@ class SndCubeb : public SndOutModule
 
 		started = true; 
 
-        outParams.channels = channels;
 		outParams.rate = rate;
+        outParams.channels = 2;
+	    outParams.format = CUBEB_SAMPLE_S16NE;
+		outParams.layout = CUBEB_LAYOUT_STEREO;
 
 		rv = cubeb_get_min_latency(api, &outParams, &latency_frames);
 
 		cubeb_stream_set_volume(stream, volume);
-		cubeb_stream_init(api, &stream, "PCSX2 Audio", nullptr, nullptr, nullptr, &outParams, latency_frames, DataCallback, StateCallback, this);
+		if(cubeb_stream_init(api, &stream, "PCSX2 Audio", nullptr, nullptr, nullptr, &outParams, latency_frames, DataCallback, StateCallback, this) != CUBEB_OK)
+		{
+			DevCon.Error("FAILED STREAM");
+		}
 		cubeb_stream_start(stream);
 	}
 

@@ -91,9 +91,7 @@ SndOutModule* mods[] =
 #endif
 #if defined(__linux__) || defined(__APPLE__)
 		SDLOut,
-#endif
-#if defined(__linux__) /* && defined(__ALSA__)*/
-		AlsaOut,
+		//AlsaOut,
 #endif
         CubebOut,
 		nullptr // signals the end of our list

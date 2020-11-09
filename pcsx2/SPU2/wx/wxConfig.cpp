@@ -392,11 +392,11 @@ Dialog::Dialog()
 #endif
 
     //Cubeb
-    m_cubeb_box = new wxBoxSizer(wxVERTICAL);
+   /* m_cubeb_box = new wxBoxSizer(wxVERTICAL);
 	m_cubeb_text = new wxStaticText(this, wxID_ANY, "Cubeb API");
 	m_cubeb_box->Add(m_cubeb_text, wxSizerFlags().Centre());
     wxArrayString cubebEntries;
-    m_cubeb_select = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, cubebEntries);
+    m_cubeb_select = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, cubebEntries);*/
 
 	// SDL
 	m_sdl_box = new wxBoxSizer(wxVERTICAL);
@@ -496,7 +496,7 @@ void Dialog::Load()
 #ifdef SPU2X_PORTAUDIO
 	m_portaudio_select->SetSelection(OutputAPI);
 #endif
-	m_sdl_select->SetSelection(SdlOutputAPI);
+	//m_sdl_select->SetSelection(SdlOutputAPI);
 
 	m_mixer_panel->Load();
 	m_sync_panel->Load();
