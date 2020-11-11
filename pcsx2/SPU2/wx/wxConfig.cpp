@@ -496,7 +496,7 @@ void Dialog::Load()
 #ifdef SPU2X_PORTAUDIO
 	m_portaudio_select->SetSelection(OutputAPI);
 #endif
-	//m_sdl_select->SetSelection(SdlOutputAPI);
+	m_sdl_select->SetSelection(SdlOutputAPI);
 
 	m_mixer_panel->Load();
 	m_sync_panel->Load();

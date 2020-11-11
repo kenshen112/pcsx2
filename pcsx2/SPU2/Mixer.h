@@ -44,6 +44,7 @@ struct StereoOut32
 	explicit StereoOut32(const StereoOutFloat& src);
 
 	StereoOut16 DownSample() const;
+    StereoOutFloat DownSampleFloat() const;
 
 	StereoOut32 operator*(const int& factor) const
 	{

@@ -1,26 +1,25 @@
 #include "PrecompiledHeader.h"
-//#include "Mixer.h"
 #include "Global.h"
 #include "SndOut.h"
 #include "cubeb/cubeb.h"
 
 long DataCallback(cubeb_stream * stm, void * user, const void * input_buffer, void * output_buffer, long nframes)
 {
-    const float * in  = (float*)input_buffer;
-    float * out = (float*)output_buffer;
+    StereoOutFloat* in  = new StereoOutFloat[SndOutPacketSize];
+    StereoOutFloat* out = (StereoOutFloat*)output_buffer;
 
 	for (u16 i = 0; i < nframes; i += SndOutPacketSize)
 	{
 		SndBuffer::ReadSamples(in);
 		for (int c = 0; c < 2; ++c) 
 		{
-            out[2 * i + c] = in[i];
+			out[2 * i + c] = in[i];
         }
 
-    }
+    }		
+	delete in;
     return nframes;
 }
-
 void StateCallback(cubeb_stream * stm, void * user, cubeb_state state)
 {
         printf("state=%d\n", state);
@@ -48,6 +47,8 @@ class SndCubeb : public SndOutModule
 
     public:
 
+    static SndCubeb cuOut;
+
 	s32 Init() override
 	{
 		std::cout << "CUBEB AUDIO" << std::endl;
@@ -57,11 +58,9 @@ class SndCubeb : public SndOutModule
 			DevCon.Error("INIT FAILED!");
 			return CUBEB_ERROR;
 		}
-		rv = cubeb_get_preferred_sample_rate(api, &rate);
-
-		if (rv != CUBEB_OK)
+		if (cubeb_get_preferred_sample_rate(api, &rate) != CUBEB_OK)
 		{
-			fprintf(stderr, "Could not get preferred sample-rate");
+			DevCon.Error("Could not get preferred sample-rate");
 			return CUBEB_ERROR;
 		}
 
@@ -72,7 +71,12 @@ class SndCubeb : public SndOutModule
 	    outParams.format = CUBEB_SAMPLE_S16NE;
 		outParams.layout = CUBEB_LAYOUT_STEREO;
 
-		rv = cubeb_get_min_latency(api, &outParams, &latency_frames);
+		if (cubeb_get_min_latency(api, &outParams, &latency_frames) != CUBEB_OK)
+		{
+			DevCon.Error("LATENCY NOT DETECTED!");
+			return CUBEB_ERROR;
+
+		}
 
 		cubeb_stream_set_volume(stream, volume);
 		if(cubeb_stream_init(api, &stream, "PCSX2 Audio", nullptr, nullptr, nullptr, &outParams, latency_frames, DataCallback, StateCallback, this) != CUBEB_OK)
@@ -85,12 +89,6 @@ class SndCubeb : public SndOutModule
 	}
 
 	s32 Test() const override { return 0; }
-
-
-	void Play()
-	{
-		cubeb_stream_start(stream);
-	}
 
 	int GetEmptySampleCount() override { return 0; }
 
@@ -122,11 +120,8 @@ class SndCubeb : public SndOutModule
 	{
 		//delete api;
 	}
-} static cuOut;
+};
 
-int cuOutCallback()
-{
-	cuOut.Play();
-}
+ SndCubeb SndCubeb::cuOut;
 
-SndOutModule* CubebOut = &cuOut;
+SndOutModule* CubebOut = &SndCubeb::cuOut;

@@ -124,6 +124,22 @@ struct StereoOutFloat
 		, Right(right)
 	{
 	}
+
+	StereoOut32 UpSample() const;
+
+	void ResampleFrom(const StereoOut32& src)
+	{
+		// Use StereoOut32's built in conversion
+		*this = src.DownSampleFloat();
+	}
+
+	void AdjustFrom(const StereoOut32& src)
+	{
+		ResampleFrom(src);
+
+		Left = (s16)(Left * VolumeAdjustFL);
+		Right = (s16)(Right * VolumeAdjustFR);
+	}
 };
 
 struct Stereo21Out16

@@ -38,6 +38,14 @@ StereoOut16 StereoOut32::DownSample() const
 		Right >> SndOutVolumeShift);
 }
 
+StereoOutFloat StereoOut32::DownSampleFloat() const
+{
+	return StereoOutFloat(
+		Left >> SndOutVolumeShift,
+		Right >> SndOutVolumeShift);
+}
+
+
 StereoOut32 StereoOut16::UpSample() const
 {
 	return StereoOut32(
@@ -288,10 +296,14 @@ void SndBuffer::ReadSamples(T* bData)
 			int b2 = nSamples - b1;
 			for (int i = 0; i < b2; i++)
 				bData[i + b1].ResampleFrom(m_buffer[i]);
+				   
+				std::cout << "Data: " << bData << std::endl;
+                std::cout << "Buffer: " << m_buffer << std::endl;
 		}
 
 		_DropSamples_Internal(nSamples);
 	}
+
 
 	// If quietSamples != 0 it means we have an underrun...
 	// Let's just dull out some silence, because that's usually the least
@@ -302,7 +314,7 @@ void SndBuffer::ReadSamples(T* bData)
 template void SndBuffer::ReadSamples(StereoOut16*);
 template void SndBuffer::ReadSamples(StereoOut32*);
 
-//template void SndBuffer::ReadSamples(StereoOutFloat*);
+template void SndBuffer::ReadSamples(StereoOutFloat*);
 template void SndBuffer::ReadSamples(Stereo21Out16*);
 template void SndBuffer::ReadSamples(Stereo40Out16*);
 template void SndBuffer::ReadSamples(Stereo41Out16*);
