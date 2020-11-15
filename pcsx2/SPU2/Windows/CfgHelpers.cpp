@@ -49,16 +49,16 @@ void SysMessage(const wchar_t* fmt, ...)
 
 //////
 
-#include "Utilities/Path.h"
+#include "Utilities/PathUtils.h"
 
-wxString CfgFile(L"SPU2.ini");
+std::string CfgFile("SPU2.ini");
 bool pathSet = false;
 
 void initIni()
 {
 	if (!pathSet)
 	{
-		CfgFile = GetSettingsFolder().Combine(CfgFile).GetFullPath();
+		CfgFile = Path::Combine(GetSettingsFolder(), CfgFile);
 		pathSet = true;
 	}
 }
@@ -69,7 +69,7 @@ void CfgSetSettingsDir(const char* dir)
 }
 
 
-/*| Config File Format: |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*\
+/*| Config File Format: |ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*\
 +--+---------------------+------------------------+
 |												  |
 | Option=Value									  |

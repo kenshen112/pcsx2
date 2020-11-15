@@ -17,6 +17,7 @@
 #include "MainFrame.h"
 #include "Utilities/PathUtils.h"
 #include "Dialogs/ModalPopups.h"
+#include "yaml-cpp/yaml.h"
 #include "AppConfig.h"
 #include <wx/stdpaths.h>
 
@@ -25,9 +26,6 @@
 #include "wx/msw/regconf.h"
 #endif
 
-wxIMPLEMENT_APP(Pcsx2App);
-
-
 DocsModeType DocsFolderMode = DocsFolder_User;
 bool UseDefaultSettingsFolder = true;
 bool UseDefaultPluginsFolder = true;
@@ -35,13 +33,12 @@ bool UseDefaultPluginsFolder = true;
 std::vector<std::string> ErrorFolders;
 
 
-std::string CustomDocumentsFolder;
-std::string SettingsFolder;
+fs::path CustomDocumentsFolder;
+fs::path SettingsFolder;
 
 std::string InstallFolder;
-std::string PluginsFolder;
+fs::path PluginsFolder;
 
-YamlUtils yamlUtils;
 YAML::Node stream;
 
 const std::string PermissionFolders[] =
@@ -162,16 +159,26 @@ void Pcsx2App::WipeUserModeSettings()
 		// Remove the portable.json entry "RunWizard" conforming to this instance of PCSX2.
 		std::string portableYamlFile(GetPortableYamlPath());
 		bool test = OpenFileConfig(portableYamlFile);
-		stream = yamlUtils.GetStream();
 		stream["RunWizard"] = 0;
 	}
 	else
 	{
 		// Remove the registry entry "RunWizard" conforming to this instance of PCSX2.
 		bool conf_install = OpenInstallSettingsFile();
-		stream = yamlUtils.GetStream();
 		stream["RunWizard"] = 0;
 	}
+}
+
+YAML::Node Pcsx2App::Load(std::string fileName)
+{
+
+}
+
+YAML::Node Pcsx2App::Save(std::string fileName)
+{
+		std::string toSave;
+		std::ofstream os(fileName);
+		os << stream;
 }
 
 static void DoFirstTimeWizard()
@@ -227,7 +234,7 @@ bool Pcsx2App::OpenInstallSettingsFile()
 
 	std::cout << "USERMODE: " << usermodefile << std::endl;
 
-	if (!yamlUtils.Load(usermodefile))
+	if (!Load(usermodefile))
 	{
 		return false;
 	}
@@ -249,17 +256,12 @@ void Pcsx2App::ForceFirstTimeWizardOnNextRun()
 
 void Pcsx2App::EstablishAppUserMode()
 {
-	Configuration cfg;
-	cfg.save();
-
 	// TODO - stop mutating the json directly, serialize and deserialize!
 
 	bool conf_install = TestForPortableInstall();
 
 	if (!conf_install)
 		conf_install = OpenInstallSettingsFile();
-
-	YAML::Node newYaml = yamlUtils.GetStream();
 
 	//  Run the First Time Wizard!
 	// ----------------------------
@@ -268,7 +270,7 @@ void Pcsx2App::EstablishAppUserMode()
 	// or the registry/user local documents position.
 
 	bool runWizard = false;
-	if (newYaml["RunWizard"])
+	if (stream["RunWizard"])
 		runWizard = true;
 
 	//App_LoadInstallSettings( newYaml );
@@ -286,22 +288,14 @@ void Pcsx2App::EstablishAppUserMode()
 	AppConfig_OnChangedSettingsFolder(true);
 	AppSaveSettings();
 
-	stream = newYaml;
-
 	// Wizard completed successfully, so let's not torture the user with this crap again!
 
 	// TODO - stawp
 
 	if (InstallationMode == InstallationModeType::InstallMode_Portable)
 	{
-		newYaml["RunWizard"] = false;
+		stream["RunWizard"] = false;
 
-		std::string toSave;
-		std::ostringstream os;
-		os << newYaml;
-		toSave = os.str();
-
-
-		yamlUtils.Save(GetPortableYamlPath(), toSave);
+		Save(GetPortableYamlPath());
 	}
 }

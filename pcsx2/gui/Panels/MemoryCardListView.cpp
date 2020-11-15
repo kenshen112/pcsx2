@@ -169,7 +169,7 @@ wxString MemoryCardListView_Simple::OnGetItemText(long item, long column) const
 
 			wxDirName filepath( it.Filename.GetPath() );
 			
-			if (filepath.SameAs(g_Conf->Folders.MemoryCards))
+			if (filepath.SameAs(wxFileName(g_Conf->Folders.MemoryCards.string())))
 				return prefix + it.Filename.GetFullName();
 			else
 				return prefix + it.Filename.GetFullPath();

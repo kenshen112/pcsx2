@@ -208,8 +208,8 @@ void iDumpBlock(u32 ee_pc, u32 ee_size, uptr x86_pc, u32 x86_size)
 
 	DbgCon.WriteLn( Color_Gray, "dump block %x:%x (x86:0x%x)", ee_pc, ee_end, x86_pc );
 
-	g_Conf->Folders.Logs.Mkdir();
-	wxString dump_filename = Path::Combine( g_Conf->Folders.Logs, wxsFormat(L"R5900dump_%.8X:%.8X.txt", ee_pc, ee_end) );
+	folderUtils.CreateFolder(g_Conf->Folders.Logs);
+	wxString dump_filename = Path::Combine( g_Conf->Folders.Logs.string(), wxsFormat(L"R5900dump_%.8X:%.8X.txt", ee_pc, ee_end).ToStdString() );
 	AsciiFile eff( dump_filename, L"w" );
 
 	// Print register content to detect the memory access type. Warning value are taken
@@ -272,9 +272,9 @@ void iDumpBlock( int startpc, u8 * ptr )
 
 	DbgCon.WriteLn( Color_Gray, "dump1 %x:%x, %x", startpc, pc, cpuRegs.cycle );
 
-	g_Conf->Folders.Logs.Mkdir();
+	folderUtils.CreateFolder(g_Conf->Folders.Logs);
 	AsciiFile eff(
-		Path::Combine( g_Conf->Folders.Logs, wxsFormat(L"R5900dump%.8X.txt", startpc) ), L"w"
+		Path::Combine( g_Conf->Folders.Logs.string(), wxsFormat(L"R5900dump%.8X.txt", startpc) ), L"w"
 	);
 
 	if (!symbolMap.GetLabelString(startpc).empty())

@@ -223,7 +223,7 @@ void Pcsx2Config::GSOptions::LoadSave( IniInterface& ini )
 
 	IniEntry( FrameLimitEnable );
 	IniEntry( FrameSkipEnable );
-	ini.EnumEntry( L"VsyncEnable", VsyncEnable, NULL, VsyncEnable );
+	ini.EnumEntry( "VsyncEnable", VsyncEnable, NULL, VsyncEnable );
 
 	IniEntry( LimitScalar );
 	IniEntry( FramerateNTSC );
