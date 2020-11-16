@@ -269,7 +269,12 @@ void ReadSettings()
 
 	else
 	{
+        wxString temp(SDLOut->GetIdent());
+
 		setDefaults();
+		//Console.Warning("* SPU2: Unknown output module '%s' specified in configuration file.", temp.wc_str());
+		Console.Warning("* SPU2: Defaulting to SDL (%s).", WX_STR(temp));
+		OutputModule = FindOutputModuleById(SDLOut->GetIdent());
 	}
 	
 

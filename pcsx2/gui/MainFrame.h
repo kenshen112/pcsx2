@@ -192,21 +192,23 @@ protected:
 	void OnFocus( wxFocusEvent& evt );
 	void OnActivate( wxActivateEvent& evt );
 
-	void Menu_SysSettings_Click(wxCommandEvent &event);
+	void Menu_SysSettings_Click(wxCommandEvent& event);
+	void Menu_NetworkSettings_Click(wxCommandEvent &event);
 	void Menu_AudioSettings_Click(wxCommandEvent& event);
-	void Menu_McdSettings_Click(wxCommandEvent &event);
-	void Menu_WindowSettings_Click(wxCommandEvent &event);
-	void Menu_GSSettings_Click(wxCommandEvent &event);
-	void Menu_SelectPluginsBios_Click(wxCommandEvent &event);
-	void Menu_ResetAllSettings_Click(wxCommandEvent &event);
+	void Menu_USBSettings_Click(wxCommandEvent& event);
+	void Menu_McdSettings_Click(wxCommandEvent& event);
+	void Menu_WindowSettings_Click(wxCommandEvent& event);
+	void Menu_GSSettings_Click(wxCommandEvent& event);
+	void Menu_SelectPluginsBios_Click(wxCommandEvent& event);
+	void Menu_ResetAllSettings_Click(wxCommandEvent& event);
 
-	void Menu_IsoBrowse_Click(wxCommandEvent &event);
-	void Menu_IsoClear_Click(wxCommandEvent &event);
-	void Menu_EnableBackupStates_Click(wxCommandEvent &event);
-	void Menu_EnablePatches_Click(wxCommandEvent &event);
-	void Menu_EnableCheats_Click(wxCommandEvent &event);
-	void Menu_EnableIPC_Click(wxCommandEvent &event);
-	void Menu_EnableWideScreenPatches_Click(wxCommandEvent &event);
+	void Menu_IsoBrowse_Click(wxCommandEvent& event);
+	void Menu_IsoClear_Click(wxCommandEvent& event);
+	void Menu_EnableBackupStates_Click(wxCommandEvent& event);
+	void Menu_EnablePatches_Click(wxCommandEvent& event);
+	void Menu_EnableCheats_Click(wxCommandEvent& event);
+	void Menu_EnableIPC_Click(wxCommandEvent& event);
+	void Menu_EnableWideScreenPatches_Click(wxCommandEvent& event);
 #ifndef DISABLE_RECORDING
 	void Menu_EnableRecordingTools_Click(wxCommandEvent& event);
 #endif

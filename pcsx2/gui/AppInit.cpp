@@ -746,7 +746,7 @@ Pcsx2App::Pcsx2App()
 		_("&Help");
 		_("&Home");
 
-		_("Show about dialog")
+		_("Show about dialog.")
 	}
 #endif
 
