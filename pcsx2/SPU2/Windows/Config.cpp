@@ -17,14 +17,13 @@
 #include "../Global.h"
 #include "GuiConfig.h"
 #include "Dialogs.h"
-#include "Config.h"
 #include <math.h>
 
 #include "fmt/core.h"
 #include "Utilities/YamlFile.h"
 
 YamlFile spuConfig;
-std::string path;
+fs::path path;
 bool pathSet = false;
 
 void init()
@@ -228,7 +227,7 @@ void ReadSettings()
 	{
 		setDefaults();
 		// Unsupported or legacy module.
-		Console.Warning("* SPU2: Unknown output module '%s' specified in configuration file.", omodid);
+		//Console.Warning("* SPU2: Unknown output module '%s' specified in configuration file.", omodid);
 		Console.Warning("* SPU2: Defaulting to XAudio (%s).", XAudio2Out->GetIdent());
 		OutputModule = FindOutputModuleById(XAudio2Out->GetIdent());
 	}

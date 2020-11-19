@@ -19,7 +19,7 @@
 
 //#include <winsock2.h>
 #include "..\DEV9.h"
-#include "AppConfig.h"
+#include "config/GlobalConfig.h"
 
 BOOL WritePrivateProfileInt(LPCSTR lpAppName, LPCSTR lpKeyName, int intvar, LPCSTR lpFileName)
 {
@@ -32,16 +32,10 @@ bool FileExists(std::string szPath)
 			!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 }
 
-<<<<<<< HEAD:plugins/dev9ghzdrk/Win32/Config.cpp
-void SaveConf() {
-	const std::string file(s_strIniPath + "dev9ghz.json");
-	DeleteFile(file.c_str());
-=======
 void SaveConf()
 {
-	const std::string file(GetSettingsFolder().Combine(wxString("DEV9.cfg")).GetFullPath());
+	const std::string file(Path::Combine(GetSettingsFolder(), "DEV9.cfg"));
 	DeleteFileA(file.c_str());
->>>>>>> master/master:pcsx2/DEV9/Win32/DEV9WinConfig.cpp
 
 	WritePrivateProfileStringA("DEV9", "Eth", config.Eth, file.c_str());
 	WritePrivateProfileStringA("DEV9", "Hdd", config.Hdd, file.c_str());
@@ -50,14 +44,9 @@ void SaveConf()
 	WritePrivateProfileInt("DEV9", "hddEnable", config.hddEnable, file.c_str());
 }
 
-<<<<<<< HEAD:plugins/dev9ghzdrk/Win32/Config.cpp
-void LoadConf() {
-	const std::string file(s_strIniPath + "dev9ghz.json");
-=======
 void LoadConf()
 {
-	const std::string file(GetSettingsFolder().Combine(wxString("DEV9.cfg")).GetFullPath());
->>>>>>> master/master:pcsx2/DEV9/Win32/DEV9WinConfig.cpp
+	const std::string file(Path::Combine(GetSettingsFolder(), "DEV9.cfg"));
 	if (FileExists(file.c_str()) == false)
 		return;
 

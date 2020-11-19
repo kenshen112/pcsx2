@@ -20,6 +20,7 @@
 #include <map>
 #include <sstream>
 #include "platcompat.h"
+#include "Utilities/PathUtils.h"
 
 #define RESULT_CANCELED 0
 #define RESULT_OK 1
@@ -70,7 +71,7 @@ void RemoveSection(const char* dev_type, int port, const std::string& key);
 
 extern TSTDSTRING IniPath;
 extern TSTDSTRING LogDir;
-extern wxString iniFile;
+extern fs::path iniFile;
 extern std::map<std::pair<int /*port*/, std::string /*devname*/>, std::string> changedAPIs;
 std::string GetSelectedAPI(const std::pair<int /*port*/, std::string /*devname*/>& pair);
 
