@@ -31,7 +31,7 @@ void init()
 	if (!pathSet)
 	{
 		path = Path::Combine(GetSettingsFolder().string(),
-							 fmt::format("{}.{}", path, spuConfig.fileExtension()));
+							 fmt::format("{}.{}", path.string(), spuConfig.fileExtension()));
 		pathSet = true;
 	}
 }
