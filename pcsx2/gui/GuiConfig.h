@@ -131,8 +131,6 @@ struct ConsoleLogOptions
 	wxString Theme;
 
 	ConsoleLogOptions();
-	bool Save(std::shared_ptr<wxConfigBase> conf);
-	void Load(std::shared_ptr<wxConfigBase> conf);
 };
 
 	// ------------------------------------------------------------------------
@@ -163,8 +161,6 @@ struct ConsoleLogOptions
 	fs::path RunDisc;		// last used location for Disc loading.
 
 	FolderOptions();
-	bool Save(std::shared_ptr<wxConfigBase> conf);
-	void Load(std::shared_ptr<wxConfigBase> conf);
 	void ApplyDefaults();
 
 	void Set( FoldersEnum_t folderidx, const std::string& src, bool useDefault );
@@ -181,8 +177,6 @@ struct ConsoleLogOptions
 		wxPoint		VirtualPadPosition;
 
 		InputRecordingOptions();
-		bool Save(std::shared_ptr<wxConfigBase> conf);
-		void Load(std::shared_ptr<wxConfigBase> conf);
 	};
 #endif
 // ------------------------------------------------------------------------
@@ -215,8 +209,6 @@ struct GSWindowOptions
 
 	GSWindowOptions();
 
-	bool Save(std::shared_ptr<wxConfigBase> conf);
-	void Load(std::shared_ptr<wxConfigBase> conf);
 	void SanityCheck();
 };
 
@@ -225,9 +217,6 @@ struct FilenameOptions
 {
 	wxString Bios;
 	std::string Plugins[PluginId_Count];
-
-	bool Save(std::shared_ptr<wxConfigBase> conf);
-	void Load(std::shared_ptr<wxConfigBase> conf);
 
 	const std::string& operator[](PluginsEnum_t pluginidx) const;
 };
@@ -244,12 +233,12 @@ struct McdOptions
 
 struct FramerateOptions
 {
-	bool		SkipOnLimit;
-	bool		SkipOnTurbo;
+	bool    SkipOnLimit;
+	bool    SkipOnTurbo;
 
-	float	NominalScalar;
-	float	TurboScalar;
-	float	SlomoScalar;
+	float   NominalScalar;
+	float   TurboScalar;
+	float   SlomoScalar;
 
 	FramerateOptions();
 
@@ -262,9 +251,6 @@ struct UiTemplateOptions
 {
 	UiTemplateOptions();
 			
-	bool Save(std::shared_ptr<wxConfigBase> conf);
-	void Load(std::shared_ptr<wxConfigBase> conf);
-
 	std::string LimiterUnlimited;
 	std::string LimiterTurbo;
 	std::string LimiterSlowmo;
@@ -295,31 +281,24 @@ public:
 
 	// Because remembering the last used tab on the settings panel is cool (tab is remembered
 	// by it's UTF/ASCII name).
-	wxString	SysSettingsTabName;
-	wxString	McdSettingsTabName;
-	wxString	ComponentsTabName;
-	wxString	AppSettingsTabName;
-	wxString	GameDatabaseTabName;
+	wxString SysSettingsTabName;
+	wxString McdSettingsTabName;
+	wxString ComponentsTabName;
+	wxString AppSettingsTabName;
+	wxString GameDatabaseTabName;
 
-	fs::path				CurrentIso;
-    std::string				CurrentBlockdump;
-	std::string				CurrentELF;
-	std::string				CurrentIRX;
-	CDVD_SourceType			CdvdSource;
-	std::string				CurrentGameArgs;
+	fs::path CurrentIso;
+    std::string	CurrentBlockdump;
+	std::string	CurrentELF;
+	std::string	CurrentIRX;
+	CDVD_SourceType	CdvdSource;
+	std::string	CurrentGameArgs;
 
 	std::string FullpathToBios() const;
 	std::string FullpathToMcd( uint slot ) const;
 	std::string FullpathTo( PluginsEnum_t pluginId ) const;
 
 	bool FullpathMatchTest( PluginsEnum_t pluginId, const wxString& cmpto );
-
-	bool Save(std::shared_ptr<wxConfigBase> conf);
-	void Load(std::shared_ptr<wxConfigBase> conf);
-	bool SaveRootItems(std::shared_ptr<wxConfigBase> conf);
-	void LoadRootItems(std::shared_ptr<wxConfigBase> conf);
-	bool SaveMemcards(std::shared_ptr<wxConfigBase> conf);
-	void LoadMemcards(std::shared_ptr<wxConfigBase> conf);
 
 	static int  GetMaxPresetIndex();
     static bool isOkGetPresetTextAndColor(int n, std::string& label, wxColor& c);
@@ -397,7 +376,7 @@ public:
 	std::shared_ptr<wxConfigBase> Init();
 	void Load();
 	void Save();
-	void SetCategory(std::string cat);
+	void SetCategory(const wxString &path);
 	~GuiConfig();
 };
 
@@ -410,9 +389,6 @@ extern wxFileConfig App_LoadSaveInstallSettings( );
 // TODO
 //extern void App_SaveInstallSettings( YAML::Node yaml );
 //extern void App_LoadInstallSettings( YAML::Node yaml );
-
-extern wxFileConfig ConLog_LoadSaveSettings(std::shared_ptr<wxConfigBase> conf);
-extern wxFileConfig SysTraceLog_LoadSaveSettings();
 
 
 // TODO - 

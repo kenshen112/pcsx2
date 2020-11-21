@@ -327,8 +327,8 @@ void Pcsx2App::EstablishAppUserMode()
 	//App_SaveInstallSettings( newYaml );
 
 	AppConfig_OnChangedSettingsFolder(true);
-	AppSaveSettings();
-
+	g_Conf->Save();
+	
 	// Wizard completed successfully, so let's not torture the user with this crap again!
 	// TODO - CONFIG - why not just use the portableMode, is there a side-effect somewhere that mutates InstallationMode?
 	if (InstallationMode == InstallationModeType::InstallMode_Portable)

@@ -1290,7 +1290,7 @@ void SysUpdateDiscSrcDrive(const wxString& newDiscDrive)
 #else
 	g_Conf->gui->Folders.RunDisc = newDiscDrive.ToStdString();
 #endif
-	AppSaveSettings();
+	g_Conf->Save();
 	sMainFrame.UpdateCdvdSrcSelection();
 }
 

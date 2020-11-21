@@ -247,7 +247,7 @@ void Dialogs::BaseConfigurationDialog::OnOk_Click(wxCommandEvent& evt)
 		SomethingChanged_StateModified_IsChanged();
 		if (m_listbook)
 			GetConfSettingsTabName() = m_labels[m_listbook->GetSelection()];
-		AppSaveSettings();
+		g_Conf->Save();
 		disabler.DetachAll();
 		evt.Skip();
 	}
@@ -268,7 +268,7 @@ void Dialogs::BaseConfigurationDialog::OnApply_Click(wxCommandEvent& evt)
 
 	if (m_listbook)
 		GetConfSettingsTabName() = m_labels[m_listbook->GetSelection()];
-	AppSaveSettings();
+	g_Conf->Save();
 
 	SomethingChanged_StateModified_IsChanged();
 }

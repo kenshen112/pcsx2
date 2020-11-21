@@ -9,6 +9,8 @@ public:
 	std::unique_ptr<GuiConfig> gui;
 	std::unique_ptr<Pcsx2Config> emulator;
 
+    void Load();
+	void Save();
 	GlobalConfig();
 };
 

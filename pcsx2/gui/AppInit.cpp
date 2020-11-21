@@ -622,7 +622,7 @@ void Pcsx2App::CleanupRestartable()
 	IdleEventDispatcher(L"Cleanup");
 
 	if (g_Conf)
-		AppSaveSettings();
+		g_Conf->Save();
 }
 
 // This cleanup handler can be called from OnExit (it doesn't need a running message pump),
