@@ -1212,8 +1212,8 @@ public:
 protected:
 	void InvokeEvent()
 	{
-		wxGetApp().ProcessMethod(AppSaveSettings);
-
+		g_Conf->Save(); // pcsx2 expects this to be an event!
+		//wxGetApp().ProcessMethod(AppSaveSettings);
 		// if something unloaded plugins since this messages was queued then it's best to ignore
 		// it, because apparently too much stuff is going on and the emulation states are wonky.
 		if (!CorePlugins.AreLoaded())

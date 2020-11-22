@@ -600,7 +600,8 @@ bool GSFrame::ShowFullScreen(bool show, bool updateConfig)
 	if (updateConfig && g_Conf->gui->gsWindow.IsFullscreen != show)
 	{
 		g_Conf->gui->gsWindow.IsFullscreen = show;
-		wxGetApp().PostIdleMethod(AppSaveSettings);
+		g_Conf->Save();
+		//wxGetApp().PostIdleMethod(AppSaveSettings);
 	}
 
 	// IMPORTANT!  On MSW platforms you must ALWAYS show the window prior to calling

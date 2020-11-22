@@ -380,8 +380,6 @@ public:
 	~GuiConfig();
 };
 
-extern void AppLoadSettings();
-extern void AppSaveSettings();
 extern void AppApplySettings( const GuiConfig* oldconf=NULL );
 
 extern wxFileConfig App_LoadSaveInstallSettings( );
