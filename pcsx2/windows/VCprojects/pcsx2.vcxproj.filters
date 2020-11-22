@@ -1054,6 +1054,7 @@
     </ClCompile>
     <ClCompile Include="..\..\DebugTools\DebugImpl.cpp">
       <Filter>System\Ps2\Debug</Filter>
+	</ClCompile>
     <ClCompile Include="..\..\DEV9\DEV9.cpp">
       <Filter>System\Ps2\DEV9</Filter>
     </ClCompile>
@@ -1740,6 +1741,7 @@
     </ClInclude>
     <ClInclude Include="..\..\config\GlobalConfig.h">
       <Filter>Configuration</Filter>
+	</ClInclude>  
     <ClInclude Include="..\..\DEV9\ata.h">
       <Filter>System\Ps2\DEV9</Filter>
     </ClInclude>
