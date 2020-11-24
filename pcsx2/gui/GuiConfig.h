@@ -215,7 +215,7 @@ struct GSWindowOptions
 	// ------------------------------------------------------------------------
 struct FilenameOptions
 {
-	wxString Bios;
+	std::string Bios;
 	std::string Plugins[PluginId_Count];
 
 	const std::string& operator[](PluginsEnum_t pluginidx) const;

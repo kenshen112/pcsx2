@@ -281,7 +281,7 @@ void LoadBIOS()
 	try
 	{
 		fs::path Bios(g_Conf->gui->FullpathToBios());
-		if (fs::is_directory(g_Conf->gui->BaseFilenames.Bios.ToStdString()))
+		if (fs::is_directory(g_Conf->gui->BaseFilenames.Bios))
 			throw Exception::FileNotFound(Bios.wstring())
 				.SetDiagMsg(L"BIOS has not been configured, or the configuration has been corrupted.")
 				.SetUserMsg(_("The PS2 BIOS could not be loaded.  The BIOS has not been configured, or the configuration has been corrupted.  Please re-configure."));
@@ -339,7 +339,7 @@ void LoadBIOS()
 
 bool IsBIOS(const wxString& filename, wxString& description)
 {
-	wxFileName Bios(g_Conf->gui->Folders.Bios + filename);
+	wxFileName Bios(g_Conf->gui->Folders.Bios);
 	pxInputStream inway(filename, new wxFFileInputStream(filename));
 
 	if (!inway.IsOk())

@@ -431,7 +431,7 @@ fs::path GetUiKeysFilename()
 
 std::string GuiConfig::FullpathToBios() const
 {
-	return Path::Combine(Folders.Bios, BaseFilenames.Bios.ToStdString());
+	return Path::Combine(Folders.Bios, BaseFilenames.Bios);
 }
 
 std::string GuiConfig::FullpathToMcd(uint slot) const
@@ -888,9 +888,6 @@ GuiConfig::GuiConfig()
 
 std::shared_ptr<wxConfigBase> GuiConfig::Init()
 {
-
-     conf = nullptr;
-
 	fs::path programFullPath = wxStandardPaths::Get().GetExecutablePath().ToStdString();
 	std::string programDir(Path::Combine(programFullPath.parent_path(), "settings/PCSX2_ui.ini"));
 
@@ -905,11 +902,14 @@ std::shared_ptr<wxConfigBase> GuiConfig::Init()
 
 void GuiConfig::SetCategory(const wxString &path)
 {
+	conf = nullptr;
+
 	conf = Init();
 
     if (conf)
 	{
 		conf->SetPath(path);
+		conf->Set(conf.get());
 	}
 
 }
@@ -921,93 +921,100 @@ void GuiConfig::Load()
 	if (conf)
 	{
 		bool rel;
+	    
+		wxString group = "FolderOptions";
+		long index = 0;
 
-		g_Conf->gui->SetCategory("FolderOptions");
-		conf->Read("UseDefaultBios", Folders.UseDefaultBios);
-		conf->Read("UseDefaultSavestates", Folders.UseDefaultSavestates);
-		conf->Read("UseDefaultMemoryCards", Folders.UseDefaultMemoryCards);
-		conf->Read("UseDefaultLogs", Folders.UseDefaultLogs);
-		conf->Read("UseDefaultLangs", Folders.UseDefaultLangs);
-		conf->Read("UseDefaultPluginsFolder", UseDefaultPluginsFolder);
-		conf->Read("UseDefaultCheats", Folders.UseDefaultCheats);
-		conf->Read("UseDefaultCheatsWS", Folders.UseDefaultCheatsWS);
 
-		conf->Read(Folders.Bios, rel);
-		conf->Read(Folders.Snapshots, rel);
-		conf->Read(Folders.Savestates, rel);
-		conf->Read(Folders.MemoryCards, rel);
-		conf->Read(Folders.Logs, rel);
-		conf->Read(Folders.Langs, rel);
-		conf->Read(Folders.Cheats, rel);
-		conf->Read(Folders.CheatsWS, rel);
-		conf->Read(PluginsFolder, wxString(Path::Combine(InstallFolder, "plugins")));
 
-		conf->Read(Folders.RunIso.string(), rel);
-		conf->Read(Folders.RunELF.string(), rel);
+		conf->GetFirstGroup(group, index);
+		
+		Folders.UseDefaultBios = conf->Read("UseDefaultBios", Folders.UseDefaultBios);
+		Folders.UseDefaultSavestates = conf->Read("UseDefaultSavestates", Folders.UseDefaultSavestates);
+		Folders.UseDefaultMemoryCards = conf->Read("UseDefaultMemoryCards", Folders.UseDefaultMemoryCards);
+		Folders.UseDefaultLogs = conf->Read("UseDefaultLogs", Folders.UseDefaultLogs);
+		Folders.UseDefaultLangs = conf->Read("UseDefaultLangs", Folders.UseDefaultLangs);
+		UseDefaultPluginsFolder = conf->Read("UseDefaultPluginsFolder", UseDefaultPluginsFolder);
+		Folders.UseDefaultCheats = conf->Read("UseDefaultCheats", Folders.UseDefaultCheats);
+		Folders.UseDefaultCheatsWS = conf->Read("UseDefaultCheatsWS", Folders.UseDefaultCheatsWS);
 
+		Folders.Bios = conf->Read(Folders.Bios, rel);
+		Folders.Snapshots = conf->Read(Folders.Snapshots, rel);
+		Folders.Savestates = conf->Read(Folders.Savestates, rel);
+		Folders.MemoryCards = conf->Read(Folders.MemoryCards, rel);
+		Folders.Logs = conf->Read(Folders.Logs, rel);
+		Folders.Langs = conf->Read(Folders.Langs, rel);
+		Folders.Cheats = conf->Read(Folders.Cheats, rel);
+		Folders.CheatsWS = conf->Read(Folders.CheatsWS, rel);
+		PluginsFolder = conf->Read(PluginsFolder, wxString(Path::Combine(InstallFolder, "plugins")));
+
+		Folders.RunIso.string() = conf->Read(Folders.RunIso.string(), rel);
+		Folders.RunELF.string() = conf->Read(Folders.RunELF.string(), rel);
+
+		conf = nullptr;
 		g_Conf->gui->SetCategory("GSWindowOptions");
 
-		conf->Read("Zoom", gsWindow.Zoom);
-		conf->Read("OffsetX", gsWindow.OffsetX);
-		conf->Read("OffsetY", gsWindow.OffsetY);
-		conf->Read("StretchY", gsWindow.StretchY);
-		conf->Read("WindowPosX", gsWindow.WindowPos.x);
-		conf->Read("WindowPosY", gsWindow.WindowPos.y);
-		conf->Read("WindowSizeX", gsWindow.WindowSize.x);
-		conf->Read("WindowSizeY", gsWindow.WindowSize.y);
-		conf->Read("CloseOnEsc", gsWindow.CloseOnEsc);
-		conf->Read("AspectRatio", (int)gsWindow.AspectRatio);
-		conf->Read("IsMaximized", gsWindow.IsMaximized);
-		conf->Read("IsFullscreen", gsWindow.IsFullscreen);
-		conf->Read("AlwaysHideMouse", gsWindow.AlwaysHideMouse);
-		conf->Read("DisableScreenSaver", gsWindow.DisableScreenSaver);
-		conf->Read("DefaultToFullScreen", gsWindow.DefaultToFullscreen);
-		conf->Read("DisableResizeBorders", gsWindow.DisableResizeBorders);
-		conf->Read("FMVAspectRatioSwitch", (int)gsWindow.FMVAspectRatioSwitch);
-		conf->Read("EnableVsyncWindowFlag", gsWindow.EnableVsyncWindowFlag);
-		conf->Read("IsToggleFullscreenOnDoubleClick", gsWindow.IsToggleFullscreenOnDoubleClick);
+		gsWindow.Zoom = conf->Read("Zoom", gsWindow.Zoom);
+		gsWindow.OffsetX = conf->Read("OffsetX", gsWindow.OffsetX);
+		gsWindow.OffsetY = conf->Read("OffsetY", gsWindow.OffsetY);
+		gsWindow.StretchY = conf->Read("StretchY", gsWindow.StretchY);
+		gsWindow.WindowPos.x = conf->Read("WindowPosX", gsWindow.WindowPos.x);
+		gsWindow.WindowPos.y = conf->Read("WindowPosY", gsWindow.WindowPos.y);
+		gsWindow.WindowSize.x = conf->Read("WindowSizeX", gsWindow.WindowSize.x);
+		gsWindow.WindowSize.y = conf->Read("WindowSizeY", gsWindow.WindowSize.y);
+		gsWindow.CloseOnEsc = conf->Read("CloseOnEsc", gsWindow.CloseOnEsc);
+		conf->Read("AspectRatio", (int)&gsWindow.AspectRatio);
+		gsWindow.IsMaximized = conf->Read("IsMaximized", gsWindow.IsMaximized);
+		gsWindow.IsFullscreen = conf->Read("IsFullscreen", gsWindow.IsFullscreen);
+		gsWindow.AlwaysHideMouse = conf->Read("AlwaysHideMouse", gsWindow.AlwaysHideMouse);
+		gsWindow.DisableScreenSaver = conf->Read("DisableScreenSaver", gsWindow.DisableScreenSaver);
+		gsWindow.DefaultToFullscreen = conf->Read("DefaultToFullScreen", gsWindow.DefaultToFullscreen);
+		gsWindow.DisableResizeBorders = conf->Read("DisableResizeBorders", gsWindow.DisableResizeBorders);
+		conf->Read("FMVAspectRatioSwitch", (int)&gsWindow.FMVAspectRatioSwitch);
+		gsWindow.EnableVsyncWindowFlag = conf->Read("EnableVsyncWindowFlag", gsWindow.EnableVsyncWindowFlag);
+		gsWindow.IsToggleFullscreenOnDoubleClick = conf->Read("IsToggleFullscreenOnDoubleClick", gsWindow.IsToggleFullscreenOnDoubleClick);
 
-        g_Conf->gui->SetCategory("UiTemplateOptions");
-		conf->Read(L"LimiterUnlimited", Templates.LimiterUnlimited);
-		conf->Read(L"LimiterTurbo", Templates.LimiterTurbo);
-		conf->Read(L"LimiterSlowmo", Templates.LimiterSlowmo);
-		conf->Read(L"LimiterNormal", Templates.LimiterNormal);
-		conf->Read(L"OutputFrame", Templates.OutputFrame);
-		conf->Read(L"OutputField", Templates.OutputField);
-		conf->Read(L"OutputProgressive", Templates.OutputProgressive);
-		conf->Read(L"OutputInterlaced", Templates.OutputInterlaced);
-		conf->Read(L"Paused", Templates.Paused);
-		conf->Read(L"TitleTemplate", Templates.TitleTemplate);
+		conf = nullptr;
+		g_Conf->gui->SetCategory("UiTemplateOptions");
+		Templates.LimiterUnlimited = conf->Read("LimiterUnlimited", Templates.LimiterUnlimited);
+		Templates.LimiterTurbo = conf->Read("LimiterTurbo", Templates.LimiterTurbo);
+		Templates.LimiterSlowmo = conf->Read("LimiterSlowmo", Templates.LimiterSlowmo);
+		Templates.LimiterNormal = conf->Read("LimiterNormal", Templates.LimiterNormal);
+		Templates.OutputFrame = conf->Read("OutputFrame", Templates.OutputFrame);
+		Templates.OutputField = conf->Read("OutputField", Templates.OutputField);
+		Templates.OutputProgressive = conf->Read("OutputProgressive", Templates.OutputProgressive);
+		Templates.OutputInterlaced = conf->Read("OutputInterlaced", Templates.OutputInterlaced);
+		Templates.Paused = conf->Read("Paused", Templates.Paused);
+		Templates.TitleTemplate = conf->Read("TitleTemplate", Templates.TitleTemplate);
 #ifndef DISABLE_RECORDING
-		conf->Read(L"RecordingTemplate", Templates.RecordingTemplate);
+		Templates.RecordingTemplate = conf->Read("RecordingTemplate", Templates.RecordingTemplate);
 #endif
-
 		g_Conf->gui->SetCategory("FilenameOptions");
-		conf->Read("BIOS", BaseFilenames.Bios);
+		BaseFilenames.Bios = conf->Read("BIOS", BaseFilenames.Bios);
 
 		g_Conf->gui->SetCategory("ConsoleLogOptions");
-		conf->Read("Theme", console.Theme);
-		conf->Read("FontSize", console.FontSize);
-		conf->Read("IsVisible", console.Visible);
-		conf->Read("Autodock", console.AutoDock);
-		conf->ReadObject("DisplaySizeX", console.DisplaySize.x);
-		conf->ReadObject("DisplaySizeY", console.DisplaySize.y);
-		conf->ReadObject("DisplayPositionX", console.DisplayPosition.x);
-		conf->ReadObject("DisplayPositionY", console.DisplayPosition.y);
+		console.Theme = conf->Read("Theme", console.Theme);
+		console.FontSize = conf->Read("FontSize", console.FontSize);
+		console.Visible = conf->Read("IsVisible", console.Visible);
+		console.AutoDock = conf->Read("Autodock", console.AutoDock);
+		console.DisplaySize.x = conf->ReadObject("DisplaySizeX", console.DisplaySize.x);
+		console.DisplaySize.y = conf->ReadObject("DisplaySizeY", console.DisplaySize.y);
+		console.DisplayPosition.x = conf->ReadObject("DisplayPositionX", console.DisplayPosition.x);
+		console.DisplayPosition.y = conf->ReadObject("DisplayPositionY", console.DisplayPosition.y);
 
 		conf->Read("SlomoScalar", Framerate.SlomoScalar);
 
 		g_Conf->gui->SetCategory("Core");
-	    conf->Read("MainGuiPositionX", MainGuiPosition.x);
-	    conf->Read("MainGuiPositionY", MainGuiPosition.y);
-	    conf->Read("SysSettingsTabName", SysSettingsTabName);
-	    conf->Read("McdSettingsTabName", McdSettingsTabName);
-	    conf->Read("ComponentsTabName", ComponentsTabName);
-	    conf->Read("AppSettingsTabName", AppSettingsTabName);
-	    conf->Read("GameDatabaseTabName", GameDatabaseTabName);
-	    conf->Read("LanguageId", (int)LanguageId);
-	    conf->Read("LanguageCode", LanguageCode);
-    }
+		MainGuiPosition.x = conf->Read("MainGuiPositionX", MainGuiPosition.x);
+		MainGuiPosition.y = conf->Read("MainGuiPositionY", MainGuiPosition.y);
+		SysSettingsTabName = conf->Read("SysSettingsTabName", SysSettingsTabName);
+		McdSettingsTabName = conf->Read("McdSettingsTabName", McdSettingsTabName);
+		ComponentsTabName = conf->Read("ComponentsTabName", ComponentsTabName);
+		AppSettingsTabName = conf->Read("AppSettingsTabName", AppSettingsTabName);
+		GameDatabaseTabName = conf->Read("GameDatabaseTabName", GameDatabaseTabName);
+		conf->Read("LanguageId", (int)&LanguageId);
+		LanguageCode = conf->Read("LanguageCode", LanguageCode);
+	}
 }
 
 void GuiConfig::Save()

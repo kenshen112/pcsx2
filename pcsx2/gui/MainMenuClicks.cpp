@@ -479,7 +479,7 @@ void MainEmuFrame::Menu_IsoBrowse_Click(wxCommandEvent& event)
 	}
 
 	SwapOrReset_Iso(this, core, isofile, GetMsg_IsoImageChanged());
-	g_Conf->Save(); // save the new iso selection; update menus!
+	//g_Conf->Save(); // save the new iso selection; update menus!
 }
 
 void MainEmuFrame::Menu_IsoClear_Click(wxCommandEvent& event)
@@ -495,7 +495,7 @@ void MainEmuFrame::Menu_IsoClear_Click(wxCommandEvent& event)
 		if (g_Conf->gui->CdvdSource != CDVD_SourceType::Iso || !SysHasValidState())
 			SysUpdateIsoSrcFile("");
 		wxGetApp().GetRecentIsoManager().Clear();
-		g_Conf->Save();
+		//g_Conf->Save();
 	}
 }
 
@@ -516,7 +516,7 @@ void MainEmuFrame::Menu_Debug_CreateBlockdump_Click(wxCommandEvent& event)
 	if (g_Conf->emulator->CdvdDumpBlocks && SysHasValidState())
 		Console.Warning("VM must be rebooted to create a useful block dump.");
 
-	g_Conf->Save();
+	//g_Conf->Save();
 }
 
 void MainEmuFrame::Menu_MultitapToggle_Click(wxCommandEvent&)
@@ -524,7 +524,7 @@ void MainEmuFrame::Menu_MultitapToggle_Click(wxCommandEvent&)
 	g_Conf->emulator->MultitapPort0_Enabled = GetMenuBar()->IsChecked(MenuId_Config_Multitap0Toggle);
 	g_Conf->emulator->MultitapPort1_Enabled = GetMenuBar()->IsChecked(MenuId_Config_Multitap1Toggle);
 	AppApplySettings();
-	g_Conf->Save();
+	//g_Conf->Save();
 
 	//evt.Skip();
 }
@@ -537,35 +537,35 @@ void MainEmuFrame::Menu_EnableBackupStates_Click(wxCommandEvent&)
 	//  (1st save after the toggle keeps the old pre-toggle value)..
 	//  wonder what that means for all the other menu checkboxes which only use AppSaveSettings... (avih)
 	AppApplySettings();
-	g_Conf->Save();
+	//g_Conf->Save();
 }
 
 void MainEmuFrame::Menu_EnablePatches_Click(wxCommandEvent&)
 {
 	g_Conf->emulator->EnablePatches = GetMenuBar()->IsChecked(MenuId_EnablePatches);
 	AppApplySettings();
-	g_Conf->Save();
+	//g_Conf->Save();
 }
 
 void MainEmuFrame::Menu_EnableCheats_Click(wxCommandEvent&)
 {
 	g_Conf->emulator->EnableCheats = GetMenuBar()->IsChecked(MenuId_EnableCheats);
 	AppApplySettings();
-	g_Conf->Save();
+	//g_Conf->Save();
 }
 
 void MainEmuFrame::Menu_EnableIPC_Click(wxCommandEvent&)
 {
 	g_Conf->emulator->EnableIPC = GetMenuBar()->IsChecked(MenuId_EnableIPC);
 	AppApplySettings();
-	g_Conf->Save();
+	//g_Conf->Save();
 }
 
 void MainEmuFrame::Menu_EnableWideScreenPatches_Click(wxCommandEvent&)
 {
 	g_Conf->emulator->EnableWideScreenPatches = GetMenuBar()->IsChecked(MenuId_EnableWideScreenPatches);
 	AppApplySettings();
-	g_Conf->Save();
+	//g_Conf->Save();
 }
 
 #ifndef DISABLE_RECORDING
@@ -625,14 +625,14 @@ void MainEmuFrame::Menu_EnableRecordingTools_Click(wxCommandEvent& event)
 	ConsoleLogFrame* progLog = wxGetApp().GetProgramLog();
 	progLog->UpdateLogList();
 	AppApplySettings();
-	AppSaveSettings();
+	//AppSaveSettings();
 }
 #endif
 
 void MainEmuFrame::Menu_EnableHostFs_Click(wxCommandEvent&)
 {
 	g_Conf->emulator->HostFs = GetMenuBar()->IsChecked(MenuId_EnableHostFs);
-	AppSaveSettings();
+	//AppSaveSettings();
 }
 
 void MainEmuFrame::Menu_OpenELF_Click(wxCommandEvent&)
