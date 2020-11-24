@@ -685,7 +685,6 @@ void AppConfig_OnChangedSettingsFolder(bool overwrite)
 	//GetAppConfig()->SetRecordDefaults(true);
 
 	AppApplySettings();
-	AppSaveSettings(); //Make sure both Yaml files are created if needed.
 }
 // --------------------------------------------------------------------------------------
 //  pxDudConfig
@@ -744,64 +743,6 @@ protected:
 
 static pxDudConfig _dud_config;
 
-/*static void LoadUiSettings(wxConfigBase* conf)
-{
-	//ConLog_LoadSaveSettings(conf);
-	//SysTraceLog_LoadSaveSettings();
-
-	g_Conf->gui->Load();
-
-	// TODO - config - clean this up, removed the unique_ptr stuff here
-	//cfg["GlobalConfig"] = g_Conf->gui->Save();
-
-	if (!folderUtils.DoesExist(g_Conf->gui->CurrentIso))
-	{
-		g_Conf->gui->CurrentIso.clear();
-	}
-
-#if defined(_WIN32)
-	if (!folderUtils.DoesExist(g_Conf->gui->Folders.RunDisc))
-	{
-		g_Conf->gui->Folders.RunDisc.clear();
-	}
-#else
-	if (!folderUtils.DoesExist(g_Conf->gui->Folders.RunDisc))
-	{
-		g_Conf->gui->Folders.RunDisc.clear();
-	}
-#endif
-	//sApp.DispatchUiSettingsEvent( loader );
-}*/
-
-/*static void SaveUiSettings()
-{
-	if (!folderUtils.DoesExist(g_Conf->gui->CurrentIso))
-	{
-		g_Conf->gui->CurrentIso.clear();
-	}
-
-#if defined(_WIN32)
-	if (!folderUtils.DoesExist(g_Conf->gui->Folders.RunDisc))
-	{
-		g_Conf->gui->Folders.RunDisc.clear();
-	}
-#else
-	if (!folderUtils.DoesExist(g_Conf->gui->Folders.RunDisc))
-	{
-		g_Conf->gui->Folders.RunDisc.clear();
-	}
-#endif
-
-	sApp.GetRecentIsoManager().Add(g_Conf->gui->CurrentIso);
-
-	g_Conf->gui->Save();
-
-	//std::string toSave = saver.dump();
-
-	//sApp.DispatchUiSettingsEvent( saver );
-	//fileUtils.Save(GetUiSettingsFilename(), toSave);
-}*/
-
 static void SaveRegSettings()
 {
 	bool conf_install;
@@ -814,28 +755,6 @@ static void SaveRegSettings()
 	//conf_install->SetRecordDefaults(false);
 
 	//App_SaveInstallSettings( conf_install.get() );
-}
-
-void AppSaveSettings()
-{
-	// If multiple SaveSettings messages are requested, we want to ignore most of them.
-	// Saving settings once when the GUI is idle should be fine. :)
-
-	static std::atomic<bool> isPosted(false);
-
-	if (!wxThread::IsMain())
-	{
-		if (!isPosted.exchange(true))
-			wxGetApp().PostIdleMethod(AppSaveSettings);
-
-		return;
-	}
-
-	Console.WriteLn("Saving config files...");
-
-	SaveRegSettings(); // save register because of PluginsFolder change
-
-	isPosted = false;
 }
 
 // Returns the current application configuration file.  This is preferred over using

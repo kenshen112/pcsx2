@@ -626,6 +626,7 @@ void MainEmuFrame::Menu_EnableRecordingTools_Click(wxCommandEvent& event)
 	progLog->UpdateLogList();
 	AppApplySettings();
 	//AppSaveSettings();
+	g_Conf->Save();
 }
 #endif
 
@@ -633,6 +634,7 @@ void MainEmuFrame::Menu_EnableHostFs_Click(wxCommandEvent&)
 {
 	g_Conf->emulator->HostFs = GetMenuBar()->IsChecked(MenuId_EnableHostFs);
 	//AppSaveSettings();
+	g_Conf->Save();
 }
 
 void MainEmuFrame::Menu_OpenELF_Click(wxCommandEvent&)
@@ -806,7 +808,8 @@ void MainEmuFrame::Menu_ShowConsole(wxCommandEvent& event)
 void MainEmuFrame::Menu_ShowConsole_Stdio(wxCommandEvent& event)
 {
 	g_Conf->emulator->ConsoleToStdio = GetMenuBar()->IsChecked(MenuId_Console_Stdio);
-	AppSaveSettings();
+	//AppSaveSettings();
+	g_Conf->Save();
 }
 
 void MainEmuFrame::Menu_GetStarted(wxCommandEvent& event)

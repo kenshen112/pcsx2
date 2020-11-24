@@ -16,7 +16,7 @@
 
 #include "PrecompiledHeader.h"
 #include "MainFrame.h"
-#include "GuiConfig.h"
+#include "config/GlobalConfig.h"
 #include "Utilities/YamlFile.h"
 #include "Utilities/PathUtils.h"
 #include "Dialogs/ModalPopups.h"
@@ -103,7 +103,7 @@ bool Pcsx2App::TestUserPermissionsRights(const std::string& testFolder)
 }
 
 // ------------------------------------------------------------------------
-wxFileConfig App_LoadSaveInstallSettings()
+void App_LoadSaveInstallSettings( wxFileConfig& ini )
 {
 	// Portable installs of PCSX2 should not save any of the following information to
 	// the INI file.  Only the Run First Time Wizard option is saved, and that's done
@@ -115,43 +115,42 @@ wxFileConfig App_LoadSaveInstallSettings()
 
 	//if (ini.IsSaving() && (InstallationMode == InstallMode_Portable)) return;
 
-	static const char* DocsFolderModeNames[] =
-		{
-			"User",
-			"Custom",
-			// WARNING: array must be NULL terminated to compute it size
-			NULL};
+	/*static const wxChar* DocsFolderModeNames[] =
+	{
+		L"User",
+		L"Custom",
+		// WARNING: array must be NULL terminated to compute it size
+		NULL
+	};
 
-	// TODO - CONFIG - YAML utilities is gone! switch to YamlFile interface
-	// aren't these settings not even needed to be saved to anywhere but the registry anyway?
+	ini.Write( L"DocumentsFolderMode",	DocsFolderMode,	DocsFolderModeNames, (InstallationMode == InstallMode_Registered) ? DocsFolder_User : DocsFolder_Custom);
 
-	//   yamlUtils.GetStream()["DocumentsFolderMode"] = ((int)DocsFolderMode, DocsFolderModeNames, (InstallationMode == InstallMode_Registered) ? (int)DocsFolder_User : (int)DocsFolder_Custom);
+	ini.Write( L"CustomDocumentsFolder",	CustomDocumentsFolder,		PathDefs::AppRoot() );
 
-	//yamlUtils.GetStream()["CustomDocumentsFolder"] = (CustomDocumentsFolder,	PathDefs::AppRoot().string() );
+	ini.Write( L"UseDefaultSettingsFolder", UseDefaultSettingsFolder,	true );
+	ini.Write( L"SettingsFolder",			SettingsFolder,				PathDefs::GetSettings() );
 
-	//yamlUtils.GetStream()["UseDefaultSettingsFolder"] = (UseDefaultSettingsFolder, true );
-	//yamlUtils.GetStream()["SettingsFolder"]	= (SettingsFolder, PathDefs::GetSettings().string() );
+	// "Install_Dir" conforms to the NSIS standard install directory key name.
+	// Attempt to load plugins based on the Install Folder.
 
-	//// "Install_Dir" conforms to the NSIS standard install directory key name.
-	//// Attempt to load plugins based on the Install Folder.
+	ini.Write( L"Install_Dir",				InstallFolder,				(wxDirName)(wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPath()) );
+	SetFullBaseDir( InstallFolder );
 
-	//yamlUtils.GetStream()["Install_Dir"] = (	InstallFolder,wxStandardPaths::Get().GetExecutablePath().ToStdString());
-	////SetFullBaseDir( InstallFolder );
+	//ini.Write( L"PluginsFolder",			PluginsFolder,				InstallFolder + PathDefs::Base::Plugins() );
 
-	//yamlUtils.GetStream()["PluginsFolder"] = (PluginsFolder = Path::Combine(InstallFolder, "plugins" ));
-	return wxFileConfig();
+	ini.Flush();*/
 }
 
-// TODO - CONFIG - what are these doing?
-void App_LoadInstallSettings(YAML::Node yaml)
+void App_LoadInstallSettings( wxConfigBase* ini )
 {
-	//yaml.push_back(App_LoadSaveInstallSettings());
+	//IniLoader loader( ini );
+	//App_LoadSaveInstallSettings( ini );
 }
 
-// TODO - CONFIG - what are these doing?
-void App_SaveInstallSettings(YAML::Node yaml)
+void App_SaveInstallSettings( wxConfigBase* ini )
 {
-	//yaml.push_back(App_LoadSaveInstallSettings());
+	//IniSaver saver( ini );
+	//App_LoadSaveInstallSettings( ini );
 }
 
 
@@ -316,6 +315,7 @@ void Pcsx2App::EstablishAppUserMode()
 
 	if (!Startup.ForceWizard)
 	{
+		g_Conf->Load();
 		AppConfig_OnChangedSettingsFolder(false);
 		return;
 	}
@@ -326,6 +326,7 @@ void Pcsx2App::EstablishAppUserMode()
 	// TODO - config - can't this be registry now / not used in portable?
 	//App_SaveInstallSettings( newYaml );
 
+    g_Conf->Load();
 	AppConfig_OnChangedSettingsFolder(true);
 	g_Conf->Save();
 	
