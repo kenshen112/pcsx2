@@ -802,7 +802,7 @@ void Pcsx2Config::save()
 	config->setSection("Debugger", Debugger.save());
 	config->setSection("Cpu", Cpu.save());
 	config->setSection("Trace", Trace.save());
-	config->setSection("GS", GS.save());
+	//config->setSection("GS", GS.save());
 
 	// Save to file
 	config->saveToFile(fmt::format("{}.{}", GetVmSettingsFilename().string(), config->fileExtension()));

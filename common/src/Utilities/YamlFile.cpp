@@ -14,19 +14,22 @@ YamlFile::YamlFile(std::string data)
 
 bool YamlFile::loadFromFile(fs::path path)
 {
-	try
+	if (fs::exists(path))
 	{
-		YAML::Node node = YAML::LoadFile(path);
-		std::ostringstream os;
-		os << node;
-		data = os.str();
-		return true;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "ERROR: " << e.what() << std::endl;
-		data = "";
-		return false;
+		try
+		{
+			YAML::Node node = YAML::LoadFile(path);
+			std::ostringstream os;
+			os << node;
+			data = os.str();
+			return true;
+		}
+		catch (const std::exception& e)
+		{
+			std::cerr << "ERROR: " << e.what() << std::endl;
+			data = "";
+			return false;
+		}
 	}
 }
 
@@ -158,7 +161,7 @@ void YamlFile::setInt(std::string key, int val)
 void YamlFile::setU32(std::string key, uint32_t val)
 {
 	YAML::Node node = YAML::Load(data);
-	node[key] = val;
+	node[key] = unsigned(val);
 
 	// re-init yaml, this is duplicate code
 	std::ostringstream os;
