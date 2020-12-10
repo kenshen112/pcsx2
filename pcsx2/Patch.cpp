@@ -190,7 +190,7 @@ static int _LoadPatchFiles(const wxDirName& folderName, wxString& fileSpec, cons
 		if (buffer.Upper().Matches(fileSpec.Upper())) {
 			PatchesCon->WriteLn(Color_Green, L"Found %s file: '%s'", WX_STR(friendlyName), WX_STR(buffer));
 			int before = Patch.size();
-			f.Open(Path::Combine(dir.GetName(), buffer));
+			f.Open(Path::Combine(dir.GetName().ToStdString(), buffer.ToStdString()));
 			inifile_process(f);
 			f.Close();
 			int loaded = Patch.size() - before;

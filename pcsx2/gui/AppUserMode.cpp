@@ -40,6 +40,8 @@ std::string InstallFolder;
 fs::path PluginsFolder;
 
 YAML::Node stream;
+FolderUtils folderUtils;
+
 
 const std::string PermissionFolders[] =
 	{
@@ -171,7 +173,7 @@ void Pcsx2App::WipeUserModeSettings()
 
 YAML::Node Pcsx2App::Load(std::string fileName)
 {
-
+	return YAML::Node();
 }
 
 YAML::Node Pcsx2App::Save(std::string fileName)
@@ -179,6 +181,8 @@ YAML::Node Pcsx2App::Save(std::string fileName)
 		std::string toSave;
 		std::ofstream os(fileName);
 		os << stream;
+
+		return YAML::Node();
 }
 
 static void DoFirstTimeWizard()
@@ -199,7 +203,7 @@ static void DoFirstTimeWizard()
 	}
 }
 
-bool Pcsx2App::OpenInstallSettingsFile()
+wxConfigBase* Pcsx2App::OpenInstallSettingsFile()
 {
 	// Implementation Notes:
 	//
@@ -208,13 +212,12 @@ bool Pcsx2App::OpenInstallSettingsFile()
 	// the old system (CWD-based json file mess) in favor of a system that simply stores
 	// most core application-level settings in the registry.
 
-	//nlohmann::json conf_install;
-
 	InstallationMode = InstallationModeType::InstallMode_Registered;
 
+	std::unique_ptr<wxConfigBase> conf_install;
 
 #ifdef __WXMSW__
-	//conf_install = std::unique_ptr<wxConfigBase>(new wxRegConfig());
+	conf_install = std::unique_ptr<wxConfigBase>(new wxRegConfig());
 #else
 	// FIXME!!  Linux / Mac
 	// Where the heck should this information be stored?
@@ -240,7 +243,7 @@ bool Pcsx2App::OpenInstallSettingsFile()
 	}
 #endif
 
-	return true;
+	return conf_install.release();
 }
 
 

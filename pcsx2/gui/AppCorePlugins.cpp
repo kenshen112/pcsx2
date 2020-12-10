@@ -437,7 +437,7 @@ int EnumeratePluginsInFolder(const wxDirName& searchpath, wxArrayString* dest)
 
 	for (uint i=0; i<realdest->GetCount(); ++i )
 	{
-		(*realdest)[i] = Path::MakeAbsolute((*realdest)[i]);
+		(*realdest)[i] = Path::MakeAbsolute((*realdest)[i].ToStdString());
 	}
 
 	return realdest->GetCount();

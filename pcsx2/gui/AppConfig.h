@@ -374,8 +374,8 @@ public:
 public:
 	AppConfig();
 
-	wxString FullpathToBios() const;
-	wxString FullpathToMcd( uint slot ) const;
+	std::string FullpathToBios() const;
+	std::string FullpathToMcd( uint slot ) const;
 	std::string FullpathTo( PluginsEnum_t pluginId ) const;
 
 	bool FullpathMatchTest( PluginsEnum_t pluginId, const wxString& cmpto ) const;

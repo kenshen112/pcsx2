@@ -274,7 +274,7 @@ void iDumpBlock( int startpc, u8 * ptr )
 
 	folderUtils.CreateFolder(g_Conf->Folders.Logs);
 	AsciiFile eff(
-		Path::Combine( g_Conf->Folders.Logs.string(), wxsFormat(L"R5900dump%.8X.txt", startpc) ), L"w"
+		Path::Combine( g_Conf->Folders.Logs.string(), wxsFormat(L"R5900dump%.8X.txt", startpc).ToStdString() ), L"w"
 	);
 
 	if (!symbolMap.GetLabelString(startpc).empty())

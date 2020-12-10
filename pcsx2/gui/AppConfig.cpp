@@ -26,11 +26,90 @@
 #include "DebugTools/Debug.h"
 #include <memory>
 
-
-    FolderUtils folderUtils;
-
-	namespace PathDefs
+//////////////////////////////////////////////////////////////////////////////////////////
+// PathDefs Namespace -- contains default values for various pcsx2 path names and locations.
+//
+// Note: The members of this namespace are intended for default value initialization only.
+// Most of the time you should use the path folder assignments in Conf() instead, since those
+// are user-configurable.
+//
+namespace PathDefs
 {
+	namespace Base
+	{
+		const wxDirName& Snapshots()
+		{
+			static const wxDirName retval( L"snaps" );
+			return retval;
+		}
+
+		const wxDirName& Savestates()
+		{
+			static const wxDirName retval( L"sstates" );
+			return retval;
+		}
+
+		const wxDirName& MemoryCards()
+		{
+			static const wxDirName retval( L"memcards" );
+			return retval;
+		}
+
+		const wxDirName& Settings()
+		{
+			static const wxDirName retval( L"inis" );
+			return retval;
+		}
+
+		const wxDirName& Plugins()
+		{
+			static const wxDirName retval( L"plugins" );
+			return retval;
+		}
+
+		const wxDirName& Logs()
+		{
+			static const wxDirName retval( L"logs" );
+			return retval;
+		}
+
+		const wxDirName& Bios()
+		{
+			static const wxDirName retval(L"bios");
+			return retval;
+		}
+
+		const wxDirName& Cheats()
+		{
+			static const wxDirName retval(L"cheats");
+			return retval;
+		}
+
+		const wxDirName& CheatsWS()
+		{
+			static const wxDirName retval(L"cheats_ws");
+			return retval;
+		}
+
+		const wxDirName& Langs()
+		{
+			static const wxDirName retval( L"Langs" );
+			return retval;
+		}
+
+		const wxDirName& Dumps()
+		{
+			static const wxDirName retval( L"dumps" );
+			return retval;
+		}
+		
+		const wxDirName& Docs()
+		{
+			static const wxDirName retval( L"docs" );
+			return retval;
+		}
+	};
+
 	// Specifies the root folder for the application install.
 	// (currently it's the CWD, but in the future I intend to move all binaries to a "bin"
 	// sub folder, in which case the approot will become "..") [- Air?]
@@ -48,14 +127,14 @@
 		}
 		else if (InstallationMode == InstallMode_Portable)
 
-		if (InstallationMode == InstallMode_Registered || InstallationMode == InstallMode_Portable)
-		{
-			static const std::string appCache( (std::string)
-			std::string(wxStandardPaths::Get().GetExecutablePath()));
-			return appCache;
-		}
-		else
-			pxFail( "Unimplemented user local folder mode encountered." );
+			if (InstallationMode == InstallMode_Registered || InstallationMode == InstallMode_Portable)
+			{
+				static const std::string appCache((std::string)
+													  std::string(wxStandardPaths::Get().GetExecutablePath()));
+				return appCache;
+			}
+			else
+				pxFail("Unimplemented user local folder mode encountered.");
 
 		static const std::string dotFail(".");
 		return dotFail;
@@ -65,24 +144,27 @@
 	fs::path GetUserLocalDataDir()
 	{
 		fs::path temp = wxStandardPaths::Get().GetUserLocalDataDir().ToStdString();
-    	return temp;
+		return temp;
 	}
 
 	// Fetches the path location for user-consumable documents -- stuff users are likely to want to
 	// share with other programs: screenshots, memory cards, and savestates.
-	fs::path GetDocuments( DocsModeType mode )
+	fs::path GetDocuments(DocsModeType mode)
 	{
-	switch( mode )
-	{
+		switch (mode)
+		{
 #ifdef XDG_STD
 			// Move all user data file into central configuration directory (XDG_CONFIG_DIR)
-			case DocsFolder_User:	return GetUserLocalDataDir();
+			case DocsFolder_User:
+				return GetUserLocalDataDir();
 #else
-			case DocsFolder_User:	return Path::Combine(wxStandardPaths::Get().GetDocumentsDir().ToStdString(), pxGetAppName().ToStdString());
+			case DocsFolder_User:
+				return std::string((wxStandardPaths::Get().GetDocumentsDir(), pxGetAppName()));
 #endif
-			case DocsFolder_Custom: return CustomDocumentsFolder;
+			case DocsFolder_Custom:
+				return CustomDocumentsFolder;
 
-			jNO_DEFAULT
+				jNO_DEFAULT
 		}
 
 		return GetDocuments(mode);
@@ -90,7 +172,7 @@
 
 	fs::path GetDocuments()
 	{
-		return GetDocuments( DocsFolderMode );
+		return GetDocuments(DocsFolderMode);
 	}
 
 	fs::path GetProgramDataDir()
@@ -98,32 +180,32 @@
 #ifndef GAMEINDEX_DIR_COMPILATION
 		return AppRoot();
 #else
-	// Each linux distributions have his rules for path so we give them the possibility to
-	// change it with compilation flags. -- Gregory
+		// Each linux distributions have his rules for path so we give them the possibility to
+		// change it with compilation flags. -- Gregory
 #define xGAMEINDEX_str(s) GAMEINDEX_DIR_str(s)
 #define GAMEINDEX_DIR_str(s) #s
-		return std::string( xGAMEINDEX_str(GAMEINDEX_DIR_COMPILATION) );
+		return std::string(xGAMEINDEX_str(GAMEINDEX_DIR_COMPILATION));
 #endif
 	}
 
 	fs::path GetSnapshots()
 	{
-		return (GetDocuments() / "snapshots").make_preferred();
+		return (GetDocuments().parent_path() / "snapshots").make_preferred();
 	}
 
 	fs::path GetBios()
 	{
-		return (GetDocuments() / "bios").make_preferred();
+		return (GetDocuments().parent_path() / "bios").make_preferred();
 	}
 
 	fs::path GetCheats()
 	{
-		return (GetDocuments() / "cheats").make_preferred();
+		return (GetDocuments().parent_path() / "cheats").make_preferred();
 	}
 
 	fs::path GetCheatsWS()
 	{
-		return (GetDocuments() / "cheats_ws").make_preferred();
+		return (GetDocuments().parent_path() / "cheats_ws").make_preferred();
 	}
 
 	fs::path GetDocs()
@@ -133,12 +215,12 @@
 
 	fs::path GetSavestates()
 	{
-		return (GetDocuments() / "sstates").make_preferred();
+		return (GetDocuments().parent_path() / "sstates").make_preferred();
 	}
 
 	fs::path GetMemoryCards()
 	{
-		return (GetDocuments() / "memcards").make_preferred();
+		return (GetDocuments().parent_path() / "memcards").make_preferred();
 	}
 
 	fs::path GetPlugins()
@@ -150,7 +232,7 @@
 #else
 #define xPLUGIN_DIR_str(s) PLUGIN_DIR_str(s)
 #define PLUGIN_DIR_str(s) #s
-		return std::string( xPLUGIN_DIR_str(PLUGIN_DIR_COMPILATION) );
+		return std::string(xPLUGIN_DIR_str(PLUGIN_DIR_COMPILATION));
 #endif
 	}
 
@@ -191,9 +273,10 @@
 
 			jNO_DEFAULT
 		}
-		return std::string(); // Aw hell naw
+		return std::string();
 	}
 };
+
 fs::path& AppConfig::FolderOptions::operator[]( FoldersEnum_t folderidx )
 {
 	switch( folderidx )
@@ -243,7 +326,7 @@ bool AppConfig::FolderOptions::IsDefault( FoldersEnum_t folderidx ) const
 	return false;
 }
 
-void AppConfig::FolderOptions::Set( FoldersEnum_t folderidx, const std::string& src, bool useDefault )
+void AppConfig::FolderOptions::Set(FoldersEnum_t folderidx, const std::string& src, bool useDefault)
 {
 	switch( folderidx )
 	{
@@ -304,6 +387,7 @@ void AppConfig::FolderOptions::Set( FoldersEnum_t folderidx, const std::string& 
 		jNO_DEFAULT
 	}
 }
+
 // --------------------------------------------------------------------------------------
 //  Default Filenames
 // --------------------------------------------------------------------------------------
@@ -367,12 +451,12 @@ bool AppConfig::FullpathMatchTest( PluginsEnum_t pluginId, const wxString& cmpto
 	// Implementation note: wxFileName automatically normalizes things as needed in it's
 	// equality comparison implementations, so we can do a simple comparison as follows:
 
-	return (std::string(cmpto) == FullpathTo(pluginId));
+	return wxFileName(cmpto).SameAs( wxFileName(FullpathTo(pluginId)) );
 }
 
-static fs::path GetResolvedFolder(FoldersEnum_t id)
+static std::string GetResolvedFolder(FoldersEnum_t id)
 {
-	return g_Conf->Folders.IsDefault(id) ? fs::path(PathDefs::Get(id)) : fs::path(g_Conf->Folders[id]);
+	return g_Conf->Folders.IsDefault(id) ? PathDefs::Get(id) : g_Conf->Folders[id];
 }
 
 fs::path GetLogFolder()
@@ -392,35 +476,39 @@ fs::path GetCheatsWsFolder()
 
 fs::path GetSettingsFolder()
 {
-	if( folderUtils.DoesExist(wxGetApp().Overrides.SettingsFolder) )
+	if (!wxGetApp().Overrides.SettingsFolder.empty())
 		return wxGetApp().Overrides.SettingsFolder;
 
-	return UseDefaultSettingsFolder ? PathDefs::GetSettings() : SettingsFolder;
+	return UseDefaultSettingsFolder ? PathDefs::GetSettings().string() : SettingsFolder;
 }
 
 fs::path GetVmSettingsFilename()
 {
-	wxFileName fname( wxGetApp().Overrides.VmSettingsFile.IsOk() ? wxGetApp().Overrides.VmSettingsFile : FilenameDefs::GetVmConfig() );
-	return Path::Combine(GetSettingsFolder(), fs::path(fname.GetFullPath().ToStdString()) );
+	fs::path fname(!wxGetApp().Overrides.VmSettingsFile.GetFullPath().ToStdString().empty() ? wxGetApp().Overrides.VmSettingsFile.GetFullPath().ToStdString() : FilenameDefs::GetVmConfig().GetFullPath().ToStdString());
+	std::cout << "Path: " << Path::Combine(GetSettingsFolder(), fname) << std::endl;
+	return Path::Combine(GetSettingsFolder(), fname);
 }
 
 fs::path GetUiSettingsFilename()
 {
-	wxFileName fname( FilenameDefs::GetUiConfig() );
-	return Path::Combine(GetSettingsFolder(), fs::path(fname.GetFullPath().ToStdString()) );
+	fs::path fname(FilenameDefs::GetUiConfig().GetFullPath().ToStdString());
+	return (GetSettingsFolder() / fname).make_preferred();
 }
 
 fs::path GetUiKeysFilename()
 {
-	wxFileName fname( FilenameDefs::GetUiKeysConfig() );
-	return Path::Combine(GetSettingsFolder(), fs::path(fname.GetFullPath().ToStdString()) );
+	fs::path fname(FilenameDefs::GetUiKeysConfig().GetFullPath().ToStdString());
+	return (GetSettingsFolder() / fname).make_preferred();
 }
 
-
-wxString AppConfig::FullpathToBios() const				{ return Path::Combine( Folders.Bios.string(), BaseFilenames.Bios ); }
-wxString AppConfig::FullpathToMcd( uint slot ) const
+std::string AppConfig::FullpathToBios() const
 {
-	return Path::Combine( Folders.MemoryCards.string(), Mcd[slot].Filename.GetFullPath().ToStdString() );
+	return Path::Combine(Folders.Bios.string(), BaseFilenames.Bios);
+}
+
+std::string AppConfig::FullpathToMcd(uint slot) const
+{
+	return Path::Combine(Folders.MemoryCards.string(), Mcd[slot].Filename.GetFullName().ToStdString());
 }
 
 bool IsPortable()
@@ -489,18 +577,18 @@ void App_LoadSaveInstallSettings( IniInterface& ini )
 		NULL
 	};
 
-	ini.EnumEntry( std::string("DocumentsFolderMode"),	DocsFolderMode,	DocsFolderModeNames, (InstallationMode == InstallMode_Registered) ? DocsFolder_User : DocsFolder_Custom);
+	ini.EnumEntry( L"DocumentsFolderMode",	DocsFolderMode,	DocsFolderModeNames, (InstallationMode == InstallMode_Registered) ? DocsFolder_User : DocsFolder_Custom);
 
-	ini.Entry( wxString("CustomDocumentsFolder"),   wxString(CustomDocumentsFolder.string()),		wxString( PathDefs::AppRoot().string()) );
+	ini.Entry( L"CustomDocumentsFolder",	wxString(CustomDocumentsFolder.string()),		wxString(PathDefs::AppRoot().string()) );
 
-	ini.Entry( wxString("UseDefaultSettingsFolder"),  UseDefaultSettingsFolder,	true );
-	ini.Entry( wxString("SettingsFolder"),			SettingsFolder.string(),				PathDefs::GetSettings().string() );
+	ini.Entry( L"UseDefaultSettingsFolder", UseDefaultSettingsFolder,	true );
+	ini.Entry( L"SettingsFolder",			wxString(SettingsFolder.string()),				wxString(PathDefs::GetSettings().string()) );
 
 	// "Install_Dir" conforms to the NSIS standard install directory key name.
 	// Attempt to load plugins based on the Install Folder.
 
-	ini.Entry( "Install_Dir",				wxFileName(InstallFolder),				(wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPath()) );
-	SetFullBaseDir( InstallFolder );
+	ini.Entry( L"Install_Dir",				wxDirName(InstallFolder),				(wxDirName)(wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPath()) );
+	SetFullBaseDir( wxDirName(InstallFolder) );
 
 	//ini.Entry( L"PluginsFolder",			PluginsFolder,				InstallFolder + PathDefs::Base::Plugins() );
 
@@ -552,7 +640,7 @@ void AppConfig::LoadSaveRootItems( IniInterface& ini )
 	IniEntry( ComponentsTabName );
 	IniEntry( AppSettingsTabName );
 	IniEntry( GameDatabaseTabName );
-	ini.EnumEntry( std::string("LanguageId"), LanguageId, NULL, LanguageId );
+	ini.EnumEntry( L"LanguageId", LanguageId, NULL, LanguageId );
 	IniEntry( LanguageCode );
 	IniEntry( RecentIsoCount );
 	IniEntry( GzipIsoIndexTemplate );
@@ -580,7 +668,7 @@ void AppConfig::LoadSaveRootItems( IniInterface& ini )
 	IniEntry( McdCompressNTFS );
 	#endif
 
-	ini.EnumEntry( std::string("CdvdSource"), CdvdSource, CDVD_SourceLabels, CdvdSource );
+	ini.EnumEntry( L"CdvdSource", CdvdSource, CDVD_SourceLabels, CdvdSource );
 }
 
 // ------------------------------------------------------------------------
@@ -681,19 +769,19 @@ void AppConfig::FolderOptions::LoadSave( IniInterface& ini )
 	 //  --> on load, these relative paths will be expanded relative to the exe folder.
 	bool rel = ( ini.IsLoading() || IsPortable() );
 	
-	IniEntryDirFile( wxString(Bios.string()),  rel);
-	IniEntryDirFile( wxString(Snapshots.string()),  rel );
-	IniEntryDirFile( wxString(Savestates.string()),  rel );
-	IniEntryDirFile( wxString(MemoryCards.string()),  rel );
-	IniEntryDirFile( wxString(Logs.string()),  rel );
-	IniEntryDirFile( wxString(Langs.string()),  rel );
-	IniEntryDirFile( wxString(Cheats.string()), rel );
-	IniEntryDirFile( wxString(CheatsWS.string()), rel );
-	ini.Entry( L"PluginsFolder", wxString(PluginsFolder), wxString(InstallFolder) + PathDefs::GetPlugins().string(), rel );
+	IniEntryDirFile( wxDirName(Bios.string()),  rel);
+	IniEntryDirFile( wxDirName(Snapshots.string()),  rel );
+	IniEntryDirFile( wxDirName(Savestates.string()),  rel );
+	IniEntryDirFile( wxDirName(MemoryCards.string()),  rel );
+	IniEntryDirFile( wxDirName(Logs.string()),  rel );
+	IniEntryDirFile( wxDirName(Langs.string()),  rel );
+	IniEntryDirFile( wxDirName(Cheats.string()), rel );
+	IniEntryDirFile( wxDirName(CheatsWS.string()), rel );
+	ini.Entry( L"PluginsFolder", wxDirName(PluginsFolder.string()), wxDirName(InstallFolder) + PathDefs::Base::Plugins(), rel );
 
-	IniEntryDirFile( wxString(RunIso.string()), rel );
-	IniEntryDirFile( wxString(RunELF.string()), rel );
-	IniEntryDirFile( wxString(RunDisc.string()), rel );
+	IniEntryDirFile( wxDirName(RunIso.string()), rel );
+	IniEntryDirFile( wxDirName(RunELF.string()), rel );
+	IniEntryDirFile( wxDirName(RunDisc.string()), rel );
 
 	if( ini.IsLoading() )
 	{
@@ -708,7 +796,7 @@ void AppConfig::FolderOptions::LoadSave( IniInterface& ini )
 const std::string& AppConfig::FilenameOptions::operator[]( PluginsEnum_t pluginidx ) const
 {
 	IndexBoundsAssumeDev( L"Filename[Plugin]", pluginidx, PluginId_Count );
-	return wxString(Plugins[pluginidx]);
+	return Plugins[pluginidx];
 }
 
 void AppConfig::FilenameOptions::LoadSave( IniInterface& ini )
@@ -726,16 +814,16 @@ void AppConfig::FilenameOptions::LoadSave( IniInterface& ini )
 	{
 		if ( needRelativeName ) {
 			wxFileName plugin_filename = wxFileName( Plugins[i] );
-			ini.Entry( wxString(tbl_PluginInfo[i].GetShortname()), plugin_filename, pc );
+			ini.Entry( tbl_PluginInfo[i].GetShortname(), plugin_filename, pc );
 		} else
-			ini.Entry( wxString(tbl_PluginInfo[i].GetShortname()), wxString(Plugins[i]), pc );
+			ini.Entry( tbl_PluginInfo[i].GetShortname(), wxFileName(Plugins[i]), pc );
 	}
 
 	if( needRelativeName ) { 
 		wxFileName bios_filename = wxFileName( Bios );
 		ini.Entry( L"BIOS", bios_filename, pc );
 	} else
-		ini.Entry( "BIOS", wxString(Bios), pc );
+		ini.Entry( L"BIOS", wxFileName(Bios), pc );
 }
 
 // ------------------------------------------------------------------------
@@ -809,7 +897,7 @@ void AppConfig::GSWindowOptions::LoadSave( IniInterface& ini )
 		NULL
 	};
 
-	ini.EnumEntry( std::string("AspectRatio"), AspectRatio, AspectRatioNames, AspectRatio );
+	ini.EnumEntry( L"AspectRatio", AspectRatio, AspectRatioNames, AspectRatio );
 
 	static const wxChar* FMVAspectRatioSwitchNames[] =
 	{
@@ -819,7 +907,7 @@ void AppConfig::GSWindowOptions::LoadSave( IniInterface& ini )
 		// WARNING: array must be NULL terminated to compute it size
 		NULL
 	};
-	ini.EnumEntry(std::string("FMVAspectRatioSwitch"), FMVAspectRatioSwitch, FMVAspectRatioSwitchNames, FMVAspectRatioSwitch);
+	ini.EnumEntry(L"FMVAspectRatioSwitch", FMVAspectRatioSwitch, FMVAspectRatioSwitchNames, FMVAspectRatioSwitch);
 
 	IniEntry( Zoom );
 
@@ -1206,7 +1294,7 @@ static void LoadUiSettings()
 		g_Conf->Folders.RunDisc.clear();
 	}
 #else
-	if (!folderUtils.DoesExist(g_Conf->Folders.RunDisc))
+	if ( !folderUtils.DoesExist(g_Conf->Folders.RunDisc) )
 	{
 		g_Conf->Folders.RunDisc.clear();
 	}
@@ -1280,11 +1368,15 @@ static void SaveVmSettings()
 
 static void SaveRegSettings()
 {
-	bool conf_install;
+	std::unique_ptr<wxConfigBase> conf_install;
 
 	if (InstallationMode == InstallMode_Portable) return;
 
 	// sApp. macro cannot be use because you need the return value of OpenInstallSettingsFile method
+	if (Pcsx2App* __app_ = (Pcsx2App*)wxApp::GetInstance())conf_install = std::unique_ptr<wxConfigBase>((*__app_).OpenInstallSettingsFile());
+	conf_install->SetRecordDefaults(false);
+
+	App_SaveInstallSettings( conf_install.get() );
 }
 
 void AppSaveSettings()

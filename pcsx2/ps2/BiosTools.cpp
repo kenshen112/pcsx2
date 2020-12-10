@@ -200,11 +200,11 @@ static void LoadExtraRom( const wxChar* ext, u8 (&dest)[_size] )
 
 	try
 	{
-		if( (filesize=Path::GetFileSize( Bios1 ) ) <= 0 )
+		if( (filesize=Path::GetFileSize( Bios1.ToStdString() ) ) <= 0 )
 		{
 			// Try the name properly extensioned next (name.rom1)
 			Bios1 = Path::ReplaceExtension( Bios, ext );
-			if( (filesize=Path::GetFileSize( Bios1 ) ) <= 0 )
+			if( (filesize=Path::GetFileSize( Bios1.ToStdString() ) ) <= 0 )
 			{
 				Console.WriteLn( Color_Gray, L"BIOS %s module not found, skipping...", ext );
 				return;
@@ -235,7 +235,7 @@ static void LoadIrx( const wxString& filename, u8* dest )
 	try
 	{
 		wxFile irx(filename);
-		if( (filesize=Path::GetFileSize( filename ) ) <= 0 ) {
+		if( (filesize=Path::GetFileSize( filename.ToStdString() ) ) <= 0 ) {
 			Console.Warning(L"IRX Warning: %s could not be read", WX_STR(filename));
 			return;
 		}

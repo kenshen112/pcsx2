@@ -422,7 +422,7 @@ class Pcsx2StandardPaths : public wxStandardPaths
 public:
 	wxString GetResourcesDir() const
 	{
-		return Path::Combine( GetDataDir(), "Langs" );
+		return Path::Combine( GetDataDir().ToStdString(), "Langs" );
 	}
 
 #ifdef __POSIX__
@@ -862,7 +862,7 @@ void AppApplySettings( const AppConfig* oldconf )
 	// Memcards generally compress very well via NTFS compression.
 
 	#ifdef __WXMSW__
-	NTFS_CompressFile( g_Conf->Folders.MemoryCards.ToString(), g_Conf->McdCompressNTFS );
+	NTFS_CompressFile( g_Conf->Folders.MemoryCards.string(), g_Conf->McdCompressNTFS );
 	#endif
 	sApp.DispatchEvent( AppStatus_SettingsApplied );
 
@@ -1194,7 +1194,7 @@ void SysUpdateIsoSrcFile( const wxString& newIsoFile )
 void SysUpdateDiscSrcDrive( const wxString& newDiscDrive )
 {
 #if defined(_WIN32)
-	g_Conf->Folders.RunDisc = wxFileName::DirName(newDiscDrive);
+	g_Conf->Folders.RunDisc = newDiscDrive.ToStdString();
 #else
 	g_Conf->Folders.RunDisc = newDiscDrive.ToStdString();
 #endif

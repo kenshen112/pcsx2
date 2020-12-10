@@ -58,8 +58,8 @@ wxString RegDumpFileName;
 
 void CfgSetLogDir(const char* dir)
 {
-	LogsFolder = (dir == nullptr) ? wxString(L"logs") : wxString(dir, wxConvFile);
-	DumpsFolder = (dir == nullptr) ? wxString(L"logs") : wxString(dir, wxConvFile);
+	LogsFolder.string() = ((dir == nullptr) ? wxString(L"logs") : wxString(dir, wxConvFile)).ToStdString();
+	DumpsFolder.string() = ((dir == nullptr) ? wxString(L"logs") : wxString(dir, wxConvFile)).ToStdString();
 	LogLocationSetByPcsx2 = (dir != nullptr);
 }
 
@@ -118,8 +118,8 @@ namespace DebugConfig
 
 		if (!LogLocationSetByPcsx2)
 		{
-			LogsFolder = CfgLogsFolder;
-			DumpsFolder = CfgLogsFolder;
+			LogsFolder = CfgLogsFolder.ToStdString();
+			DumpsFolder = CfgLogsFolder.ToStdString();
 		}
 	}
 

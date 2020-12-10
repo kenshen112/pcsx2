@@ -143,7 +143,7 @@ static wxString ApplyTemplate(const wxString& name, const wxDirName& base,
 
 	wxString fname(filename);
 	if (first > 0)
-		fname = Path::GetFilename(fname); // without path
+		fname = Path::GetFilename(fname.ToStdString()); // without path
 
 	tem.Replace(key, fname);
 	if (first > 0)
