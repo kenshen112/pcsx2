@@ -32,6 +32,7 @@ bool UseDefaultPluginsFolder = true;
 
 std::vector<std::string> ErrorFolders;
 
+std::string data;
 
 fs::path CustomDocumentsFolder;
 fs::path SettingsFolder;
@@ -171,18 +172,43 @@ void Pcsx2App::WipeUserModeSettings()
 	}
 }
 
-YAML::Node Pcsx2App::Load(std::string fileName)
+bool Pcsx2App::Load(fs::path fileName)
 {
-	return YAML::Node();
+    if (fs::exists(fileName))
+	{
+		try
+		{
+			YAML::Node node = YAML::LoadFile(fileName);
+			std::ostringstream os;
+			os << node;
+			data = os.str();
+			return true;
+		}
+		catch (const std::exception& e)
+		{
+			std::cerr << "ERROR: " << e.what() << std::endl;
+			data = "";
+			return false;
+		}
+	}
 }
 
-YAML::Node Pcsx2App::Save(std::string fileName)
+YAML::Node Pcsx2App::Save(fs::path fileName)
 {
-		std::string toSave;
-		std::ofstream os(fileName);
-		os << stream;
+	YAML::Node node;
+	try
+	{
+	    node = YAML::Load(fileName);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "ERROR: " << e.what() << std::endl;
+	}
 
-		return YAML::Node();
+	std::ofstream fout(fileName);
+	fout << node;
+
+    return node;
 }
 
 static void DoFirstTimeWizard()
@@ -203,7 +229,8 @@ static void DoFirstTimeWizard()
 	}
 }
 
-wxConfigBase* Pcsx2App::OpenInstallSettingsFile()
+
+bool Pcsx2App::OpenInstallSettingsFile()
 {
 	// Implementation Notes:
 	//
@@ -214,10 +241,9 @@ wxConfigBase* Pcsx2App::OpenInstallSettingsFile()
 
 	InstallationMode = InstallationModeType::InstallMode_Registered;
 
-	std::unique_ptr<wxConfigBase> conf_install;
-
 #ifdef __WXMSW__
-	conf_install = std::unique_ptr<wxConfigBase>(new wxRegConfig());
+	// TODO - I think `conf_install` can be removed, historically its just used to set RunTimeWizard or not
+	// conf_install = std::unique_ptr<wxConfigBase>(new wxRegConfig());
 #else
 	// FIXME!!  Linux / Mac
 	// Where the heck should this information be stored?
@@ -243,9 +269,8 @@ wxConfigBase* Pcsx2App::OpenInstallSettingsFile()
 	}
 #endif
 
-	return conf_install.release();
+	return true;
 }
-
 
 void Pcsx2App::ForceFirstTimeWizardOnNextRun()
 {

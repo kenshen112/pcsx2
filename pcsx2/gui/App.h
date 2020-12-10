@@ -612,11 +612,11 @@ public:
 	void EstablishAppUserMode();
 	void ForceFirstTimeWizardOnNextRun();
 
-	wxConfigBase* OpenInstallSettingsFile();
+	bool OpenInstallSettingsFile();
 	bool TestForPortableInstall();
     
-    YAML::Node Load(std::string fN);
-    YAML::Node Save(std::string fN);
+    bool Load(fs::path fN);
+    YAML::Node Save(fs::path fN);
 
 	bool HasPendingSaves() const;
 	void StartPendingSave();
