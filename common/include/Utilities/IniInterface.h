@@ -32,58 +32,58 @@
 class IniInterface
 {
 protected:
-    wxConfigBase *m_Config;
+	wxConfigBase* m_Config;
 
 public:
-    virtual ~IniInterface();
-    explicit IniInterface();
-    explicit IniInterface(wxConfigBase &config);
-    explicit IniInterface(wxConfigBase *config);
+	virtual ~IniInterface();
+	explicit IniInterface();
+	explicit IniInterface(wxConfigBase& config);
+	explicit IniInterface(wxConfigBase* config);
 
-    void SetPath(const wxString &path);
-    void Flush();
+	void SetPath(const wxString& path);
+	void Flush();
 
-    wxConfigBase &GetConfig()
-    {
-        pxAssert(m_Config);
-        return *m_Config;
-    }
-    bool IsOk() const { return m_Config != NULL; }
+	wxConfigBase& GetConfig()
+	{
+		pxAssert(m_Config);
+		return *m_Config;
+	}
+	bool IsOk() const { return m_Config != NULL; }
 
-    virtual bool IsLoading() const = 0;
-    bool IsSaving() const { return !IsLoading(); }
+	virtual bool IsLoading() const = 0;
+	bool IsSaving() const { return !IsLoading(); }
 
-    virtual void Entry( wxString var, wxString value,  wxString defvalue = wxString()) = 0;
-    virtual void Entry( wxString var, wxDirName value, const wxDirName defvalue = wxDirName(), bool isAllowRelative = false) = 0;
-    virtual void Entry( wxString var, wxFileName value, const wxFileName defvalue = wxFileName(), bool isAllowRelative = false) = 0;
-    //virtual void Entry( wxString var, int value, const int defvalue = 0) = 0;
-    //virtual void Entry( wxString var, uint value, const uint defvalue = 0) = 0;
-    virtual void Entry( wxString var, bool value, const bool defvalue = false) = 0;
+	virtual void Entry(const wxString& var, wxString& value, const wxString defvalue = wxString()) = 0;
+	virtual void Entry(const wxString& var, wxDirName& value, const wxDirName defvalue = wxDirName(), bool isAllowRelative = false) = 0;
+	virtual void Entry(const wxString& var, wxFileName& value, const wxFileName defvalue = wxFileName(), bool isAllowRelative = false) = 0;
+	virtual void Entry(const wxString& var, int& value, const int defvalue = 0) = 0;
+	virtual void Entry(const wxString& var, uint& value, const uint defvalue = 0) = 0;
+	virtual void Entry(const wxString& var, bool& value, const bool defvalue = false) = 0;
 
-    // This special form of Entry is provided for bitfields, which cannot be passed by reference.
-    virtual bool EntryBitBool(wxString var, bool value, const bool defvalue = false) = 0;
-    virtual int EntryBitfield(wxString var, int value, const int defvalue = 0) = 0;
+	// This special form of Entry is provided for bitfields, which cannot be passed by reference.
+	virtual bool EntryBitBool(const wxString& var, bool value, const bool defvalue = false) = 0;
+	virtual int EntryBitfield(const wxString& var, int value, const int defvalue = 0) = 0;
 
-    virtual void Entry(wxString var, Fixed100 value, const Fixed100 defvalue = Fixed100()) = 0;
+	virtual void Entry(const wxString& var, Fixed100& value, const Fixed100 defvalue = Fixed100()) = 0;
 
-    virtual void Entry(wxString var, wxPoint value, const wxPoint defvalue = wxDefaultPosition) = 0;
-    virtual void Entry(wxString var, wxSize value, const wxSize defvalue = wxDefaultSize) = 0;
-    virtual void Entry(wxString var, wxRect value, const wxRect defvalue = wxDefaultRect) = 0;
+	virtual void Entry(const wxString& var, wxPoint& value, const wxPoint defvalue = wxDefaultPosition) = 0;
+	virtual void Entry(const wxString& var, wxSize& value, const wxSize defvalue = wxDefaultSize) = 0;
+	virtual void Entry(const wxString& var, wxRect& value, const wxRect defvalue = wxDefaultRect) = 0;
 
-    template <typename T>
-    void EnumEntry( std::string var, T value, const wxChar *const *enumArray = NULL, const T defvalue = (T)0)
-    {
-        int tstore = (int)value;
-        auto defaultvalue = enum_cast(defvalue);
-        if (enumArray == NULL)
-            Entry(var, tstore, defaultvalue);
-        else
-            _EnumEntry(var, tstore, enumArray, defaultvalue);
-        value = (T)tstore;
-    }
+	template <typename T>
+	void EnumEntry(const wxString& var, T& value, const wxChar* const* enumArray = NULL, const T defvalue = (T)0)
+	{
+		int tstore = (int)value;
+		auto defaultvalue = enum_cast(defvalue);
+		if (enumArray == NULL)
+			Entry(var, tstore, defaultvalue);
+		else
+			_EnumEntry(var, tstore, enumArray, defaultvalue);
+		value = (T)tstore;
+	}
 
 protected:
-    virtual void _EnumEntry(std::string var, int value, const wxChar *const *enumArray, int defvalue) = 0;
+	virtual void _EnumEntry(const wxString& var, int& value, const wxChar* const* enumArray, int defvalue) = 0;
 };
 
 // --------------------------------------------------------------------------------------
@@ -92,11 +92,11 @@ protected:
 class ScopedIniGroup
 {
 protected:
-    IniInterface &m_mom;
+	IniInterface& m_mom;
 
 public:
-    ScopedIniGroup(IniInterface &mommy, const wxString &group);
-    virtual ~ScopedIniGroup();
+	ScopedIniGroup(IniInterface& mommy, const wxString& group);
+	virtual ~ScopedIniGroup();
 };
 
 // --------------------------------------------------------------------------------------
@@ -110,31 +110,31 @@ public:
 class IniLoader : public IniInterface
 {
 public:
-    virtual ~IniLoader() = default;
-    explicit IniLoader();
-    explicit IniLoader(wxConfigBase &config);
-    explicit IniLoader(wxConfigBase *config);
+	virtual ~IniLoader() = default;
+	explicit IniLoader();
+	explicit IniLoader(wxConfigBase& config);
+	explicit IniLoader(wxConfigBase* config);
 
-    bool IsLoading() const { return true; }
+	bool IsLoading() const { return true; }
 
-    void Entry(wxString var, wxString value, const wxString defvalue = wxEmptyString);
-    void Entry(wxString var, wxDirName value, const wxDirName defvalue = wxDirName(), bool isAllowRelative = false);
-    void Entry(wxString var, wxFileName value, const wxFileName defvalue = wxFileName(), bool isAllowRelative = false);
-    void Entry(wxString var, int value, const int defvalue = 0);
-    void Entry(wxString var, uint value, const uint defvalue = 0);
-    void Entry(wxString var, bool value, const bool defvalue = false);
+	void Entry(const wxString& var, wxString& value, const wxString defvalue = wxEmptyString);
+	void Entry(const wxString& var, wxDirName& value, const wxDirName defvalue = wxDirName(), bool isAllowRelative = false);
+	void Entry(const wxString& var, wxFileName& value, const wxFileName defvalue = wxFileName(), bool isAllowRelative = false);
+	void Entry(const wxString& var, int& value, const int defvalue = 0);
+	void Entry(const wxString& var, uint& value, const uint defvalue = 0);
+	void Entry(const wxString& var, bool& value, const bool defvalue = false);
 
-    bool EntryBitBool(wxString var, bool value, const bool defvalue = false);
-    int EntryBitfield(wxString var, int value, const int defvalue = 0);
+	bool EntryBitBool(const wxString& var, bool value, const bool defvalue = false);
+	int EntryBitfield(const wxString& var, int value, const int defvalue = 0);
 
-    void Entry(wxString var, Fixed100 value, const Fixed100 defvalue = Fixed100());
+	void Entry(const wxString& var, Fixed100& value, const Fixed100 defvalue = Fixed100());
 
-    void Entry(wxString var, wxPoint value, const wxPoint defvalue = wxDefaultPosition);
-    void Entry(wxString var, wxSize value, const wxSize defvalue = wxDefaultSize);
-    void Entry(wxString var, wxRect value, const wxRect defvalue = wxDefaultRect);
+	void Entry(const wxString& var, wxPoint& value, const wxPoint defvalue = wxDefaultPosition);
+	void Entry(const wxString& var, wxSize& value, const wxSize defvalue = wxDefaultSize);
+	void Entry(const wxString& var, wxRect& value, const wxRect defvalue = wxDefaultRect);
 
 protected:
-    void _EnumEntry(std::string var, int value, const wxChar *const *enumArray, int defvalue);
+	void _EnumEntry(const wxString& var, int& value, const wxChar* const* enumArray, int defvalue);
 };
 
 // --------------------------------------------------------------------------------------
@@ -148,38 +148,38 @@ protected:
 class IniSaver : public IniInterface
 {
 public:
-    virtual ~IniSaver() = default;
-    explicit IniSaver();
-    explicit IniSaver(wxConfigBase &config);
-    explicit IniSaver(wxConfigBase *config);
+	virtual ~IniSaver() = default;
+	explicit IniSaver();
+	explicit IniSaver(wxConfigBase& config);
+	explicit IniSaver(wxConfigBase* config);
 
-    bool IsLoading() const { return false; }
+	bool IsLoading() const { return false; }
 
-    void Entry(wxString var, wxString value, wxString defvalue = wxString());
-    void Entry(wxString var, wxDirName value, wxDirName defvalue = wxDirName(), bool isAllowRelative = false);
-    void Entry(wxString var, wxFileName value, wxFileName defvalue = wxFileName(), bool isAllowRelative = false);
-    void Entry(wxString var, int value, const int defvalue = 0);
-    void Entry(wxString var, uint value, const uint defvalue = 0);
-    void Entry(wxString var, bool value, const bool defvalue = false);
+	void Entry(const wxString& var, wxString& value, const wxString defvalue = wxString());
+	void Entry(const wxString& var, wxDirName& value, const wxDirName defvalue = wxDirName(), bool isAllowRelative = false);
+	void Entry(const wxString& var, wxFileName& value, const wxFileName defvalue = wxFileName(), bool isAllowRelative = false);
+	void Entry(const wxString& var, int& value, const int defvalue = 0);
+	void Entry(const wxString& var, uint& value, const uint defvalue = 0);
+	void Entry(const wxString& var, bool& value, const bool defvalue = false);
 
-    bool EntryBitBool(wxString var, bool value, const bool defvalue = false);
-    int EntryBitfield(wxString var, int value, const int defvalue = 0);
+	bool EntryBitBool(const wxString& var, bool value, const bool defvalue = false);
+	int EntryBitfield(const wxString& var, int value, const int defvalue = 0);
 
-    void Entry(wxString var, Fixed100 value, Fixed100 defvalue = Fixed100());
+	void Entry(const wxString& var, Fixed100& value, const Fixed100 defvalue = Fixed100());
 
-    void Entry(wxString var, wxPoint value,  wxPoint defvalue = wxDefaultPosition);
-    void Entry(wxString var, wxSize value,   wxSize defvalue = wxDefaultSize);
-    void Entry(wxString var, wxRect value,   wxRect defvalue = wxDefaultRect);
+	void Entry(const wxString& var, wxPoint& value, const wxPoint defvalue = wxDefaultPosition);
+	void Entry(const wxString& var, wxSize& value, const wxSize defvalue = wxDefaultSize);
+	void Entry(const wxString& var, wxRect& value, const wxRect defvalue = wxDefaultRect);
 
 protected:
-    void _EnumEntry(std::string var, int value, const wxChar *const *enumArray, int defvalue);
+	void _EnumEntry(const wxString& var, int& value, const wxChar* const* enumArray, int defvalue);
 };
 
 // ------------------------------------------------------------------------
 // GCC Note: wxT() macro is required when using string token pasting.  For some reason L generates
 // syntax errors. >_<
 //
-#define IniEntry(varname) ini.Entry(wxString(#varname), varname, varname)
+#define IniEntry(varname) ini.Entry(wxT(#varname), varname, varname)
 #define IniEntryDirFile(varname, isAllowRelative) ini.Entry(wxT(#varname), varname, varname, isAllowRelative)
 #define IniBitfield(varname) varname = ini.EntryBitfield(wxT(#varname), varname, varname)
 #define IniBitBool(varname) varname = ini.EntryBitBool(wxT(#varname), !!varname, varname)
@@ -189,4 +189,4 @@ protected:
 
 //used for filenames and folder names as ini values.
 //Set to app root folder, so all files and folders which are inside appRoot will be written as relative.
-void SetFullBaseDir(std::string appRoot);
+void SetFullBaseDir(wxDirName appRoot);
