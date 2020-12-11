@@ -124,7 +124,7 @@ bool Pcsx2App::TestForPortableInstall()
 	std::string portableDocsFolder = portableYamlFile.parent_path();
 
 	std::cout << "PATH: " << portableYamlFile << std::endl;
-	bool isPortable = OpenFileConfig(portableYamlFile.string());
+	bool isPortable = Load(portableYamlFile);
 
 	if (isPortable)
 	{
@@ -159,16 +159,16 @@ void Pcsx2App::WipeUserModeSettings()
 {
 	if (InstallationMode == InstallMode_Portable)
 	{
-		// Remove the portable.json entry "RunWizard" conforming to this instance of PCSX2.
+		// Remove the portable file entry "RunWizard" conforming to this instance of PCSX2.
 		std::string portableYamlFile(GetPortableYamlPath());
-		bool test = OpenFileConfig(portableYamlFile);
-		stream["RunWizard"] = 0;
+		bool test = Load(portableYamlFile);
+		stream["RunWizard"] = false;
 	}
 	else
 	{
 		// Remove the registry entry "RunWizard" conforming to this instance of PCSX2.
 		bool conf_install = OpenInstallSettingsFile();
-		stream["RunWizard"] = 0;
+		stream["RunWizard"] = false;
 	}
 }
 
@@ -178,10 +178,11 @@ bool Pcsx2App::Load(fs::path fileName)
 	{
 		try
 		{
-			YAML::Node node = YAML::LoadFile(fileName);
+			stream = YAML::LoadFile(fileName);
 			std::ostringstream os;
-			os << node;
+			os << stream;
 			data = os.str();
+			std::cout << "PORTABLE: " << data << std::endl;
 			return true;
 		}
 		catch (const std::exception& e)
@@ -195,10 +196,9 @@ bool Pcsx2App::Load(fs::path fileName)
 
 YAML::Node Pcsx2App::Save(fs::path fileName)
 {
-	YAML::Node node;
 	try
 	{
-	    node = YAML::Load(fileName);
+	    stream = YAML::Load(fileName);
 	}
 	catch (const std::exception& e)
 	{
@@ -206,9 +206,9 @@ YAML::Node Pcsx2App::Save(fs::path fileName)
 	}
 
 	std::ofstream fout(fileName);
-	fout << node;
+	fout << stream;
 
-    return node;
+    return stream;
 }
 
 static void DoFirstTimeWizard()
@@ -297,13 +297,11 @@ void Pcsx2App::EstablishAppUserMode()
 	// the installation json file, which can be either the portable install (useful for admins)
 	// or the registry/user local documents position.
 
-	bool runWizard = false;
-	if (stream["RunWizard"])
-		runWizard = true;
-
+	bool runWizard = stream["RunWizard"].as<bool>();
+    
 	//App_LoadInstallSettings( newYaml );
 
-	if (!Startup.ForceWizard)
+	if (!Startup.ForceWizard && !runWizard)
 	{
 		AppConfig_OnChangedSettingsFolder(false);
 		return;
@@ -317,13 +315,8 @@ void Pcsx2App::EstablishAppUserMode()
 	AppSaveSettings();
 
 	// Wizard completed successfully, so let's not torture the user with this crap again!
-
 	// TODO - stawp
 
-	if (InstallationMode == InstallationModeType::InstallMode_Portable)
-	{
-		stream["RunWizard"] = false;
-
-		Save(GetPortableYamlPath());
-	}
+	stream["RunWizard"] = false;
+	Save(GetPortableYamlPath());
 }

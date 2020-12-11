@@ -253,7 +253,7 @@ namespace PathDefs
 
 	fs::path GetLangs()
 	{
-		return (AppRoot().parent_path() / "langs").make_preferred();
+		return (AppRoot().parent_path() / "Langs").make_preferred();
 	}
 
 	std::string Get( FoldersEnum_t folderidx )
@@ -779,18 +779,6 @@ void AppConfig::FolderOptions::LoadSave( IniInterface& ini )
 	 //  --> on load, these relative paths will be expanded relative to the exe folder.
 	bool rel = ( ini.IsLoading() || IsPortable() );
 	
-    wxDirName Bios(AppConfig::FolderOptions::Bios.string());
-    wxDirName Snapshots(AppConfig::FolderOptions::Snapshots.string()); 
-    wxDirName Savestates(AppConfig::FolderOptions::Savestates.string()); 
-    wxDirName MemoryCards(AppConfig::FolderOptions::MemoryCards.string());
-	wxDirName Logs(AppConfig::FolderOptions::Logs.string());
-	wxDirName Langs(AppConfig::FolderOptions::Langs.string());
-	wxDirName Cheats(AppConfig::FolderOptions::Cheats.string());
-	wxDirName CheatsWS(AppConfig::FolderOptions::CheatsWS.string());
-	wxDirName PluginsF(PluginsFolder.string());
-	wxDirName RunIso(AppConfig::FolderOptions::RunIso.string());
-	wxDirName RunELF(AppConfig::FolderOptions::RunELF.string());
-	wxDirName RunDisc(AppConfig::FolderOptions::RunDisc.string());
 	IniEntryDirFile(Bios,  rel);
 	IniEntryDirFile(Snapshots,  rel);
 	IniEntryDirFile(Savestates,  rel );
@@ -799,11 +787,14 @@ void AppConfig::FolderOptions::LoadSave( IniInterface& ini )
 	IniEntryDirFile(Langs,  rel );
 	IniEntryDirFile(Cheats, rel );
 	IniEntryDirFile(CheatsWS, rel );
-	ini.Entry( L"PluginsFolder", PluginsF, wxDirName(InstallFolder) + PathDefs::Base::Plugins(), rel );
+	ini.Entry( L"PluginsFolder", PluginsFolder, InstallFolder + PathDefs::Base::Plugins().ToString().ToStdString(), rel );
 
 	IniEntryDirFile(RunIso, rel );
 	IniEntryDirFile(RunELF, rel );
 	IniEntryDirFile(RunDisc, rel );
+
+    std::cout << "BIOS: " << Bios.string() << std::endl;
+
 
 	if( ini.IsLoading() )
 	{
@@ -827,8 +818,6 @@ void AppConfig::FilenameOptions::LoadSave( IniInterface& ini )
 
 	static const wxFileName pc( L"Please Configure" );
 
-    wxFileName Bios(AppConfig::FilenameOptions::Bios);
-
 	//when saving in portable mode, we just save the non-full-path filename
  	//  --> on load they'll be initialized with default (relative) paths (works both for plugins and bios)
 	//note: this will break if converting from install to portable, and custom folders are used. We can live with that.
@@ -844,11 +833,17 @@ void AppConfig::FilenameOptions::LoadSave( IniInterface& ini )
 			ini.Entry( tbl_PluginInfo[i].GetShortname(), plugin_filename, pc );
 	}
 
-	if( needRelativeName ) { 
-		wxFileName bios_filename = Bios;
+	if( needRelativeName ) 
+	{ 
+		wxFileName bios_filename(Bios);
 		ini.Entry( L"BIOS", bios_filename, pc );
-	} else
-		ini.Entry( L"BIOS", Bios, pc );
+	} 
+	else
+	{
+		ini.Entry( "BIOS", Bios, pc.GetFullPath().ToStdString() );
+	}
+
+	std::cout << "BIOS: " << Bios << std::endl;
 }
 
 // ------------------------------------------------------------------------
@@ -1394,19 +1389,12 @@ static void SaveVmSettings()
 static void SaveRegSettings()
 {
 
-    bool conf_install; //sApp.OpenInstallSettingsFile();
-
-
-     if (conf_install)
-	 {
-
-	 }
+	if (InstallationMode == InstallMode_Portable) return;
        
-
+    // install mode Logic goes in here
 
 	/*std::unique_ptr<wxConfigBase> conf_install;
 
-	if (InstallationMode == InstallMode_Portable) return;
 
 	// sApp. macro cannot be use because you need the return value of OpenInstallSettingsFile method
 	if (Pcsx2App* __app_ = (Pcsx2App*)wxApp::GetInstance())conf_install = std::unique_ptr<wxConfigBase>((*__app_).OpenInstallSettingsFile());

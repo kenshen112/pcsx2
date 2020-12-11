@@ -951,7 +951,7 @@ void Panels::MemoryCardListPanel_Simple::UiAssignUnassignFile(McdSlotItem &card)
 			McdSlotItem& selCard = GetCardForViewIndex(i);
 			wxString sel = GetPortName( selCard.Slot ) + L"   ( ";
 			if (selCard.IsPresent)
-				sel += selCard.Filename.wstring();
+				sel += selCard.Filename.relative_path().wstring();
 			else
 				sel += _("Empty");
 			sel += L" )";
@@ -959,7 +959,7 @@ void Panels::MemoryCardListPanel_Simple::UiAssignUnassignFile(McdSlotItem &card)
 			selections.Add(sel);
 		}
 		wxString title;
-		wxString toPrint(card.Filename.wstring());
+		wxString toPrint(card.Filename.relative_path().wstring());
 		title.Printf(_("Select a target port for '%s'"), WX_STR(toPrint));
 		int res=wxGetSingleChoiceIndex(title, _("Insert card"), selections, this);
 		if( res<0 )
