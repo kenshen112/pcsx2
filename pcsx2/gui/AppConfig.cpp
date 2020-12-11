@@ -510,7 +510,7 @@ std::string AppConfig::FullpathToBios() const
 
 std::string AppConfig::FullpathToMcd(uint slot) const
 {
-	return Path::Combine(Folders.MemoryCards.string(), Mcd[slot].Filename.GetFullName().ToStdString());
+	return Path::Combine(Folders.MemoryCards.string(), Mcd[slot].Filename.string());
 }
 
 bool IsPortable()
@@ -549,7 +549,7 @@ AppConfig::AppConfig()
 	for( uint slot=0; slot<8; ++slot )
 	{
 		Mcd[slot].Enabled	= !FileMcd_IsMultitapSlot(slot);	// enables main 2 slots
-		Mcd[slot].Filename	= FileMcd_GetDefaultName( slot );
+		Mcd[slot].Filename	= FileMcd_GetDefaultName( slot ).ToStdString();
 
 		// Folder memory card is autodetected later.
 		Mcd[slot].Type = MemoryCardType::MemoryCard_File;
@@ -620,21 +620,25 @@ void AppConfig::LoadSaveMemcards( IniInterface& ini )
 
 	for( uint slot=0; slot<2; ++slot )
 	{
+		wxString Filename (Mcd[slot].Filename.wstring());;
+
 		ini.Entry( pxsFmt( L"Slot%u_Enable", slot+1 ),
 			Mcd[slot].Enabled, Mcd[slot].Enabled );
 		ini.Entry( pxsFmt( L"Slot%u_Filename", slot+1 ),
-			Mcd[slot].Filename, Mcd[slot].Filename );
+			Filename, Filename );
 	}
 
 	for( uint slot=2; slot<8; ++slot )
 	{
+       wxString Filename (Mcd[slot].Filename.wstring());;
+
 		int mtport = FileMcd_GetMtapPort(slot)+1;
 		int mtslot = FileMcd_GetMtapSlot(slot)+1;
 
 		ini.Entry( pxsFmt( L"Multitap%u_Slot%u_Enable", mtport, mtslot ),
 			Mcd[slot].Enabled, Mcd[slot].Enabled );
 		ini.Entry( pxsFmt( L"Multitap%u_Slot%u_Filename", mtport, mtslot ),
-			Mcd[slot].Filename, Mcd[slot].Filename );
+			Filename, Filename );
 	}
 }
 

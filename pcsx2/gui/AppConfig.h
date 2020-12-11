@@ -204,7 +204,7 @@ public:
 	//
 	struct McdOptions
 	{
-		wxFileName	Filename;	// user-configured location of this memory card
+		fs::path	Filename;	// user-configured location of this memory card
 		bool		Enabled;	// memory card enabled (if false, memcard will not show up in-game)
 		MemoryCardType Type;	// the memory card implementation that should be used
 	};
