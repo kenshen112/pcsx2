@@ -196,15 +196,17 @@ bool Pcsx2App::Load(fs::path fileName)
 
 YAML::Node Pcsx2App::Save(fs::path fileName)
 {
-	try
+	if (!stream)
 	{
-	    stream = YAML::Load(fileName);
+		try
+		{
+			stream = YAML::Load(fileName);
+		}
+		catch (const std::exception& e)
+		{
+			std::cerr << "ERROR: " << e.what() << std::endl;
+		}
 	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "ERROR: " << e.what() << std::endl;
-	}
-
 	std::ofstream fout(fileName);
 	fout << stream;
 
