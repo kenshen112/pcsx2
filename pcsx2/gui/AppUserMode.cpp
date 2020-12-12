@@ -88,7 +88,6 @@ bool Pcsx2App::TestUserPermissionsRights(const std::string& testFolder)
 			if (!folderUtils.CreateFolder(folder))
 			{
 				ErrorFolders.push_back(folder);
-				//wxFileConfig* OpenFileConfig( const std::string& filename );
 			}
 		}
 	}
@@ -174,7 +173,7 @@ void Pcsx2App::WipeUserModeSettings()
 
 bool Pcsx2App::Load(fs::path fileName)
 {
-    if (fs::exists(fileName))
+	if (fs::exists(fileName))
 	{
 		try
 		{
@@ -210,7 +209,7 @@ YAML::Node Pcsx2App::Save(fs::path fileName)
 	std::ofstream fout(fileName);
 	fout << stream;
 
-    return stream;
+	return stream;
 }
 
 static void DoFirstTimeWizard()
@@ -300,7 +299,7 @@ void Pcsx2App::EstablishAppUserMode()
 	// or the registry/user local documents position.
 
 	bool runWizard = stream["RunWizard"].as<bool>();
-    
+
 	//App_LoadInstallSettings( newYaml );
 
 	if (!Startup.ForceWizard && !runWizard)

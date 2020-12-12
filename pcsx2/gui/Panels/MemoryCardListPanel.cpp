@@ -544,7 +544,7 @@ void Panels::MemoryCardListPanel_Simple::AppStatusEvent_OnSettingsApplied()
 		m_Cards[slot].Filename = g_Conf->Mcd[slot].Filename;
 		
 		// Automatically create the enabled but non-existing file such that it can be managed (else will get created anyway on boot)
-		wxString targetFile = (GetMcdPath() + m_Cards[slot].Filename.wstring()).GetFullPath();
+		wxString targetFile(Path::Combine(GetMcdPath().ToString().ToStdString(), m_Cards[slot].Filename.string()));
 		if (m_Cards[slot].IsEnabled && !(wxFileExists(targetFile) || wxDirExists(targetFile))) {
 			wxString errMsg;
 			if (isValidNewFilename(m_Cards[slot].Filename.wstring(), GetMcdPath(), errMsg, 5)) {
@@ -598,7 +598,7 @@ void Panels::MemoryCardListPanel_Simple::DoRefresh()
 		//	continue;
 
 		//wxFileName fullpath( m_FolderPicker->GetPath() + g_Conf->Mcd[slot].Filename.GetFullName() );
-		wxFileName fullpath = m_FolderPicker->GetPath() + m_Cards[slot].Filename.wstring();
+		wxFileName fullpath(Path::Combine(m_FolderPicker->GetPath().ToString().ToStdString(), m_Cards[slot].Filename.string()));
 
 		EnumerateMemoryCard( m_Cards[slot], fullpath, m_FolderPicker->GetPath());
 		m_Cards[slot].Slot = slot;
