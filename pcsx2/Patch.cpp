@@ -249,7 +249,7 @@ int LoadPatchesFromDir(wxString name, const wxDirName& folderName, const wxStrin
 	// This check only tests the default cheats folder, so the message it produces is possibly misleading.
 	if (folderName.ToString().IsSameAs(PathDefs::GetCheats().string()) && numberFoundPatchFiles == 0)
 	{
-		wxString pathName = Path::Combine(folderName.ToString.ToStdString(), (name.MakeUpper() + L".pnach").ToStdString());
+		wxString pathName = Path::Combine(folderName.ToString().ToStdString(), (name.MakeUpper().ToStdString() + ".pnach"));
 		PatchesCon->WriteLn(Color_Gray, L"Not found %s file: %s", WX_STR(friendlyName), WX_STR(pathName));
 	}
 
