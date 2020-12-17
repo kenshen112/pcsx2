@@ -104,7 +104,7 @@ static void cdvdGetMechaVer(u8* ver)
 		throw Exception::CannotCreateStream(fname);
 
 
-	if (Path::GetFileSize(fname) < 4)
+	if (Path::GetFileSize(fname.ToStdString()) < 4)
 	{
 		Console.Warning("MEC File Not Found, creating substitute...");
 
@@ -149,7 +149,7 @@ static void cdvdNVM(u8* buffer, int offset, size_t bytes, bool read)
 	if (nvmfile.IsDir())
 		throw Exception::CannotCreateStream(fname);
 
-	if (Path::GetFileSize(fname) < 1024)
+	if (Path::GetFileSize(fname.ToStdString()) < 1024)
 	{
 		Console.Warning("NVM File Not Found, creating substitute...");
 
@@ -334,7 +334,7 @@ static MutexRecursive Mutex_NewDiskCB;
 static __fi ElfObject* loadElf(const wxString filename)
 {
 	if (filename.StartsWith(L"host"))
-		return new ElfObject(filename.After(':'), Path::GetFileSize(filename.After(':')));
+		return new ElfObject(filename.After(':'), Path::GetFileSize(filename.After(':').ToStdString()));
 
 	// Mimic PS2 behavior!
 	// Much trial-and-error with changing the ISOFS and BOOT2 contents of an image have shown that
@@ -600,7 +600,35 @@ static s32 cdvdReadDvdDualInfo(s32* dualType, u32* layer1Start)
 
 static uint cdvdBlockReadTime(CDVD_MODE_TYPE mode)
 {
-	return (PSXCLK * cdvd.BlockSize) / (((mode == MODE_CDROM) ? PSX_CD_READSPEED : PSX_DVD_READSPEED) * cdvd.Speed);
+	int numSectors = 0;
+	int offset = 0;
+	// Sector counts are taken from google for Single layer, Dual layer DVD's and for 700MB CD's
+	switch (cdvd.Type)
+	{
+		case CDVD_TYPE_DETCTDVDS:
+		case CDVD_TYPE_PS2DVD:
+			numSectors = 2298496;
+			break;
+		case CDVD_TYPE_DETCTDVDD:
+			numSectors = 4173824 / 2; // Total sectors for both layers, assume half per layer
+			u32 layer1Start;
+			s32 dualType;
+
+			// Layer 1 needs an offset as it goes back to the middle of the disc
+			cdvdReadDvdDualInfo(&dualType, &layer1Start);
+			if (cdvd.Sector >= layer1Start)
+				offset = layer1Start;
+			break;
+		default: // Pretty much every CD format
+			numSectors = 360000;
+			break;
+	}
+	// Read speed is roughly 37% at lowest and full speed on outer edge. I imagine it's more logarithmic than this
+	// Required for Shadowman to work
+	// Use SeekToSector as Sector hasn't been updated yet
+	const float sectorSpeed = (((float)(cdvd.SeekToSector-offset) / numSectors) * 0.63f) + 0.37f; 
+	//DevCon.Warning("Read speed %f sector %d\n", sectorSpeed, cdvd.Sector);
+	return ((PSXCLK * cdvd.BlockSize) / ((float)(((mode == MODE_CDROM) ? PSX_CD_READSPEED : PSX_DVD_READSPEED) * cdvd.Speed) * sectorSpeed));
 }
 
 void cdvdReset()
