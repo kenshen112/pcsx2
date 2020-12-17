@@ -120,6 +120,8 @@ add_pcsx2_lib(${Output}_NO_TLS "${UtilitiesFinalSources}" "${UtilitiesFinalLibs}
 
 target_compile_features(${Output} PUBLIC cxx_std_17)
 target_compile_features(${Output}_NO_TLS PUBLIC cxx_std_17)
+target_include_directories(${Output} PUBLIC ../../../3rdparty/include)
+target_include_directories(${Output}_NO_TLS PUBLIC ../../../3rdparty/include)
 
 if(COMMAND target_precompile_headers)
 	target_precompile_headers(${Output} PRIVATE PrecompiledHeader.h)

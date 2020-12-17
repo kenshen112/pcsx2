@@ -15,8 +15,9 @@
 
 #include "PrecompiledHeader.h"
 #include "Path.h"
-
+#include "PathUtils.h"
 #include <wx/file.h>
+#include "ghc/filesystem.h"
 #include <wx/utils.h>
 
 // ---------------------------------------------------------------------------------
@@ -54,7 +55,7 @@ wxDirName &wxDirName::Normalize(int flags, const wxString &cwd)
         throw Exception::ParseError().SetDiagMsg(L"wxDirName::Normalize operation failed.");
     return *this;
 }
-
+/*
 wxDirName &wxDirName::MakeRelativeTo(const wxString &pathBase)
 {
     pxAssertMsg(IsDir(), L"Warning: Malformed directory name detected during wDirName normalization.");
@@ -70,7 +71,7 @@ wxDirName &wxDirName::MakeAbsolute(const wxString &cwd)
         throw Exception::ParseError().SetDiagMsg(L"wxDirName::MakeAbsolute operation failed.");
     return *this;
 }
-
+*/
 void wxDirName::Rmdir()
 {
     if (!Exists())
@@ -99,17 +100,18 @@ bool wxDirName::Mkdir()
 // ---------------------------------------------------------------------------------
 
 
-bool Path::IsRelative(const wxString &path)
+bool Path::IsRelative(const std::string &path)
 {
-    return wxDirName(path).IsRelative();
+    fs::path temp = path;
+    return temp.is_relative();
 }
 
 // Returns -1 if the file does not exist.
-s64 Path::GetFileSize(const wxString &path)
+s64 Path::GetFileSize(const std::string &path)
 {
-    if (!wxFile::Exists(path.c_str()))
+    if (!fs::exists(path.c_str()))
         return -1;
-    return (s64)wxFileName::GetSize(path).GetValue();
+    return (s64)fs::file_size(path);
 }
 
 
@@ -125,50 +127,48 @@ wxString Path::Normalize(const wxDirName &src)
     return wxDirName(src).Normalize().ToString();
 }
 
-wxString Path::MakeAbsolute(const wxString &src)
+std::string Path::MakeAbsolute(const std::string &src)
 {
-    wxFileName absolute(src);
-    absolute.MakeAbsolute();
-    return absolute.GetFullPath();
+    return ghc::filesystem::absolute(src);
 }
 
 // Concatenates two pathnames together, inserting delimiters (backslash on win32)
 // as needed! Assumes the 'dest' is allocated to at least g_MaxPath length.
 //
-wxString Path::Combine(const wxString &srcPath, const wxString &srcFile)
+fs::path Path::Combine(fs::path &srcPath, fs::path &srcFile)
 {
-    return (wxDirName(srcPath) + srcFile).GetFullPath();
+    return (srcPath / srcFile).make_preferred();
 }
-
-wxString Path::Combine(const wxDirName &srcPath, const wxFileName &srcFile)
+/*std::string Path::Combine(const wxDirName &srcPath, const wxFileName &srcFile)
 {
     return (srcPath + srcFile).GetFullPath();
-}
+}*/
 
-wxString Path::Combine(const wxString &srcPath, const wxDirName &srcFile)
+std::string Path::Combine(const std::string &srcPath, const std::string &srcFile)
 {
-    return (wxDirName(srcPath) + srcFile).ToString();
+    fs::path srcP = srcPath;
+    fs::path srcF = srcFile;
+    return (srcP / srcF).make_preferred();
 }
-
 // Replaces the extension of the file with the one given.
 // This function works for path names as well as file names.
-wxString Path::ReplaceExtension(const wxString &src, const wxString &ext)
+std::string Path::ReplaceExtension(const wxString &src, const wxString &ext)
 {
     wxFileName jojo(src);
     jojo.SetExt(ext);
-    return jojo.GetFullPath();
+    return jojo.GetFullPath().ToStdString();
 }
 
-wxString Path::ReplaceFilename(const wxString &src, const wxString &newfilename)
+std::string Path::ReplaceFilename(const wxString &src, const wxString &newfilename)
 {
     wxFileName jojo(src);
     jojo.SetFullName(newfilename);
-    return jojo.GetFullPath();
+    return jojo.GetFullPath().ToStdString();
 }
 
-wxString Path::GetFilename(const wxString &src)
+std::string Path::GetFilename(const std::string &src)
 {
-    return wxFileName(src).GetFullName();
+    return ghc::filesystem::absolute(src);
 }
 
 wxString Path::GetFilenameWithoutExt(const wxString &src)
@@ -176,21 +176,37 @@ wxString Path::GetFilenameWithoutExt(const wxString &src)
     return wxFileName(src).GetName();
 }
 
-wxString Path::GetDirectory(const wxString &src)
+std::string Path::GetDirectory(const std::string &src)
 {
-    return wxFileName(src).GetPath();
+    return src;
+}
+
+// TODO - blindly copy-pasted from stackoverflow, this is probably not PERFECT!
+fs::path Path::GetExecutableDirectory()
+{
+    fs::path exePath;
+#ifdef _WIN32
+    wchar_t path[MAX_PATH] = {0};
+    GetModuleFileName(NULL, path, MAX_PATH);
+    exePath = std::wstring(path);
+#else
+    char result[PATH_MAX];
+    ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+    exePath = std::string(result, (count > 0) ? count : 0);
+#endif
+    return exePath.parent_path();
 }
 
 
 // returns the base/root directory of the given path.
 // Example /this/that/something.txt -> dest == "/"
-wxString Path::GetRootDirectory(const wxString &src)
+std::string Path::GetRootDirectory(const wxString &src)
 {
     size_t pos = src.find_first_of(wxFileName::GetPathSeparators());
-    if (pos == wxString::npos)
-        return wxString();
+    if (pos == 0)
+        return std::string();
     else
-        return wxString(src.begin(), src.begin() + pos);
+        return fs::path(std::string(src.begin(), src.begin() + pos));
 }
 
 // ------------------------------------------------------------------------
@@ -220,4 +236,24 @@ void pxExplore(const wxString &path)
 void pxExplore(const char *path)
 {
     pxExplore(fromUTF8(path));
+}
+
+bool FolderUtils::CreateFolder(std::string path)
+{
+    return fs::create_directory(path); // An attempt to create the User mode Dir which already exists
+}
+
+bool FolderUtils::DoesExist(std::string path)
+{
+    return fs::exists(path);
+}
+
+bool FolderUtils::DoesExist(fs::path path)
+{
+    return fs::exists(path);
+}
+
+bool FolderUtils::Empty(std::string path)
+{
+    return fs::is_empty(path);
 }
