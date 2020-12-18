@@ -35,7 +35,7 @@ void USBsetSettingsDir()
 	if(!USBpathSet)
 	{
 #ifdef _WIN32
-		IniPath = Path::Combine(GetSettingsFolder(), fs::path(iniFile)).wstring(); // default path, just in case
+		IniPath = fs::path(Path::Combine(GetSettingsFolder(), fs::path(iniFile))).wstring(); // default path, just in case
 #else
 		IniPath = Path::Combine(GetSettingsFolder(), fs::path(iniFile)); // default path, just in case
 #endif
