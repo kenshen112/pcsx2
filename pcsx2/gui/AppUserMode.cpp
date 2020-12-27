@@ -257,8 +257,12 @@ bool Pcsx2App::OpenInstallSettingsFile()
 	InstallationMode = InstallationModeType::InstallMode_Registered;
 	fs::path usrlocaldir = PathDefs::GetUserLocalDataDir();
 
+	InstallFolder = (wxFileName(wxStandardPaths::Get().GetExecutablePath())).GetPath().ToStdString();
+
 	std::string usermodeFile = (GetAppName().ToStdString() + "-reg.yaml");
 	std::string usermodePath = Path::Combine(usrlocaldir, usermodeFile); 
+
+	CustomDocumentsFolder = PathDefs::AppRoot();
 
 	std::cout << "USERMODE: " << usermodePath << std::endl;
 

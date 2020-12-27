@@ -118,7 +118,7 @@ namespace PathDefs
 
 	//The installer installs the folders which are relative to AppRoot (that's plugins/langs)
 	//  relative to the exe folder, and not relative to cwd. So the exe should be default AppRoot. - avih
-	fs::path AppRoot()
+	const fs::path& AppRoot()
 	{
 		//AffinityAssert_AllowFrom_MainUI();
 
@@ -239,6 +239,7 @@ namespace PathDefs
 	{
 		fs::path docPath = GetDocuments();
 		fs::path path = GetDocuments() / "settings";
+		SettingsFolder = path;
 		// make_preferred() is causing issues?
 		return path;
 	}
@@ -325,7 +326,7 @@ bool AppConfig::FolderOptions::IsDefault( FoldersEnum_t folderidx ) const
 	return false;
 }
 
-void AppConfig::FolderOptions::Set( FoldersEnum_t folderidx, const std::string& src, bool useDefault)
+void AppConfig::FolderOptions::Set( FoldersEnum_t folderidx, const fs::path& src, bool useDefault)
 {
 	switch( folderidx )
 	{

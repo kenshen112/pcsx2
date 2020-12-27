@@ -64,6 +64,7 @@ namespace PathDefs
 	extern fs::path GetCheats();
 	extern fs::path GetCheatsWS();
 	extern fs::path GetDocs();
+	extern const fs::path& AppRoot();
 
 	extern std::string Get( FoldersEnum_t folderidx );
 

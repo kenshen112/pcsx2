@@ -181,7 +181,7 @@ public:
 		void LoadSave( IniInterface& conf );
 		void ApplyDefaults();
 
-		void Set( FoldersEnum_t folderidx, const std::string& src, bool useDefault );
+		void Set( FoldersEnum_t folderidx, const fs::path& src, bool useDefault );
 
 		const fs::path& operator[]( FoldersEnum_t folderidx ) const;
 		fs::path& operator[]( FoldersEnum_t folderidx );
