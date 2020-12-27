@@ -36,8 +36,8 @@ AppGameDatabase& AppGameDatabase::LoadFromFile(const wxString& _file)
 {
 	// TODO - config - refactor with std::filesystem/ghc::filesystem
 
-	wxString file(_file);
-	if (wxFileName(file).IsRelative())
+	fs::path file(_file.ToStdWstring());
+	if (file.is_relative())
 	{
 		// InstallFolder is the preferred base directory for the DB file, but the registry can point to previous
 		// installs if uninstall wasn't done properly.
@@ -49,20 +49,20 @@ AppGameDatabase& AppGameDatabase::LoadFromFile(const wxString& _file)
 		//           So the games DB was really the only one that suffers from residues of prior installs.
 
 		//wxDirName dir = InstallFolder;
-		wxDirName dir = (wxDirName)wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPath();
-		file = (dir + file).GetFullPath();
+		fs::path dir(wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPath().ToStdWstring());
+		file = (dir / file);
 	}
 
 
-	if (!wxFileExists(file))
+	if (!folderUtils.DoesExist(file))
 	{
-		Console.Error(L"[GameDB] Database Not Found! [%s]", WX_STR(file));
+		Console.Error(L"[GameDB] Database Not Found! [%s]", WX_STR(wxString(file.wstring())));
 		return *this;
 	}
 
 	const u64 qpc_Start = GetCPUTicks();
 
-	std::ifstream fileStream = getFileAsStream(file);
+	std::ifstream fileStream = getFileAsStream(wxString(file.wstring()));
 	if (!this->initDatabase(fileStream))
 	{
 		Console.Error(L"[GameDB] Database could not be loaded successfully");
