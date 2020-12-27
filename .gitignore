@@ -77,10 +77,11 @@ oprofile_data/
 /bin/*ReplayLoader
 /bin/PCSX2-linux.sh
 /bin/GSdx*.txt
+/bin/portable.yaml
 /bin/bios
 /bin/dumps
 /bin/help
-/bin/inis
+/bin/settings
 /bin/logs
 /bin/memcards
 /bin/plugins
@@ -115,4 +116,4 @@ oprofile_data/
 /pcsx2/windows/VCprojects/GSdx_opengl_debug_hw.txt
 /pcsx2/windows/VCprojects/GSdx_opengl_debug_sw.txt
 /out/build/x64-Debug (default)
-/bin/settings
+
