@@ -323,6 +323,12 @@ void Pcsx2App::EstablishAppUserMode()
 			AppConfig_OnChangedSettingsFolder(false);
 			return;
 		}
+
+	// Wizard completed successfully, so let's not torture the user with this crap again!
+	// TODO - stawp
+
+	stream["RunWizard"] = false;
+	Save(GetPortableYamlPath());
 	}
 
 	DoFirstTimeWizard();
@@ -332,9 +338,4 @@ void Pcsx2App::EstablishAppUserMode()
 	AppConfig_OnChangedSettingsFolder(true);
 	AppSaveSettings();
 
-	// Wizard completed successfully, so let's not torture the user with this crap again!
-	// TODO - stawp
-
-	stream["RunWizard"] = false;
-	Save(GetPortableYamlPath());
 }
