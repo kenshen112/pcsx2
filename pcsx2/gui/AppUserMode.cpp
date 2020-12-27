@@ -204,6 +204,12 @@ bool Pcsx2App::Load(fs::path fileName)
 
 YAML::Node Pcsx2App::Save(fs::path fileName)
 {
+
+	if (!folderUtils.DoesExist(fileName.parent_path().make_preferred()))
+	{
+		folderUtils.CreateFolder(fileName.parent_path().make_preferred());
+	}
+
 	if (!stream)
 	{
 		try
