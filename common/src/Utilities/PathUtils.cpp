@@ -238,9 +238,9 @@ void pxExplore(const char *path)
     pxExplore(fromUTF8(path));
 }
 
-bool FolderUtils::CreateFolder(std::string path)
+bool FolderUtils::CreateFolder(fs::path path)
 {
-    return fs::create_directory(path); // An attempt to create the User mode Dir which already exists
+    return fs::create_directory(path.make_preferred()); // An attempt to create the User mode Dir which already exists
 }
 
 bool FolderUtils::DoesExist(std::string path)

@@ -14,7 +14,7 @@ protected:
 	fs::path folder;
 
 public:
-	bool CreateFolder(std::string path);
+	bool CreateFolder(fs::path path);
 	bool Empty(std::string);          // Is the folder empty
 	bool DoesExist(std::string path); // Does the path exist
 	bool DoesExist(fs::path path);    // Does the path exist
