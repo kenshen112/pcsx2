@@ -240,17 +240,17 @@ void pxExplore(const char *path)
 
 bool FolderUtils::CreateFolder(fs::path path)
 {
-    return fs::create_directory(path.make_preferred()); // An attempt to create the User mode Dir which already exists
+    return fs::create_directories(path.make_preferred()); // An attempt to create the User mode Dir which already exists
 }
 
 bool FolderUtils::DoesExist(std::string path)
 {
-    return fs::exists(path);
+    return fs::exists(fs::path(path).make_preferred());
 }
 
 bool FolderUtils::DoesExist(fs::path path)
 {
-    return fs::exists(path);
+    return fs::exists(path.make_preferred());
 }
 
 bool FolderUtils::Empty(std::string path)

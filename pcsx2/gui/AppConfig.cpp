@@ -227,7 +227,7 @@ namespace PathDefs
 		// Each linux distributions have his rules for path so we give them the possibility to
 		// change it with compilation flags. -- Gregory
 #ifndef PLUGIN_DIR_COMPILATION
-		return (AppRoot().parent_path() / "plugins").make_preferred();
+		return (GetDocuments() / "plugins").make_preferred();
 #else
 #define xPLUGIN_DIR_str(s) PLUGIN_DIR_str(s)
 #define PLUGIN_DIR_str(s) #s
@@ -250,7 +250,7 @@ namespace PathDefs
 
 	fs::path GetLangs()
 	{
-		return (AppRoot().parent_path() / "Langs").make_preferred();
+		return (GetDocuments() / "Langs").make_preferred();
 	}
 
 	std::string Get( FoldersEnum_t folderidx )

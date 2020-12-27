@@ -208,14 +208,14 @@ YAML::Node Pcsx2App::Save(fs::path fileName)
 	{
 		try
 		{
-			stream = YAML::Load(fileName);
+			stream = YAML::Load(fileName.make_preferred());
 		}
 		catch (const std::exception& e)
 		{
 			std::cerr << "ERROR: " << e.what() << std::endl;
 		}
 	}
-	std::ofstream fout(fileName);
+	std::ofstream fout(fileName.make_preferred());
 	fout << stream;
 
 	return stream;
@@ -249,6 +249,21 @@ bool Pcsx2App::OpenInstallSettingsFile()
 	// most core application-level settings in the registry.
 
 	InstallationMode = InstallationModeType::InstallMode_Registered;
+	fs::path usrlocaldir = PathDefs::GetUserLocalDataDir();
+
+	std::string usermodeFile = (GetAppName().ToStdString() + "-reg.yaml");
+	std::string usermodePath = Path::Combine(usrlocaldir, usermodeFile); 
+
+	std::cout << "USERMODE: " << usermodePath << std::endl;
+
+	// Install Mode, genereate a new stream and manually write data to new file if it doesn't.
+ 	stream["DocumentsFolderMode"] = (int)DocsFolderMode;
+	stream["CustomDocumentsFolder"] = CustomDocumentsFolder.string();
+	stream["UseDefaultSettingsFolder"] = UseDefaultSettingsFolder;
+	stream["SettingsFolder"] = SettingsFolder.string();
+	stream["Install_Dir"] = InstallFolder;
+	stream["RunWizard"] = runWizard;
+	Save(usermodePath);
 
 #ifdef __WXMSW__
 	// TODO - I think `conf_install` can be removed, historically its just used to set RunTimeWizard or not
@@ -257,7 +272,6 @@ bool Pcsx2App::OpenInstallSettingsFile()
 	// FIXME!!  Linux / Mac
 	// Where the heck should this information be stored?
 
-	fs::path usrlocaldir = PathDefs::GetUserLocalDataDir();
 	//fs::path usrlocaldir( wxStandardPaths::Get().GetDataDir() );
 	if (!fs::exists(usrlocaldir))
 	{
@@ -266,23 +280,10 @@ bool Pcsx2App::OpenInstallSettingsFile()
 		{
 			return false;
 		}
-	}
-
-	std::string usermodeFile = (GetAppName().ToStdString() + "-reg.yaml");
-	std::string usermodePath = Path::Combine(usrlocaldir, usermodeFile); 
-
-	std::cout << "USERMODE: " << usermodePath << std::endl;
-
-	// Install Mode, genereate a new stream and manually write data to new file if it doesn't.
-	stream["DocumentsFolderMode"] = (int)DocsFolderMode;
-	stream["CustomDocumentsFolder"] = CustomDocumentsFolder.string();
-	stream["UseDefaultSettingsFolder"] = UseDefaultSettingsFolder;
-	stream["SettingsFolder"] = SettingsFolder.string();
-	stream["Install_Dir"] = InstallFolder;
-	stream["RunWizard"] = runWizard;
-	Save(usermodePath);
-
+	}    
 #endif
+
+
 
 	return true;
 }
