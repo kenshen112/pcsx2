@@ -271,26 +271,6 @@ bool Pcsx2App::OpenInstallSettingsFile()
 	stream["RunWizard"] = runWizard;
 	Save(usermodePath);
 
-#ifdef __WXMSW__
-	// TODO - I think `conf_install` can be removed, historically its just used to set RunTimeWizard or not
-	// conf_install = std::unique_ptr<wxConfigBase>(new wxRegConfig());
-#else
-	// FIXME!!  Linux / Mac
-	// Where the heck should this information be stored?
-
-	//fs::path usrlocaldir( wxStandardPaths::Get().GetDataDir() );
-	if (!fs::exists(usrlocaldir))
-	{
-		Console.WriteLn("Creating UserLocalData folder: " + (std::string)usrlocaldir);
-		if (!folderUtils.CreateFolder(usrlocaldir))
-		{
-			return false;
-		}
-	}    
-#endif
-
-
-
 	return true;
 }
 
