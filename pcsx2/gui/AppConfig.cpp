@@ -118,21 +118,23 @@ namespace PathDefs
 
 	//The installer installs the folders which are relative to AppRoot (that's plugins/langs)
 	//  relative to the exe folder, and not relative to cwd. So the exe should be default AppRoot. - avih
-	const fs::path& AppRoot()
+	fs::path AppRoot()
 	{
 		//AffinityAssert_AllowFrom_MainUI();
 
-		if (InstallationMode == InstallMode_Registered)
+		/*if (InstallationMode == InstallMode_Registered)
 		{
 			static const std::string cwdCache( (std::string)Path::Normalize(wxGetCwd()) );
 			return cwdCache;
 		}
-		else if (InstallationMode == InstallMode_Portable)
+		else if (InstallationMode == InstallMode_Portable)*/
 
 		if (InstallationMode == InstallMode_Registered || InstallationMode == InstallMode_Portable)
 		{
-			fs::path appCache(wxStandardPaths::Get().GetExecutablePath().ToStdString());
-			return appCache.make_preferred();
+			std::wstring path = wxStandardPaths::Get().GetExecutablePath().ToStdWstring();
+			fs::path ret(path);
+			ret.make_preferred();
+			return ret.parent_path();
 		}
 		/*else
 			pxFail("Unimplemented user local folder mode encountered.");
