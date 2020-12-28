@@ -124,22 +124,21 @@ namespace PathDefs
 
 		if (InstallationMode == InstallMode_Registered)
 		{
-			//static const std::string cwdCache( (std::string)Path::Normalize(wxGetCwd()) );
-			//return cwdCache;
+			static const std::string cwdCache( (std::string)Path::Normalize(wxGetCwd()) );
+			return cwdCache;
 		}
 		else if (InstallationMode == InstallMode_Portable)
 
 		if (InstallationMode == InstallMode_Registered || InstallationMode == InstallMode_Portable)
 		{
-			static const std::string appCache((std::string)
-				std::string(wxStandardPaths::Get().GetExecutablePath()));
-			return appCache;
+			fs::path appCache(wxStandardPaths::Get().GetExecutablePath().ToStdString());
+			return appCache.make_preferred();
 		}
-		else
+		/*else
 			pxFail("Unimplemented user local folder mode encountered.");
 
 		static const std::string dotFail(".");
-		return dotFail;
+		return dotFail;*/
 	}
 
     // Specifies the main configuration folder.

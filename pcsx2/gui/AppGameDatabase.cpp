@@ -50,7 +50,7 @@ AppGameDatabase& AppGameDatabase::LoadFromFile(const wxString& _file)
 
 		//wxDirName dir = InstallFolder;
 		fs::path dir(wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPath().ToStdWstring());
-		file = (dir / file);
+		file = (dir.parent_path() / file);
 	}
 
 
