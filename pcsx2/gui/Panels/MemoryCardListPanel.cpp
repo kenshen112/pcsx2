@@ -106,7 +106,7 @@ bool EnumerateMemoryCard( McdSlotItem& dest, const wxFileName& filename, const w
 	dest.IsPresent		= true;
 	dest.Filename		= filename.GetFullPath().ToStdString();
 	if( filename.GetFullPath() == (basePath+filename.GetFullName()).GetFullPath() )
-		dest.Filename.wstring() = filename.GetFullName();
+		dest.Filename = filename.GetFullName().ToStdWstring();
 	
 	return true;
 }
@@ -326,7 +326,7 @@ public:
 			//   Note: For the sake of usability, automatically enable dest if a ps2-port.
 			if (src.IsPresent)
 			{
-				wxFileName	tmpFilename = wxFileName(dest.Filename.wstring());
+				wxFileName	tmpFilename = wxFileName(dest.Filename.relative_path().wstring());
 				bool		tmpPresent  = dest.IsPresent;
 				if (src.Slot<0 && m_listview->GetMcdProvider().isFileAssignedToInternalSlot(tmpFilename))
 					m_listview->GetMcdProvider().RemoveCardFromSlot(tmpFilename);
