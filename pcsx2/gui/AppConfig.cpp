@@ -814,14 +814,13 @@ void AppConfig::FilenameOptions::LoadSave( IniInterface& ini )
 	//note: this will break if converting from install to portable, and custom folders are used. We can live with that.
 	bool needRelativeName = ini.IsSaving() && IsPortable();
 
-	for( int i=0; i<PluginId_Count; ++i )
-	{			
-		wxFileName plugin_filename = wxFileName( Plugins[i] );
-
-		if ( needRelativeName ) {
-			ini.Entry( tbl_PluginInfo[i].GetShortname(), plugin_filename, pc );
-		} else
-			ini.Entry( tbl_PluginInfo[i].GetShortname(), plugin_filename, pc );
+    for (int i = 0; i < PluginId_Count; i++)
+	{
+		wxFileName plugin_filename = wxFileName(Plugins[i]);
+		ini.Entry(tbl_PluginInfo[i].GetShortname(), plugin_filename, pc);
+		
+		// Why is this not required for the BIOS part below?
+		Plugins[i] = plugin_filename.GetFullPath().ToStdString();
 	}
 
 	if( needRelativeName ) 

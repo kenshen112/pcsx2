@@ -82,6 +82,7 @@ oprofile_data/
 /bin/dumps
 /bin/help
 /bin/settings
+/bin/inis
 /bin/logs
 /bin/memcards
 /bin/plugins
