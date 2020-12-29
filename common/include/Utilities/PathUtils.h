@@ -15,9 +15,12 @@ protected:
 
 public:
 	bool CreateFolder(fs::path path);
-	bool Empty(std::string);          // Is the folder empty
-	bool DoesExist(std::string path); // Does the path exist
-	bool DoesExist(fs::path path);    // Does the path exist
+	// Is the folder empty
+	bool Empty(std::string);          
+	// Does the path exist
+	bool DoesExist(std::string path);
+	// Does the path exist
+	bool DoesExist(fs::path path);
 };
 
 namespace Path
@@ -30,7 +33,6 @@ namespace Path
 	extern std::string MakeAbsolute(const std::string& srcpath);
 
 	extern fs::path Combine(fs::path &srcPath, fs::path &srcFile);
-	//extern std::string Combine(const wxDirName &srcPath, const wxFileName &srcFile);
 	extern std::string Combine(const std::string& srcPath, const std::string& srcFile);
 	extern std::string ReplaceExtension(const wxString& src, const wxString& ext);
 	extern std::string ReplaceFilename(const wxString& src, const wxString& newfilename);
