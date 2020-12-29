@@ -262,16 +262,23 @@ bool Pcsx2App::OpenInstallSettingsFile()
 	std::string usermodeFile = (GetAppName().ToStdString() + "-reg.yaml");
 	usermodePath = Path::Combine(usrlocaldir, usermodeFile); 
 
-	CustomDocumentsFolder = PathDefs::AppRoot();
+	if (!folderUtils.DoesExist(usermodePath))
+	{
+		CustomDocumentsFolder = PathDefs::AppRoot();
 
-	// Install Mode, genereate a new stream and manually write data to new file if it doesn't.
- 	stream["DocumentsFolderMode"] = (int)DocsFolderMode;
-	stream["CustomDocumentsFolder"] = CustomDocumentsFolder.string();
-	stream["UseDefaultSettingsFolder"] = UseDefaultSettingsFolder;
-	stream["SettingsFolder"] = SettingsFolder.string();
-	stream["Install_Dir"] = InstallFolder;
-	stream["RunWizard"] = runWizard;
-	Save(usermodePath);
+		// Install Mode, genereate a new stream and manually write data to new file if it doesn't.
+		stream["DocumentsFolderMode"] = (int)DocsFolderMode;
+		stream["CustomDocumentsFolder"] = CustomDocumentsFolder.string();
+		stream["UseDefaultSettingsFolder"] = UseDefaultSettingsFolder;
+		stream["SettingsFolder"] = SettingsFolder.string();
+		stream["Install_Dir"] = InstallFolder;
+		stream["RunWizard"] = false;
+		Save(usermodePath);
+	}
+	else
+	{
+		Load(usermodePath);
+	}
 
 	return true;
 }
@@ -294,6 +301,8 @@ void Pcsx2App::EstablishAppUserMode()
 
 	if (!conf_install)
 		conf_install = OpenInstallSettingsFile();
+	
+	bool runWizard = stream["RunWizard"].as<bool>();
 
 	//  Run the First Time Wizard!
 	// ----------------------------
@@ -302,8 +311,6 @@ void Pcsx2App::EstablishAppUserMode()
 	// or the registry/user local documents position.
 	if (InstallationMode == InstallationModeType::InstallMode_Portable)
 	{
-		bool runWizard = stream["RunWizard"].as<bool>();
-
 		if (!Startup.ForceWizard && !runWizard)
 		{
 			AppConfig_OnChangedSettingsFolder(false);
@@ -311,14 +318,15 @@ void Pcsx2App::EstablishAppUserMode()
 		}
 
 	// Wizard completed successfully, so let's not torture the user with this crap again!
-	// TODO - stawp
-
-	stream["RunWizard"] = false;
-	Save(GetPortableYamlPath());
+	// TODO - stawp	
+		stream["RunWizard"] = false;	
+		Save(GetPortableYamlPath());
 	}
 
-	DoFirstTimeWizard();
-
+	if (runWizard)
+	{
+		DoFirstTimeWizard();
+	}
 	// Save user's new settings
 	AppConfig_OnChangedSettingsFolder(true);
 	AppSaveSettings();
