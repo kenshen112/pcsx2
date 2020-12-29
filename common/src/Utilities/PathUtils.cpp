@@ -55,23 +55,7 @@ wxDirName &wxDirName::Normalize(int flags, const wxString &cwd)
         throw Exception::ParseError().SetDiagMsg(L"wxDirName::Normalize operation failed.");
     return *this;
 }
-/*
-wxDirName &wxDirName::MakeRelativeTo(const wxString &pathBase)
-{
-    pxAssertMsg(IsDir(), L"Warning: Malformed directory name detected during wDirName normalization.");
-    if (!wxFileName::MakeRelativeTo(pathBase))
-        throw Exception::ParseError().SetDiagMsg(L"wxDirName::MakeRelativeTo operation failed.");
-    return *this;
-}
 
-wxDirName &wxDirName::MakeAbsolute(const wxString &cwd)
-{
-    pxAssertMsg(IsDir(), L"Warning: Malformed directory name detected during wDirName normalization.");
-    if (!wxFileName::MakeAbsolute(cwd))
-        throw Exception::ParseError().SetDiagMsg(L"wxDirName::MakeAbsolute operation failed.");
-    return *this;
-}
-*/
 void wxDirName::Rmdir()
 {
     if (!Exists())
@@ -102,8 +86,7 @@ bool wxDirName::Mkdir()
 
 bool Path::IsRelative(const std::string &path)
 {
-    fs::path temp = path;
-    return temp.is_relative();
+	return fs::path(path).is_relative();
 }
 
 // Returns -1 if the file does not exist.
@@ -139,10 +122,6 @@ fs::path Path::Combine(fs::path &srcPath, fs::path &srcFile)
 {
     return (srcPath / srcFile).make_preferred();
 }
-/*std::string Path::Combine(const wxDirName &srcPath, const wxFileName &srcFile)
-{
-    return (srcPath + srcFile).GetFullPath();
-}*/
 
 std::string Path::Combine(const std::string &srcPath, const std::string &srcFile)
 {

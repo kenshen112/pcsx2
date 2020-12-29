@@ -120,15 +120,6 @@ namespace PathDefs
 	//  relative to the exe folder, and not relative to cwd. So the exe should be default AppRoot. - avih
 	fs::path AppRoot()
 	{
-		//AffinityAssert_AllowFrom_MainUI();
-
-		/*if (InstallationMode == InstallMode_Registered)
-		{
-			static const std::string cwdCache( (std::string)Path::Normalize(wxGetCwd()) );
-			return cwdCache;
-		}
-		else if (InstallationMode == InstallMode_Portable)*/
-
 		if (InstallationMode == InstallMode_Registered || InstallationMode == InstallMode_Portable)
 		{
 			std::wstring path = wxStandardPaths::Get().GetExecutablePath().ToStdWstring();
@@ -136,11 +127,11 @@ namespace PathDefs
 			ret.make_preferred();
 			return ret.parent_path();
 		}
-		/*else
+		else
 			pxFail("Unimplemented user local folder mode encountered.");
 
 		static const std::string dotFail(".");
-		return dotFail;*/
+		return dotFail;
 	}
 
     // Specifies the main configuration folder.
@@ -241,7 +232,6 @@ namespace PathDefs
 		fs::path docPath = GetDocuments();
 		fs::path path = GetDocuments() / "settings";
 		SettingsFolder = path;
-		// make_preferred() is causing issues?
 		return path;
 	}
 
@@ -486,7 +476,6 @@ fs::path GetSettingsFolder()
 fs::path GetVmSettingsFilename()
 {
 	fs::path fname( !wxGetApp().Overrides.VmSettingsFile.GetFullPath().ToStdString().empty() ? wxGetApp().Overrides.VmSettingsFile.GetFullPath().ToStdString() : FilenameDefs::GetVmConfig().GetFullPath().ToStdString() );
-	//std::cout << "Path: " << Path::Combine(GetSettingsFolder(), fname) << std::endl;
 	return Path::Combine(GetSettingsFolder(), fname);
 }
 
@@ -832,8 +821,6 @@ void AppConfig::FilenameOptions::LoadSave( IniInterface& ini )
 	{
 		ini.Entry( "BIOS", Bios, pc.GetFullPath().ToStdString() );
 	}
-
-	std::cout << "BIOS: " << Bios << std::endl;
 }
 
 // ------------------------------------------------------------------------
@@ -1379,23 +1366,6 @@ static void SaveVmSettings()
 	sApp.DispatchVmSettingsEvent( vmsaver );
 }
 
-static void SaveRegSettings()
-{
-
-	if (InstallationMode == InstallMode_Portable) return;
-       
-    // install mode Logic goes in here
-
-	/*std::unique_ptr<wxConfigBase> conf_install;
-
-
-	// sApp. macro cannot be use because you need the return value of OpenInstallSettingsFile method
-	if (Pcsx2App* __app_ = (Pcsx2App*)wxApp::GetInstance())conf_install = std::unique_ptr<wxConfigBase>((*__app_).OpenInstallSettingsFile());
-	conf_install->SetRecordDefaults(false);
-
-	App_SaveInstallSettings( conf_install.get() );*/
-}
-
 void AppSaveSettings()
 {
 	// If multiple SaveSettings messages are requested, we want to ignore most of them.
@@ -1415,7 +1385,6 @@ void AppSaveSettings()
 
 	SaveUiSettings();
 	SaveVmSettings();
-	SaveRegSettings(); // save register because of PluginsFolder change
 
 	isPosted = false;
 }

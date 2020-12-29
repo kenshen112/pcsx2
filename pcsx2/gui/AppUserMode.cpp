@@ -188,12 +188,11 @@ bool Pcsx2App::Load(fs::path fileName)
 			std::ostringstream os;
 			os << stream;
 			data = os.str();
-			std::cout << "PORTABLE: " << data << std::endl;
 			return true;
 		}
 		catch (const std::exception& e)
 		{
-			std::cerr << "ERROR: " << e.what() << std::endl;
+			DevCon.Warning("ERROR: ", e.what());
 			data = "";
 			return false;
 		}
@@ -202,12 +201,10 @@ bool Pcsx2App::Load(fs::path fileName)
 	{
 		return false;
 	}
-	
 }
 
 YAML::Node Pcsx2App::Save(fs::path fileName)
 {
-
 	if (!folderUtils.DoesExist(fileName.parent_path().make_preferred()))
 	{
 		folderUtils.CreateFolder(fileName.parent_path().make_preferred());
@@ -221,7 +218,7 @@ YAML::Node Pcsx2App::Save(fs::path fileName)
 		}
 		catch (const std::exception& e)
 		{
-			std::cerr << "ERROR: " << e.what() << std::endl;
+			DevCon.Warning("ERROR: ", e.what());
 		}
 	}
 	std::ofstream fout(fileName.make_preferred());
@@ -266,8 +263,6 @@ bool Pcsx2App::OpenInstallSettingsFile()
 	usermodePath = Path::Combine(usrlocaldir, usermodeFile); 
 
 	CustomDocumentsFolder = PathDefs::AppRoot();
-
-	std::cout << "USERMODE: " << usermodePath << std::endl;
 
 	// Install Mode, genereate a new stream and manually write data to new file if it doesn't.
  	stream["DocumentsFolderMode"] = (int)DocsFolderMode;
@@ -327,8 +322,6 @@ void Pcsx2App::EstablishAppUserMode()
 	DoFirstTimeWizard();
 
 	// Save user's new settings
-	//App_SaveInstallSettings( newYaml );
 	AppConfig_OnChangedSettingsFolder(true);
 	AppSaveSettings();
-
 }

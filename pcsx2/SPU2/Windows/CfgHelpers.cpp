@@ -69,7 +69,7 @@ void CfgSetSettingsDir(const char* dir)
 }
 
 
-/*| Config File Format: |����������������������*\
+/*| Config File Format: |*\
 +--+---------------------+------------------------+
 |												  |
 | Option=Value									  |

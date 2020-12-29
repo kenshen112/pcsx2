@@ -24,7 +24,6 @@
 
 std::ifstream AppGameDatabase::getFileAsStream(const wxString& file)
 {
-// TODO - config - refactor with std::filesystem/ghc::filesystem
 #ifdef _WIN32
 	return std::ifstream(file.wc_str());
 #else
@@ -34,8 +33,6 @@ std::ifstream AppGameDatabase::getFileAsStream(const wxString& file)
 
 AppGameDatabase& AppGameDatabase::LoadFromFile(const wxString& _file)
 {
-	// TODO - config - refactor with std::filesystem/ghc::filesystem
-
 	fs::path file(_file.ToStdWstring());
 	if (file.is_relative())
 	{
