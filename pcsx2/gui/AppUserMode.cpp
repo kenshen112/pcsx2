@@ -34,6 +34,7 @@ bool 					runWizard  = false;
 std::vector<std::string> ErrorFolders;
 
 std::string data;
+std::string usermodePath;
 
 fs::path CustomDocumentsFolder;
 fs::path SettingsFolder;
@@ -165,13 +166,15 @@ void Pcsx2App::WipeUserModeSettings()
 		// Remove the portable file entry "RunWizard" conforming to this instance of PCSX2.
 		std::string portableYamlFile(GetPortableYamlPath());
 		bool test = Load(portableYamlFile);
-		stream["RunWizard"] = false;
+		stream["RunWizard"] = true;
+		Save(portableYamlFile);
 	}
 	else
 	{
 		// Remove the registry entry "RunWizard" conforming to this instance of PCSX2.
 		bool conf_install = OpenInstallSettingsFile();
-		stream["RunWizard"] = false;
+		stream["RunWizard"] = true;
+		Save(usermodePath);
 	}
 }
 
@@ -260,7 +263,7 @@ bool Pcsx2App::OpenInstallSettingsFile()
 	InstallFolder = (wxFileName(wxStandardPaths::Get().GetExecutablePath())).GetPath().ToStdString();
 
 	std::string usermodeFile = (GetAppName().ToStdString() + "-reg.yaml");
-	std::string usermodePath = Path::Combine(usrlocaldir, usermodeFile); 
+	usermodePath = Path::Combine(usrlocaldir, usermodeFile); 
 
 	CustomDocumentsFolder = PathDefs::AppRoot();
 
