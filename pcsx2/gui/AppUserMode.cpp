@@ -304,8 +304,6 @@ void Pcsx2App::EstablishAppUserMode()
 	{
 		bool runWizard = stream["RunWizard"].as<bool>();
 
-		//App_LoadInstallSettings( newYaml );
-
 		if (!Startup.ForceWizard && !runWizard)
 		{
 			AppConfig_OnChangedSettingsFolder(false);
