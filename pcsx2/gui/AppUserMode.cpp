@@ -29,7 +29,7 @@
 DocsModeType			DocsFolderMode = DocsFolder_User;
 bool					UseDefaultSettingsFolder = true;
 bool					UseDefaultPluginsFolder = true;
-bool 					runWizard  = false;
+bool 					runWizard  = true; // This should default to true unless the stream says otherwise. If this doesn't get flipped somethings wrong and setup required
 
 std::vector<std::string> ErrorFolders;
 
@@ -110,6 +110,24 @@ bool Pcsx2App::TestUserPermissionsRights(const std::string& testFolder)
 	}
 }
 
+static void DoFirstTimeWizard()
+{
+	// first time startup, so give the user the choice of user mode:
+	while (true)
+	{
+		// PCSX2's FTWizard allows improptu restarting of the wizard without cancellation.
+		// This is typically used to change the user's language selection.
+
+		FirstTimeWizard wiz(NULL);
+		if (wiz.RunWizard(wiz.GetFirstPage()))
+			break;
+		if (wiz.GetReturnCode() != pxID_RestartWizard)
+			throw Exception::StartupAborted(L"User canceled FirstTime Wizard.");
+
+		Console.WriteLn(Color_StrongBlack, "Restarting First Time Wizard!");
+	}
+}
+
 // Portable installations are assumed to be run in either administrator rights mode, or run
 // from "insecure media" such as a removable flash drive.  In these cases, the default path for
 // PCSX2 user documents becomes ".", which is the current working directory.
@@ -147,10 +165,24 @@ bool Pcsx2App::TestForPortableInstall()
 
 		// Success -- all user-based folders have write access.  PCSX2 should be able to run error-free!
 		// Force-set the custom documents mode, and set the
-
+		runWizard = stream["RunWizard"].as<bool>();
 		InstallationMode = InstallMode_Portable;
 		DocsFolderMode = DocsFolder_Custom;
 		CustomDocumentsFolder = portableDocsFolder;
+
+
+	    //  Run the First Time Wizard!
+		// ----------------------------
+		// Wizard is only run once.  The status of the wizard having been run is stored in
+		// the installation yaml file, which can be either the portable install (useful for admins)
+		// or the registry/user local documents position.		
+		if (runWizard == true)
+		{
+			DoFirstTimeWizard();	
+			stream["RunWizard"] = false;	
+			Save(GetPortableYamlPath());
+		}
+		
 		return isPortable;
 	}
 	else
@@ -227,24 +259,6 @@ YAML::Node Pcsx2App::Save(fs::path fileName)
 	return stream;
 }
 
-static void DoFirstTimeWizard()
-{
-	// first time startup, so give the user the choice of user mode:
-	while(true)
-	{
-		// PCSX2's FTWizard allows improptu restarting of the wizard without cancellation.
-		// This is typically used to change the user's language selection.
-
-		FirstTimeWizard wiz( NULL );
-		if (wiz.RunWizard(wiz.GetFirstPage()))
-			break;
-		if (wiz.GetReturnCode() != pxID_RestartWizard)
-			throw Exception::StartupAborted( L"User canceled FirstTime Wizard." );
-
-		Console.WriteLn( Color_StrongBlack, "Restarting First Time Wizard!" );
-	}
-}
-
 bool Pcsx2App::OpenInstallSettingsFile()
 {
 	// Implementation Notes:
@@ -274,10 +288,17 @@ bool Pcsx2App::OpenInstallSettingsFile()
 		stream["Install_Dir"] = InstallFolder;
 		stream["RunWizard"] = false;
 		Save(usermodePath);
+		DoFirstTimeWizard();
 	}
 	else
 	{
 		Load(usermodePath);
+		if (stream["RunWizard"].as<bool>())
+		{
+			DoFirstTimeWizard(); // covering the case the file was edited to true manually
+			stream["RunWizard"] = false;
+			Save(usermodePath);
+		}
 	}
 
 	return true;
@@ -301,32 +322,13 @@ void Pcsx2App::EstablishAppUserMode()
 
 	if (!conf_install)
 		conf_install = OpenInstallSettingsFile();
-	
-	bool runWizard = stream["RunWizard"].as<bool>();
-
-	//  Run the First Time Wizard!
-	// ----------------------------
-	// Wizard is only run once.  The status of the wizard having been run is stored in
-	// the installation yaml file, which can be either the portable install (useful for admins)
-	// or the registry/user local documents position.
-	if (InstallationMode == InstallationModeType::InstallMode_Portable)
+			
+	if (!Startup.ForceWizard && !runWizard)
 	{
-		if (!Startup.ForceWizard && !runWizard)
-		{
-			AppConfig_OnChangedSettingsFolder(false);
-			return;
-		}
-
-	// Wizard completed successfully, so let's not torture the user with this crap again!
-	// TODO - stawp	
-		stream["RunWizard"] = false;	
-		Save(GetPortableYamlPath());
+		AppConfig_OnChangedSettingsFolder(false);
+		return;
 	}
 
-	if (runWizard)
-	{
-		DoFirstTimeWizard();
-	}
 	// Save user's new settings
 	AppConfig_OnChangedSettingsFolder(true);
 	AppSaveSettings();
