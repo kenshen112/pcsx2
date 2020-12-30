@@ -299,6 +299,14 @@ bool Pcsx2App::OpenInstallSettingsFile()
 			stream["RunWizard"] = false;
 			Save(usermodePath);
 		}
+
+		DocsFolderMode = (DocsModeType)stream["DocumentsFolderMode"].as<int>();
+		CustomDocumentsFolder = stream["CustomDocumentsFolder"].as<std::string>();
+		UseDefaultSettingsFolder = stream["UseDefaultSettingsFolder"].as<bool>();
+		SettingsFolder = stream["SettingsFolder"].as<std::string>();
+		InstallFolder = stream["Install_Dir"].as<std::string>();
+
+
 	}
 
 	return true;
