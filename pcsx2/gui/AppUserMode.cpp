@@ -180,7 +180,11 @@ bool Pcsx2App::TestForPortableInstall()
 		{
 			DoFirstTimeWizard();	
 			stream["RunWizard"] = false;	
-			Save(GetPortableYamlPath());
+			Save(GetPortableYamlPath()); // Save Portable Yaml
+			
+			// Save user's new general settings
+			AppConfig_OnChangedSettingsFolder(true);
+			AppSaveSettings();
 		}
 		
 		return isPortable;
@@ -289,6 +293,9 @@ bool Pcsx2App::OpenInstallSettingsFile()
 		stream["RunWizard"] = false;
 		Save(usermodePath);
 		DoFirstTimeWizard();
+		// Save user's new settings
+		AppConfig_OnChangedSettingsFolder(true);
+		AppSaveSettings();
 	}
 	else
 	{
@@ -305,10 +312,7 @@ bool Pcsx2App::OpenInstallSettingsFile()
 		UseDefaultSettingsFolder = stream["UseDefaultSettingsFolder"].as<bool>();
 		SettingsFolder = stream["SettingsFolder"].as<std::string>();
 		InstallFolder = stream["Install_Dir"].as<std::string>();
-
-
 	}
-
 	return true;
 }
 
@@ -330,14 +334,12 @@ void Pcsx2App::EstablishAppUserMode()
 
 	if (!conf_install)
 		conf_install = OpenInstallSettingsFile();
-			
-	if (!Startup.ForceWizard && !runWizard)
+
+	if (conf_install)
 	{
+		//No first time wizard. No save
 		AppConfig_OnChangedSettingsFolder(false);
 		return;
 	}
-
-	// Save user's new settings
-	AppConfig_OnChangedSettingsFolder(true);
-	AppSaveSettings();
+	return;
 }
