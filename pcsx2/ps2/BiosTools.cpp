@@ -295,7 +295,7 @@ void LoadBIOS()
 
 		ChecksumIt( BiosChecksum, eeMem->ROM );
 
-		pxInputStream memfp( Bios, new wxMemoryInputStream( eeMem->ROM, sizeof(eeMem->ROM) ) );
+		pxInputStream memfp( Bios.string(), new wxMemoryInputStream( eeMem->ROM, sizeof(eeMem->ROM) ) );
 		LoadBiosVersion( memfp, BiosVersion, BiosDescription, BiosRegion, biosZone );
 
 		Console.SetTitle( pxsFmt( L"Running BIOS (%s v%u.%u)",

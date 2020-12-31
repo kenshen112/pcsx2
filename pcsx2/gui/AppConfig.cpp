@@ -731,8 +731,9 @@ AppConfig::FolderOptions::FolderOptions()
 	, Logs			( PathDefs::GetLogs() )
 	, Cheats		( PathDefs::GetCheats() )
 	, CheatsWS      ( PathDefs::GetCheatsWS() )
-
-	, RunDisc	( PathDefs::GetDocuments() )
+	, RunIso(PathDefs::GetDocuments()) // raw default is always the Documents folder.
+	, RunELF(PathDefs::GetDocuments()) // raw default is always the Documents folder.
+	, RunDisc(PathDefs::GetDocuments())
 {
 	bitset = 0xffffffff;
 }
