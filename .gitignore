@@ -80,6 +80,7 @@ oprofile_data/
 /bin/bios
 /bin/dumps
 /bin/help
+/bin/settings
 /bin/inis
 /bin/logs
 /bin/memcards
@@ -115,3 +116,4 @@ oprofile_data/
 /pcsx2/windows/VCprojects/GSdx_opengl_debug_hw.txt
 /pcsx2/windows/VCprojects/GSdx_opengl_debug_sw.txt
 /out/build/x64-Debug (default)
+
