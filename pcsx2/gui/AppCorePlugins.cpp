@@ -88,8 +88,13 @@ static void PostPluginStatus(PluginEventType pevt)
 
 static void ConvertPluginFilenames(wxString (&passins)[PluginId_Count])
 {
+<<<<<<< HEAD
 	ForPlugins([&](const PluginInfo* pi) {
 		passins[pi->id] = wxGetApp().Overrides.Filenames[pi->id].GetFullPath();
+=======
+	ForPlugins([&] (const PluginInfo * pi) {
+		passins[pi->id] = wxGetApp().Overrides.Filenames[pi->id];
+>>>>>>> c0f6f1589 (core: Updated path handling to ghc::filesystem)
 
 		if (passins[pi->id].IsEmpty() || !wxFileExists(passins[pi->id]))
 			passins[pi->id] = g_Conf->FullpathTo(pi->id);
@@ -209,16 +214,26 @@ wxIMPLEMENT_DYNAMIC_CLASS(SinglePluginMethodEvent, pxActionEvent);
 
 static void _SetSettingsFolder()
 {
+<<<<<<< HEAD
 	if (wxGetApp().Rpc_TryInvoke(_SetSettingsFolder))
 		return;
 	CorePlugins.SetSettingsFolder(GetSettingsFolder().ToString());
+=======
+	if (wxGetApp().Rpc_TryInvoke( _SetSettingsFolder )) return;
+	CorePlugins.SetSettingsFolder( GetSettingsFolder().string() );
+>>>>>>> c0f6f1589 (core: Updated path handling to ghc::filesystem)
 }
 
 static void _SetLogFolder()
 {
+<<<<<<< HEAD
 	if (wxGetApp().Rpc_TryInvoke(_SetLogFolder))
 		return;
 	CorePlugins.SetLogFolder(GetLogFolder().ToString());
+=======
+	if (wxGetApp().Rpc_TryInvoke( _SetLogFolder )) return;
+	CorePlugins.SetLogFolder( GetLogFolder().string() );
+>>>>>>> c0f6f1589 (core: Updated path handling to ghc::filesystem)
 }
 
 void AppCorePlugins::Load(PluginsEnum_t pid, const wxString& srcfile)
@@ -342,8 +357,13 @@ void AppCorePlugins::Open()
 {
 	AffinityAssert_AllowFrom_CoreThread();
 
+<<<<<<< HEAD
 	SetLogFolder(GetLogFolder().ToString());
 	SetSettingsFolder(GetSettingsFolder().ToString());
+=======
+    SetLogFolder( GetLogFolder().string() );
+	SetSettingsFolder( GetSettingsFolder().string() );
+>>>>>>> c0f6f1589 (core: Updated path handling to ghc::filesystem)
 
 	if (!NeedsOpen())
 		return;
@@ -448,7 +468,7 @@ int EnumeratePluginsInFolder(const wxDirName& searchpath, wxArrayString* dest)
 
 	for (uint i = 0; i < realdest->GetCount(); ++i)
 	{
-		(*realdest)[i] = Path::MakeAbsolute((*realdest)[i]);
+		(*realdest)[i] = Path::MakeAbsolute((*realdest)[i].ToStdString());
 	}
 
 	return realdest->GetCount();

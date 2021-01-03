@@ -424,7 +424,7 @@ wxString InputRecording::resolveGameName()
 			}
 		}
 	}
-	return !gameName.IsEmpty() ? gameName : (wxString)Path::GetFilename(g_Conf->CurrentIso);
+	return !gameName.IsEmpty() ? gameName : (wxString)Path::GetFilename(g_Conf->CurrentIso.ToStdString());
 }
 
 #endif
