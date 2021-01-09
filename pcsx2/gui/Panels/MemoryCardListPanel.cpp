@@ -123,9 +123,9 @@ bool EnumerateMemoryCard(McdSlotItem& dest, const wxFileName& filename, const wx
 	}
 
 	dest.IsPresent		= true;
-	dest.Filename		= filename.GetFullPath().ToStdString();
+	dest.Filename		= filename;
 	if( filename.GetFullPath() == (basePath+filename.GetFullName()).GetFullPath() )
-		dest.Filename = filename.GetFullName().ToStdWstring();
+		dest.Filename = filename.GetFullName();
 	
 	return true;
 }
@@ -733,8 +733,6 @@ void Panels::MemoryCardListPanel_Simple::UiDeleteCard(McdSlotItem& card)
 	
 		wxFileName fullpath( m_FolderPicker->GetPath() + card.Filename.wstring());
 
-		wxFileName fullpath(m_FolderPicker->GetPath() + card.Filename.GetFullName());
-
 		card.IsEnabled = false;
 		Apply();
 
@@ -785,37 +783,23 @@ bool Panels::MemoryCardListPanel_Simple::UiDuplicateCard(McdSlotItem& src, McdSl
 		wxString errMsg;
 		if (!isValidNewFilename(newFilename, basepath, errMsg, 5))
 		{
-			wxString newFilename=L"";
-			newFilename = wxGetTextFromUser(_("Select a name for the duplicate\n( '.ps2' will be added automatically)"), _("Duplicate memory card"));
-			if( newFilename==L"" )
-			{
-				//Msgbox::Alert( _("Duplicate canceled"), _("Duplicate memory card") );
-				return false;
-			}
-			newFilename += L".ps2";
-
-			//check that the name is valid for a new file
-			wxString errMsg;
-			if( !isValidNewFilename( newFilename, basepath, errMsg, 5 ) )
-			{
-				wxString message;
-				message.Printf(_("Failed: %s"), WX_STR(errMsg));
-				Msgbox::Alert( message, _("Duplicate memory card") );
-				continue;
-			}
+			wxString message;
+			message.Printf(_("Failed: %s"), WX_STR(errMsg));
+			Msgbox::Alert(message, _("Duplicate memory card"));
+			continue;
+		}
 
 			dest.Filename = newFilename.ToStdString();
 			break;
 		}
 
-		dest.Filename = newFilename;
-		break;
-	}
+	wxFileName srcfile(basepath + src.Filename);
+	wxFileName destfile(basepath + dest.Filename);
 
 		wxFileName srcfile( basepath + src.Filename.wstring());
 		wxFileName destfile( basepath + dest.Filename.wstring());
 
-	ScopedBusyCursor doh(Cursor_ReallyBusy);
+		ScopedBusyCursor doh( Cursor_ReallyBusy );
 
 		if( !(    ( srcfile.FileExists() && wxCopyFile( srcfile.GetFullPath(), destfile.GetFullPath(), true ) )
 			   || ( !srcfile.FileExists() && CopyDirectory( srcfile.GetFullPath(), destfile.GetFullPath() ) ) ) )

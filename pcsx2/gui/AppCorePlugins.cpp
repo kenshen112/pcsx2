@@ -210,13 +210,13 @@ wxIMPLEMENT_DYNAMIC_CLASS(SinglePluginMethodEvent, pxActionEvent);
 static void _SetSettingsFolder()
 {
 	if (wxGetApp().Rpc_TryInvoke( _SetSettingsFolder )) return;
-	CorePlugins.SetSettingsFolder( GetSettingsFolder().string() );
+	CorePlugins.SetSettingsFolder( Path::wxConvert(GetSettingsFolder()) );
 }
 
 static void _SetLogFolder()
 {
 	if (wxGetApp().Rpc_TryInvoke( _SetLogFolder )) return;
-	CorePlugins.SetLogFolder( GetLogFolder().string() );
+	CorePlugins.SetLogFolder( Path::wxConvert(GetLogFolder()) );
 }
 
 void AppCorePlugins::Load(PluginsEnum_t pid, const wxString& srcfile)
@@ -339,8 +339,9 @@ void AppCorePlugins::Close()
 void AppCorePlugins::Open()
 {
 	AffinityAssert_AllowFrom_CoreThread();
-	SetLogFolder( GetLogFolder().string() );
-	SetSettingsFolder( GetSettingsFolder().string() );
+
+	SetLogFolder( Path::wxConvert(GetLogFolder()) );
+	SetSettingsFolder( Path::wxConvert(GetSettingsFolder()) );
 
 	if (!NeedsOpen())
 		return;
