@@ -733,11 +733,11 @@ void AppApplySettings( const AppConfig* oldconf )
 	// Ensure existence of necessary documents folders.
 	// Other parts of PCSX2 rely on them.
 
-	folderUtils.CreateFolder(g_Conf->Folders.MemoryCards);
-	folderUtils.CreateFolder(g_Conf->Folders.Savestates);
-	folderUtils.CreateFolder(g_Conf->Folders.Snapshots);
-	folderUtils.CreateFolder(g_Conf->Folders.Cheats);
-	folderUtils.CreateFolder(g_Conf->Folders.CheatsWS);
+	fs::create_directories(g_Conf->Folders.MemoryCards);
+	fs::create_directories(g_Conf->Folders.Savestates);
+	fs::create_directories(g_Conf->Folders.Snapshots);
+	fs::create_directories(g_Conf->Folders.Cheats);
+	fs::create_directories(g_Conf->Folders.CheatsWS);
 
 
 	g_Conf->EmuOptions.BiosFilename = g_Conf->FullpathToBios();
@@ -754,7 +754,7 @@ void AppApplySettings( const AppConfig* oldconf )
 	// Memcards generally compress very well via NTFS compression.
 
 	#ifdef __WXMSW__
-	NTFS_CompressFile( g_Conf->Folders.MemoryCards.string(), g_Conf->McdCompressNTFS );
+	NTFS_CompressFile( Path::ToWxString(g_Conf->Folders.MemoryCards), g_Conf->McdCompressNTFS );
 	#endif
 	sApp.DispatchEvent( AppStatus_SettingsApplied );
 

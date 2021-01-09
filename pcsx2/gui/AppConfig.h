@@ -63,7 +63,6 @@ extern fs::path		CustomDocumentsFolder;		// allows the specification of a custom
 extern fs::path		SettingsFolder;				// dictates where the settings folder comes from, *if* UseDefaultSettingsFolder is FALSE.
 
 extern std::string		InstallFolder;
-extern FolderUtils      folderUtils;
 
 extern fs::path  GetSettingsFolder();
 extern fs::path  GetVmSettingsFilename();

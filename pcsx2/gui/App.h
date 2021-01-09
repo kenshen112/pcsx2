@@ -399,7 +399,7 @@ public:
 
 	bool HasSettingsOverride() const
 	{
-		return folderUtils.DoesExist(SettingsFolder) || VmSettingsFile.IsOk();
+		return Path::DoesExist(SettingsFolder) || VmSettingsFile.IsOk();
 	}
 
 };
