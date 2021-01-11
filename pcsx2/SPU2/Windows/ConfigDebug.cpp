@@ -65,17 +65,17 @@ void CfgSetLogDir(const char* dir)
 
 FILE* OpenBinaryLog(const std::string& logfile)
 {
-	return wxFopen(Path::wxConvert(Path::Combine(LogsFolder.string(), logfile)), L"wb");
+	return wxFopen(Path::ToWxString(Path::Combine(LogsFolder.string(), logfile)), L"wb");
 }
 
 FILE* OpenLog(const std::string& logfile)
 {
-	return wxFopen(Path::wxConvert(Path::Combine(LogsFolder.string(), logfile)), L"w");
+	return wxFopen(Path::ToWxString(Path::Combine(LogsFolder.string(), logfile)), L"w");
 }
 
 FILE* OpenDump(const std::string& logfile)
 {
-	return wxFopen(Path::wxConvert(Path::Combine(DumpsFolder.string(), logfile)), L"w");
+	return wxFopen(Path::ToWxString(Path::Combine(DumpsFolder.string(), logfile)), L"w");
 }
 
 namespace DebugConfig

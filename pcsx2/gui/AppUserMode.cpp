@@ -43,8 +43,6 @@ std::string InstallFolder;
 fs::path PluginsFolder;
 
 YAML::Node stream;
-FolderUtils folderUtils;
-
 
 const std::string PermissionFolders[] =
 {
@@ -85,9 +83,9 @@ bool Pcsx2App::TestUserPermissionsRights(const std::string& testFolder)
 	{
 		fs::path folder = Path::Combine(testFolder, PermissionFolders[i]);
 
-		if (!folderUtils.DoesExist(folder))
+		if (!Path::DoesExist(folder))
 		{
-			if (!folderUtils.CreateFolder(folder))
+			if (!Path::CreateFolder(folder))
 			{
 				ErrorFolders.push_back(folder);
 			}
@@ -150,7 +148,7 @@ bool Pcsx2App::TestForPortableInstall()
 			Console.WriteLn(L"(UserMode) Portable mode requested via commandline switch!");
 		else
 		{
-			wxString temp = Path::wxConvert(portableYamlFile);
+			wxString temp = Path::ToWxString(portableYamlFile);
 			Console.WriteLn(L"(UserMode) Found portable install yaml @ %s", WX_STR(temp));
 		}
 		// Just because the portable yaml file exists doesn't mean we can actually run in portable
@@ -241,9 +239,9 @@ bool Pcsx2App::Load(fs::path fileName)
 
 YAML::Node Pcsx2App::Save(fs::path fileName)
 {
-	if (!folderUtils.DoesExist(fileName.parent_path().make_preferred()))
+	if (!Path::DoesExist(fileName.parent_path().make_preferred()))
 	{
-		folderUtils.CreateFolder(fileName.parent_path().make_preferred());
+		Path::CreateFolder(fileName.parent_path().make_preferred());
 	}
 
 	if (!stream)
@@ -280,7 +278,7 @@ bool Pcsx2App::OpenInstallSettingsFile()
 	std::string usermodeFile = (GetAppName().ToStdString() + "-reg.yaml");
 	usermodePath = Path::Combine(usrlocaldir, usermodeFile); 
 
-	if (!folderUtils.DoesExist(usermodePath))
+	if (!Path::DoesExist(usermodePath))
 	{
 		CustomDocumentsFolder = PathDefs::AppRoot();
 

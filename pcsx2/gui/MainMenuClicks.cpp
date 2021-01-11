@@ -215,7 +215,7 @@ wxWindowID SwapOrReset_Disc(wxWindow* owner, IScopedCoreThread& core, const wxSt
 {
 	wxWindowID result = wxID_CANCEL;
 
-	if ((g_Conf->CdvdSource == CDVD_SourceType::Disc) && (driveLetter == Path::wxConvert(g_Conf->Folders.RunDisc)))
+	if ((g_Conf->CdvdSource == CDVD_SourceType::Disc) && (driveLetter == Path::ToWxString(g_Conf->Folders.RunDisc)))
 	{
 		core.AllowResume();
 		return result;
@@ -355,7 +355,7 @@ bool MainEmuFrame::_DoSelectIsoBrowser(wxString& result)
 	isoFilterTypes.Add(_("All Files (*.*)"));
 	isoFilterTypes.Add(L"*.*");
 
-	wxFileDialog ctrl(this, _("Select disc image, compressed disc image, or block-dump..."), Path::wxConvert(g_Conf->Folders.RunIso), wxEmptyString,
+	wxFileDialog ctrl(this, _("Select disc image, compressed disc image, or block-dump..."), Path::ToWxString(g_Conf->Folders.RunIso), wxEmptyString,
 					  JoinString(isoFilterTypes, L"|"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
 	if (ctrl.ShowModal() != wxID_CANCEL)
@@ -372,7 +372,7 @@ bool MainEmuFrame::_DoSelectELFBrowser()
 {
 	static const wxChar* elfFilterType = L"ELF Files (.elf)|*.elf;*.ELF";
 
-	wxFileDialog ctrl(this, _("Select ELF file..."), Path::wxConvert(g_Conf->Folders.RunELF), wxEmptyString,
+	wxFileDialog ctrl(this, _("Select ELF file..."), Path::ToWxString(g_Conf->Folders.RunELF), wxEmptyString,
 					  (wxString)elfFilterType + L"|" + _("All Files (*.*)") + L"|*.*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
 	if (ctrl.ShowModal() != wxID_CANCEL)
@@ -935,7 +935,7 @@ void MainEmuFrame::Menu_Capture_Screenshot_Screenshot_As_Click(wxCommandEvent &e
 	if (!wasPaused)
 		CoreThread.Pause();
 
-	wxFileDialog fileDialog(this, _("Select a file"), Path::wxConvert(g_Conf->Folders.Snapshots), wxEmptyString, "PNG files (*.png)|*.png", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+	wxFileDialog fileDialog(this, _("Select a file"), Path::ToWxString(g_Conf->Folders.Snapshots), wxEmptyString, "PNG files (*.png)|*.png", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
 	if (fileDialog.ShowModal() == wxID_OK)
 		GSmakeSnapshot(fileDialog.GetPath().c_str());

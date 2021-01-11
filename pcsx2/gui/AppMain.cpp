@@ -850,11 +850,11 @@ void AppApplySettings( const AppConfig* oldconf )
 	// Ensure existence of necessary documents folders.  Plugins and other parts
 	// of PCSX2 rely on them.
 
-	folderUtils.CreateFolder(g_Conf->Folders.MemoryCards);
-	folderUtils.CreateFolder(g_Conf->Folders.Savestates);
-	folderUtils.CreateFolder(g_Conf->Folders.Snapshots);
-	folderUtils.CreateFolder(g_Conf->Folders.Cheats);
-	folderUtils.CreateFolder(g_Conf->Folders.CheatsWS);
+	Path::CreateFolder(g_Conf->Folders.MemoryCards);
+	Path::CreateFolder(g_Conf->Folders.Savestates);
+	Path::CreateFolder(g_Conf->Folders.Snapshots);
+	Path::CreateFolder(g_Conf->Folders.Cheats);
+	Path::CreateFolder(g_Conf->Folders.CheatsWS);
 	
 
 
@@ -868,13 +868,13 @@ void AppApplySettings( const AppConfig* oldconf )
 		i18n_SetLanguage( g_Conf->LanguageId, g_Conf->LanguageCode );
 	}
 	
-	CorePlugins.SetSettingsFolder( Path::wxConvert(GetSettingsFolder()) );
+	CorePlugins.SetSettingsFolder( Path::ToWxString(GetSettingsFolder()) );
 
 	// Update the compression attribute on the Memcards folder.
 	// Memcards generally compress very well via NTFS compression.
 
 	#ifdef __WXMSW__
-	NTFS_CompressFile( Path::wxConvert(g_Conf->Folders.MemoryCards), g_Conf->McdCompressNTFS );
+	NTFS_CompressFile( Path::ToWxString(g_Conf->Folders.MemoryCards), g_Conf->McdCompressNTFS );
 	#endif
 	sApp.DispatchEvent( AppStatus_SettingsApplied );
 
