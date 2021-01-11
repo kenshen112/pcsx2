@@ -1145,7 +1145,7 @@ wxFileConfig* OpenFileConfig( const wxString& filename )
 
 void RelocateLogfile()
 {
-	folderUtils.CreateFolder(g_Conf->Folders.Logs);
+	Path::CreateFolder(g_Conf->Folders.Logs);
 
 	wxString newlogname( Path::Combine( g_Conf->Folders.Logs.string(), "emuLog.txt" ) );
 
@@ -1177,8 +1177,8 @@ void RelocateLogfile()
 //
 void AppConfig_OnChangedSettingsFolder( bool overwrite )
 {
-	folderUtils.CreateFolder(PathDefs::GetDocuments());
-	folderUtils.CreateFolder(GetSettingsFolder());
+	Path::CreateFolder(PathDefs::GetDocuments());
+	Path::CreateFolder(GetSettingsFolder());
 
 	const wxString iniFilename( GetUiSettingsFilename() );
 
@@ -1303,12 +1303,12 @@ static void LoadUiSettings()
 	}
 
 #if defined(_WIN32)
-	if( !folderUtils.DoesExist(g_Conf->Folders.RunDisc.make_preferred()) )
+	if( !Path::DoesExist(g_Conf->Folders.RunDisc.make_preferred()) )
 	{
 		g_Conf->Folders.RunDisc.clear();
 	}
 #else
-	if ( !folderUtils.DoesExist(g_Conf->Folders.RunDisc.make_preferred()))
+	if ( !Path::DoesExist(g_Conf->Folders.RunDisc.make_preferred()))
 	{
 		g_Conf->Folders.RunDisc.clear();
 	}
@@ -1350,12 +1350,12 @@ static void SaveUiSettings()
 	}
 
 #if defined(_WIN32)
-	if (!folderUtils.DoesExist(g_Conf->Folders.RunDisc.make_preferred()))
+	if (!Path::DoesExist(g_Conf->Folders.RunDisc.make_preferred()))
 	{
 		g_Conf->Folders.RunDisc.clear();
 	}
 #else
-	if (!folderUtils.DoesExist(g_Conf->Folders.RunDisc.make_preferred()))
+	if (!Path::DoesExist(g_Conf->Folders.RunDisc.make_preferred()))
 	{
 		g_Conf->Folders.RunDisc.clear();
 	}
