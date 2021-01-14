@@ -115,10 +115,9 @@ namespace PathDefs
 	{
 		if (InstallationMode == InstallMode_Registered || InstallationMode == InstallMode_Portable)
 		{
-			std::wstring path = wxStandardPaths::Get().GetExecutablePath().ToStdWstring();
-			fs::path ret(path);
-			ret.make_preferred();
-			return ret.parent_path();
+			fs::path path(Path::GetExecutableDirectory());
+			path.make_preferred();
+			return path;
 		}
 		else
 			pxFail("Unimplemented user local folder mode encountered.");
@@ -763,7 +762,7 @@ void AppConfig::FilenameOptions::LoadSave( IniInterface& ini )
 	needRelativeName = ini.IsSaving() && IsPortable();
 
 	if( needRelativeName ) { 
-		wxFileName bios_filename = wxFileName( Bios.GetFullName() );
+		wxFileName bios_filename = wxFileName( Bios );
 		ini.Entry( "BIOS", bios_filename, pc );
 	} 
 	else

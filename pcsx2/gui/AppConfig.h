@@ -187,7 +187,7 @@ public:
 	struct FilenameOptions
 	{
 		std::string Bios;
-
+		bool needRelativeName;
 		void LoadSave( IniInterface& conf );
 	};
 
