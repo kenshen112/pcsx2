@@ -124,7 +124,7 @@ namespace PathDefs
 		{
 			fs::path path(Path::GetExecutableDirectory());
 			path.make_preferred();
-			return path.parent_path();
+			return path;
 		}
 		else
 			pxFail("Unimplemented user local folder mode encountered.");
