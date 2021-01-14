@@ -283,7 +283,7 @@ void FileMemoryCard::Open()
 				continue;
 		}
 
-		wxFileName fname(g_Conf->FullpathToMcd(slot));
+		wxFileName fname(Path::ToWxString(g_Conf->FullpathToMcd(slot)));
 		wxString str(fname.GetFullPath());
 		bool cont = false;
 

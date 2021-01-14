@@ -132,7 +132,11 @@ void Panels::BiosSelectorPanel::Apply()
 			) );
 	}
 
-	g_Conf->BaseFilenames.Bios = (*m_BiosList)[(sptr)m_ComboBox->GetClientData(sel)];
+#ifdef _WIN32
+	g_Conf->BaseFilenames.Bios = fs::path((*m_BiosList)[(sptr)m_ComboBox->GetClientData(sel)].ToStdWstring());
+#else
+	g_Conf->BaseFilenames.Bios = fs::path((*m_BiosList)[(sptr)m_ComboBox->GetClientData(sel)].ToStdString());
+#endif
 }
 
 void Panels::BiosSelectorPanel::AppStatusEvent_OnSettingsApplied()
@@ -168,7 +172,7 @@ void Panels::BiosSelectorPanel::DoRefresh()
 
 	m_ComboBox->Clear();
 
-	const wxFileName right(g_Conf->FullpathToBios());
+	const wxFileName right(Path::ToWxString(g_Conf->FullpathToBios()));
 	bool biosSet = false;
 
 	for(size_t i=0; i<m_BiosList->GetCount(); ++i)

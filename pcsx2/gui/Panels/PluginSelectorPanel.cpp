@@ -470,7 +470,11 @@ void Panels::PluginSelectorPanel::Apply()
 				.SetUserMsg(pxsFmt( _("Please select a valid plugin for the %s."), WX_STR(plugname) ) + L"\n\n" + GetApplyFailedMsg() );
 		}
 
-		g_Conf->BaseFilenames.Plugins[pid] = GetFilename((uptr)m_ComponentBoxes->Get(pid).GetClientData(sel));
+#ifdef _WIN32
+		g_Conf->BaseFilenames.Plugins[pid] = fs::path(GetFilename((uptr)m_ComponentBoxes->Get(pid).GetClientData(sel)).ToStdWstring());
+#else
+		g_Conf->BaseFilenames.Plugins[pid] = fs::path(GetFilename((uptr)m_ComponentBoxes->Get(pid).GetClientData(sel)).ToStdString());
+#endif
 	});
 
 	// ----------------------------------------------------------------------------
@@ -640,7 +644,7 @@ void Panels::PluginSelectorPanel::OnConfigure_Clicked( wxCommandEvent& evt )
 		ScopedCoreThreadPause paused_core( new SysExecEvent_SaveSinglePlugin(pid) );
 		if (!CorePlugins.AreLoaded())
 		{
-			CorePlugins.Load(pid, filename);
+			CorePlugins.Load(pid, filename.ToStdWstring());
 			CorePlugins.SendLogFolder();
 			CorePlugins.SendSettingsFolder();
 			configfunc();
