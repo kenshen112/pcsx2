@@ -740,7 +740,7 @@ void AppApplySettings( const AppConfig* oldconf )
 	fs::create_directories(g_Conf->Folders.CheatsWS);
 
 
-	g_Conf->EmuOptions.BiosFilename = g_Conf->FullpathToBios();
+	g_Conf->EmuOptions.BiosFilename = Path::ToWxString(g_Conf->FullpathToBios());
 
 	RelocateLogfile();
 
