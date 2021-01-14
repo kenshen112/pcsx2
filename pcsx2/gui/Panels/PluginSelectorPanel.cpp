@@ -470,11 +470,8 @@ void Panels::PluginSelectorPanel::Apply()
 				.SetUserMsg(pxsFmt( _("Please select a valid plugin for the %s."), WX_STR(plugname) ) + L"\n\n" + GetApplyFailedMsg() );
 		}
 
-#ifdef _WIN32
 		g_Conf->BaseFilenames.Plugins[pid] = fs::path(GetFilename((uptr)m_ComponentBoxes->Get(pid).GetClientData(sel)).ToStdWstring());
-#else
-		g_Conf->BaseFilenames.Plugins[pid] = fs::path(GetFilename((uptr)m_ComponentBoxes->Get(pid).GetClientData(sel)).ToStdString());
-#endif
+
 	});
 
 	// ----------------------------------------------------------------------------

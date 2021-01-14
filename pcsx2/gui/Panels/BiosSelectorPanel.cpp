@@ -132,11 +132,7 @@ void Panels::BiosSelectorPanel::Apply()
 			) );
 	}
 
-#ifdef _WIN32
 	g_Conf->BaseFilenames.Bios = fs::path((*m_BiosList)[(sptr)m_ComboBox->GetClientData(sel)].ToStdWstring());
-#else
-	g_Conf->BaseFilenames.Bios = fs::path((*m_BiosList)[(sptr)m_ComboBox->GetClientData(sel)].ToStdString());
-#endif
 }
 
 void Panels::BiosSelectorPanel::AppStatusEvent_OnSettingsApplied()
