@@ -401,7 +401,7 @@ void MainEmuFrame::_DoBootCdvd()
 
 	if (g_Conf->CdvdSource == CDVD_SourceType::Iso)
 	{
-		bool selector = g_Conf->CurrentIso.IsEmpty();
+		bool selector = g_Conf->CurrentIso.empty();
 
 		if (!selector && !wxFileExists(g_Conf->CurrentIso))
 		{

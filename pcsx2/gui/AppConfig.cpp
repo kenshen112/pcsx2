@@ -962,24 +962,24 @@ void AppConfig::FramerateOptions::LoadSave( IniInterface& ini )
 
 AppConfig::UiTemplateOptions::UiTemplateOptions()
 {
-	LimiterUnlimited	= L"Max";
-	LimiterTurbo		= L"Turbo";
-	LimiterSlowmo		= L"Slowmo";
-	LimiterNormal		= L"Normal";
-	OutputFrame			= L"Frame";
-	OutputField			= L"Field";
-	OutputProgressive	= L"Progressive";
-	OutputInterlaced	= L"Interlaced";
-	Paused				= L"<PAUSED> ";
-	TitleTemplate		= L"Slot: ${slot} | Speed: ${speed} (${vfps}) | ${videomode} | Limiter: ${limiter} | ${gsdx} | ${omodei} | ${cpuusage}";
+	LimiterUnlimited	= "Max";
+	LimiterTurbo		= "Turbo";
+	LimiterSlowmo		= "Slowmo";
+	LimiterNormal		= "Normal";
+	OutputFrame			= "Frame";
+	OutputField			= "Field";
+	OutputProgressive	= "Progressive";
+	OutputInterlaced	= "Interlaced";
+	Paused				= "<PAUSED> ";
+	TitleTemplate		= "Slot: ${slot} | Speed: ${speed} (${vfps}) | ${videomode} | Limiter: ${limiter} | ${gsdx} | ${omodei} | ${cpuusage}";
 #ifndef DISABLE_RECORDING
-	RecordingTemplate	= L"Slot: ${slot} | Frame: ${frame}/${maxFrame} | Rec. Mode: ${mode} | Speed: ${speed} (${vfps}) | Limiter: ${limiter}";
+	RecordingTemplate	= "Slot: ${slot} | Frame: ${frame}/${maxFrame} | Rec. Mode: ${mode} | Speed: ${speed} (${vfps}) | Limiter: ${limiter}";
 #endif
 }
 
 void AppConfig::UiTemplateOptions::LoadSave(IniInterface& ini)
 {
-	ScopedIniGroup path(ini, L"UiTemplates");
+	ScopedIniGroup path(ini, "UiTemplates");
 
 	IniEntry(LimiterUnlimited);
 	IniEntry(LimiterTurbo);
@@ -1333,22 +1333,15 @@ void AppLoadSettings()
 
 static void SaveUiSettings()
 {	
-	if( !wxFile::Exists( g_Conf->CurrentIso ) )
+	if(!Path::DoesExist( g_Conf->CurrentIso ))
 	{
 		g_Conf->CurrentIso.clear();
 	}
 
-#if defined(_WIN32)
-	if (!Path::DoesExist(g_Conf->Folders.RunDisc.make_preferred()))
+	if (!Path::DoesExist(g_Conf->Folders.RunDisc))
 	{
 		g_Conf->Folders.RunDisc.clear();
 	}
-#else
-	if (!Path::DoesExist(g_Conf->Folders.RunDisc.make_preferred()))
-	{
-		g_Conf->Folders.RunDisc.clear();
-	}
-#endif
 
 	sApp.GetRecentIsoManager().Add( g_Conf->CurrentIso );
 
