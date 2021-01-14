@@ -378,7 +378,6 @@ public:
 
 	fs::path FullpathToBios() const;
 	fs::path FullpathToMcd( uint slot ) const;
-
 	void LoadSave( IniInterface& ini );
 	void LoadSaveRootItems( IniInterface& ini );
 	void LoadSaveMemcards( IniInterface& ini );
