@@ -206,7 +206,8 @@ s32 DEV9open(void* pDsp)
 
 	if (hddPath.is_relative())
 	{
-		ghc::filesystem::path path(GetSettingsFolder().ToString().wx_str());
+		//GHC uses UTF8 on all platforms
+		fs::path path = GetSettingsFolder();
 		hddPath = path / hddPath;
 	}
 
@@ -1097,7 +1098,7 @@ void ApplyConfigIfRunning(Config oldConfig)
 	if (hddPath.is_relative())
 	{
 		//GHC uses UTF8 on all platforms
-		ghc::filesystem::path path(GetSettingsFolder().ToString().wx_str());
+		ghc::filesystem::path path(GetSettingsFolder());
 		hddPath = path / hddPath;
 	}
 
