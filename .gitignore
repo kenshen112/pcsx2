@@ -78,7 +78,6 @@ oprofile_data/
 /bin/PCSX2-linux.sh
 /bin/GS*.txt
 /bin/GSdx*.txt
-/bin/portable.yaml
 /bin/bios
 /bin/dumps
 /bin/help
