@@ -428,7 +428,7 @@ class Pcsx2StandardPaths : public wxStandardPaths
 public:
 	wxString GetResourcesDir() const
 	{
-		return Path::Combine( Path::FromWxString(GetDataDir()), "Langs" );
+		return Path::ToWxString(Path::Combine( Path::FromWxString(GetDataDir()), "Langs" ));
 	}
 
 #ifdef __POSIX__
