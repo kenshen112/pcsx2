@@ -161,7 +161,7 @@ namespace PathDefs
 	fs::path GetProgramDataDir()
 	{
 #ifdef __APPLE__
-		return wxDirName(wxStandardPaths::Get().GetResourcesDir());
+		return Path::FromWxString(wxStandardPaths::Get().GetResourcesDir());
 #elif !defined(GAMEINDEX_DIR_COMPILATION)
 		return AppRoot();
 #else
