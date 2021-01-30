@@ -94,7 +94,7 @@ int hEeprom;
 int mapping;
 #endif
 
-std::string s_strIniPath = "inis";
+std::string s_strIniPath = "settings";
 std::string s_strLogPath = "logs";
 
 s32 DEV9init()
@@ -1068,7 +1068,7 @@ void DEV9setSettingsDir(const char* dir)
 {
 	// Grab the ini directory.
 	// TODO: Use
-	s_strIniPath = (dir == NULL) ? "inis" : dir;
+	s_strIniPath = (dir == NULL) ? "settings" : dir;
 }
 
 void DEV9setLogDir(const char* dir)
