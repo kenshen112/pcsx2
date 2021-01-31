@@ -592,7 +592,11 @@ void App_LoadSaveInstallSettings( IniInterface& ini )
 
 	//ini.Entry( L"PluginsFolder",			PluginsFolder,				InstallFolder + PathDefs::Base::Plugins() );
 
-	ini.Flush();
+	if (!ini.Flush())
+	{
+		Console.Error(L"You don\'t have permissions to write settings");
+		return;
+	}
 }
 
 void App_LoadInstallSettings( wxConfigBase* ini )
@@ -692,7 +696,11 @@ void AppConfig::LoadSave( IniInterface& ini )
 #endif
 	Templates		.LoadSave( ini );
 
-	ini.Flush();
+	if (!ini.Flush())
+	{
+		Console.Error(L"You don\'t have permissions to write settings");
+		return;
+	}
 }
 
 // ------------------------------------------------------------------------
