@@ -160,13 +160,9 @@ fs::path Path::GetExecutableDirectory()
 fs::path Path::isPortable(fs::path p, bool isPort)
 {
     if (isPort)
-    {
         return fs::relative(p);
-    }
     else
-    {
         return fs::absolute(p);
-    }
 }
 
 // returns the base/root directory of the given path.
