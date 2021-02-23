@@ -199,6 +199,7 @@ set(pcsx2Headers
 set(pcsx2CDVDSources
 	CDVD/BlockdumpFileReader.cpp
 	CDVD/CdRom.cpp
+	CDVD/Cue.cpp
 	CDVD/CDVDaccess.cpp
 	CDVD/CDVD.cpp
 	CDVD/CDVDdiscReader.cpp
@@ -218,6 +219,7 @@ set(pcsx2CDVDSources
 # CDVD headers
 set(pcsx2CDVDHeaders
 	CDVD/CdRom.h
+	CDVD/Cue.h
 	CDVD/CDVDaccess.h
 	CDVD/CDVD.h
 	CDVD/CDVD_internal.h
@@ -1109,8 +1111,10 @@ if(USE_VTUNE)
     set(pcsx2FinalLibs ${pcsx2FinalLibs} ${VTUNE_LIBRARIES})
 endif()
 
+
 add_pcsx2_executable(${Output} "${pcsx2FinalSources}" "${pcsx2FinalLibs}" "${pcsx2FinalFlags}")
 target_compile_features(${Output} PRIVATE cxx_std_17)
+target_include_directories(${Output} PUBLIC ../3rdparty/libcue)
 
 if(COMMAND target_precompile_headers)
 	message("Using precompiled headers.")
