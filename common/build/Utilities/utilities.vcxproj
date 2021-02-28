@@ -43,7 +43,7 @@
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Label="PropertySheets">
     <Import Project="..\..\vsprops\CommonLibrary.props" />
-    <Import Project="..\..\vsprops\3rdpartyDeps.props"/>
+    <Import Project="..\..\vsprops\3rdpartyDeps.props" />
     <Import Project="..\..\vsprops\pthreads.props" />
     <Import Condition="$(Configuration.Contains(Debug))" Project="..\..\vsprops\CodeGen_Debug.props" />
     <Import Condition="$(Configuration.Contains(Devel))" Project="..\..\vsprops\CodeGen_Devel.props" />
@@ -79,6 +79,7 @@
     <ClCompile Include="..\..\src\Utilities\pxWindowTextWriter.cpp" />
     <ClCompile Include="..\..\src\Utilities\ThreadingDialogs.cpp" />
     <ClCompile Include="..\..\src\Utilities\VirtualMemory.cpp" />
+    <ClCompile Include="..\..\src\Utilities\WindowsFileUtils.cpp" />
     <ClCompile Include="..\..\src\Utilities\x86\MemcpyFast.cpp">
       <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -117,7 +118,9 @@
   <ItemGroup>
     <ClInclude Include="..\..\include\Utilities\EmbeddedImage.h" />
     <ClInclude Include="..\..\include\Utilities\boost_spsc_queue.hpp" />
+    <ClInclude Include="..\..\include\Utilities\FileUtilsInterface.h" />
     <ClInclude Include="..\..\include\Utilities\ScopedAlloc.h" />
+    <ClInclude Include="..\..\include\Utilities\WindowsFileUtils.h" />
     <ClInclude Include="..\..\src\Utilities\ThreadingInternal.h" />
     <ClInclude Include="..\..\include\Utilities\Assertions.h" />
     <ClInclude Include="..\..\include\Utilities\CheckedStaticBox.h" />
