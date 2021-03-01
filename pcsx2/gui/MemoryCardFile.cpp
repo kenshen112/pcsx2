@@ -15,6 +15,7 @@
 
 #include "PrecompiledHeader.h"
 #include "Utilities/SafeArray.inl"
+#include "Utilities/FileUtils.h"
 #include <wx/file.h>
 #include <wx/dir.h>
 #include <wx/stopwatch.h>
@@ -161,7 +162,7 @@ static bool ConvertRAWtoNoECC(wxString file_in, wxString file_out)
 class FileMemoryCard
 {
 protected:
-	wxFFile m_file[8];
+	fs::path m_file[8];
 	u8 m_effeffs[528 * 16];
 	SafeArray<u8> m_currentdata;
 	u64 m_chksum[8];
@@ -468,7 +469,9 @@ s32 FileMemoryCard::Read(uint slot, u8* dest, u32 adr, int size)
 
 s32 FileMemoryCard::Save(uint slot, const u8* src, u32 adr, int size)
 {
-	wxFFile& mcfp(m_file[slot]);
+
+    FileUtils& mcfp(m_file[slot]);
+	//wxFFile& mcfp(m_file[slot]);
 
 	if (!mcfp.IsOpened())
 	{

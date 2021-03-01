@@ -26,6 +26,8 @@ set(UtilitiesSources
 	FastFormatString.cpp
 	IniInterface.cpp
 	Linux/LnxHostSys.cpp
+	LinuxFileUtils.cpp
+	FileUtils.cpp
 	Mutex.cpp
 	PathUtils.cpp
 	PrecompiledHeader.cpp
@@ -55,6 +57,9 @@ set(UtilitiesHeaders
 	../../include/Utilities/EventSource.h
 	../../include/Utilities/Exceptions.h
 	../../include/Utilities/FixedPointTypes.h
+	../../include/Utilities/FileUtilsInterface.h
+	../../include/Utilities/LinuxFileUtils.h
+	../../include/Utilities/FileUtils.h
 	../../include/Utilities/General.h
 	../../include/Utilities/MakeUnique.h
 	../../include/Utilities/MemcpyFast.h

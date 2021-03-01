@@ -1,13 +1,13 @@
+#pragma once
+
 #include <iostream>
 #include <PathUtils.h>
 
+// This is supposed to be an OS Specific overide to WxFile
 class FileUtilsInterface
 {
-protected:
-	fs::path currentFilePath;
 public:
 	virtual bool Open(fs::path p) = 0;
 	virtual void Close() = 0;
-	virtual bool ApplyLock() = 0;
-	virtual void ReleaseLock() = 0;
+	virtual bool Save(void* buffer) = 0;
 };
