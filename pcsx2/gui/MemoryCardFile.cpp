@@ -162,7 +162,7 @@ static bool ConvertRAWtoNoECC(wxString file_in, wxString file_out)
 class FileMemoryCard
 {
 protected:
-	fs::path m_file[8];
+	FileUtils m_file[8];
 	u8 m_effeffs[528 * 16];
 	SafeArray<u8> m_currentdata;
 	u64 m_chksum[8];
@@ -188,7 +188,7 @@ public:
 	u64 GetCRC(uint slot);
 
 protected:
-	bool Seek(wxFFile& f, u32 adr);
+	bool Seek(FileUtils& f, u32 adr);
 	bool Create(const wxString& mcdFile, uint sizeInMB);
 
 	wxString GetDisabledMessage(uint slot) const
@@ -344,17 +344,17 @@ void FileMemoryCard::Open()
 			str = newname;
 		}
 
-		if (!m_file[slot].Open(str.c_str(), L"r+b"))
+		if (!m_file[slot].Open(Path::FromWxString(str)))
 		{
 			// Translation note: detailed description should mention that the memory card will be disabled
 			// for the duration of this session.
 			Msgbox::Alert(
-				wxsFormat(_("Access denied to memory card: \n\n%s\n\n"), str.c_str()) +
+				wxsFormat(_("Access denied to memory card: \n\n%s\n\n"), str.c_str()) + 
 				GetDisabledMessage(slot));
 		}
 		else // Load checksum
 		{
-			m_ispsx[slot] = m_file[slot].Length() == 0x20000;
+			m_ispsx[slot] = m_file[slot].Size() == 0x20000;
 			m_chkaddr = 0x210;
 
 			if (!m_ispsx[slot] && !!m_file[slot].Seek(m_chkaddr))
@@ -371,13 +371,13 @@ void FileMemoryCard::Close()
 		{
 			// Store checksum
 			if (!m_ispsx[slot] && !!m_file[slot].Seek(m_chkaddr))
-				m_file[slot].Write(&m_chksum[slot], 8);
+				m_file[slot].Save(&m_chksum[slot], 8);
 
 			m_file[slot].Close();
 
-			if (m_file[slot].GetName().EndsWith(".binx"))
+			if ( m_file[slot].GetName().string().find(".binx", 0, 8) != std::string::npos)
 			{
-				wxString name = m_file[slot].GetName();
+				wxString name = Path::ToWxString(m_file[slot].GetName());
 				wxString name_old = name.SubString(0, name.Last('.')) + "bin";
 				if (ConvertRAWtoNoECC(name, name_old))
 					wxRemoveFile(name);
@@ -387,9 +387,9 @@ void FileMemoryCard::Close()
 }
 
 // Returns FALSE if the seek failed (is outside the bounds of the file).
-bool FileMemoryCard::Seek(wxFFile& f, u32 adr)
+bool FileMemoryCard::Seek(FileUtils& f, u32 adr)
 {
-	const u32 size = f.Length();
+	const u32 size = f.Size();
 
 	// If anyone knows why this filesize logic is here (it appears to be related to legacy PSX
 	// cards, perhaps hacked support for some special emulator-specific memcard formats that
@@ -416,13 +416,13 @@ bool FileMemoryCard::Create(const wxString& mcdFile, uint sizeInMB)
 
 	Console.WriteLn(L"(FileMcd) Creating new %uMB memory card: " + mcdFile, sizeInMB);
 
-	wxFFile fp(mcdFile, L"wb");
+	FileUtils fp(Path::FromWxString(mcdFile));
 	if (!fp.IsOpened())
 		return false;
 
 	for (uint i = 0; i < (MC2_MBSIZE * sizeInMB) / sizeof(m_effeffs); i++)
 	{
-		if (fp.Write(m_effeffs, sizeof(m_effeffs)) == 0)
+		if (fp.Save(m_effeffs, sizeof(m_effeffs)) == 0)
 			return false;
 	}
 	return true;
@@ -439,8 +439,8 @@ void FileMemoryCard::GetSizeInfo(uint slot, PS2E_McdSizeInfo& outways)
 	outways.EraseBlockSizeInSectors = 16; // 0x0010
 	outways.Xor = 18;                     // 0x12, XOR 02 00 00 10
 
-	if (pxAssert(m_file[slot].IsOpened()))
-		outways.McdSizeInSectors = m_file[slot].Length() / (outways.SectorSize + outways.EraseBlockSizeInSectors);
+	if (m_file[slot].IsOpened())
+		outways.McdSizeInSectors = m_file[slot].Size() / (outways.SectorSize + outways.EraseBlockSizeInSectors);
 	else
 		outways.McdSizeInSectors = 0x4000;
 
@@ -455,7 +455,7 @@ bool FileMemoryCard::IsPSX(uint slot)
 
 s32 FileMemoryCard::Read(uint slot, u8* dest, u32 adr, int size)
 {
-	wxFFile& mcfp(m_file[slot]);
+	FileUtils& mcfp(m_file[slot]);
 	if (!mcfp.IsOpened())
 	{
 		DevCon.Error("(FileMcd) Ignoring attempted read from disabled slot.");
@@ -516,7 +516,7 @@ s32 FileMemoryCard::Save(uint slot, const u8* src, u32 adr, int size)
 	if (!Seek(mcfp, adr))
 		return 0;
 
-	int status = mcfp.Write(m_currentdata.GetPtr(), size);
+	int status = mcfp.Save(m_currentdata.GetPtr(), size);
 
 	if (status)
 	{
@@ -526,7 +526,7 @@ s32 FileMemoryCard::Save(uint slot, const u8* src, u32 adr, int size)
 		if (elapsed > std::chrono::seconds(5))
 		{
 			wxString name, ext;
-			wxFileName::SplitPath(m_file[slot].GetName(), NULL, NULL, &name, &ext);
+			wxFileName::SplitPath(Path::ToWxString(m_file[slot].GetName()), NULL, NULL, &name, &ext);
 			OSDlog(Color_StrongYellow, false, "Memory Card %s written.", (const char*)(name + "." + ext).c_str());
 			last = std::chrono::system_clock::now();
 		}
@@ -538,7 +538,7 @@ s32 FileMemoryCard::Save(uint slot, const u8* src, u32 adr, int size)
 
 s32 FileMemoryCard::EraseBlock(uint slot, u32 adr)
 {
-	wxFFile& mcfp(m_file[slot]);
+	FileUtils& mcfp(m_file[slot]);
 
 	if (!mcfp.IsOpened())
 	{
@@ -548,12 +548,12 @@ s32 FileMemoryCard::EraseBlock(uint slot, u32 adr)
 
 	if (!Seek(mcfp, adr))
 		return 0;
-	return mcfp.Write(m_effeffs, sizeof(m_effeffs)) != 0;
+	return mcfp.Save(m_effeffs, sizeof(m_effeffs)) != 0;
 }
 
 u64 FileMemoryCard::GetCRC(uint slot)
 {
-	wxFFile& mcfp(m_file[slot]);
+	FileUtils& mcfp(m_file[slot]);
 	if (!mcfp.IsOpened())
 		return 0;
 
@@ -568,7 +568,7 @@ u64 FileMemoryCard::GetCRC(uint slot)
 
 		u64 buffer[528 * 8]; // use 528 (sector size), ensures even divisibility
 
-		const uint filesize = mcfp.Length() / sizeof(buffer);
+		const uint filesize = mcfp.Size() / sizeof(buffer);
 		for (uint i = filesize; i; --i)
 		{
 			mcfp.Read(&buffer, sizeof(buffer));

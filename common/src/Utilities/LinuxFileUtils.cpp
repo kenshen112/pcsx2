@@ -2,9 +2,10 @@
 
 bool LinuxFileUtils::Open(fs::path p)
 {
-    descriptor = open(p.c_str(), O_CREAT|O_WRONLY);
-
-     
+    currentPath = p;
+    
+    descriptor = open(currentPath.c_str(), O_CREAT|O_WRONLY);
+ 
     if (descriptor < 0)
     {
         Console.Error("File Open ERROR: " + errno);
@@ -27,10 +28,15 @@ void LinuxFileUtils::Close()
    int state = close(descriptor);
 }
 
-bool LinuxFileUtils::Save(void* buffer)
+fs::path LinuxFileUtils::GetName()
+{
+    return currentPath; 
+}
+
+bool LinuxFileUtils::Save(void* buffer, int size)
 {
     // Linux Write uses a generic
-    int isWrite = write(descriptor, buffer, sizeof(buffer));
+    int isWrite = write(descriptor, buffer, size);
     if (isWrite < 0)
     {
         Console.Error("Write Error: " + errno);
@@ -40,4 +46,39 @@ bool LinuxFileUtils::Save(void* buffer)
     {
         return true;
     }
+}
+
+bool LinuxFileUtils::IsOpened()
+{
+    return descriptor;
+}
+
+bool LinuxFileUtils::Seek(off_t offset)
+{
+    lseek(descriptor, offset, SEEK_CUR);
+}
+
+s32 LinuxFileUtils::Read(void* buf, size_t count)
+{
+    return read(descriptor, buf, count);
+}
+
+int LinuxFileUtils::Size()
+{
+    int size = lseek(descriptor, 0, SEEK_END);
+
+    if (size >= 0)
+    {
+        return size;
+    }
+    else
+    {
+        Console.Error("Size incorrect");
+        return -1;
+    }
+}
+
+LinuxFileUtils::~LinuxFileUtils()
+{
+    
 }

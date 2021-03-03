@@ -17,7 +17,14 @@ public:
 FileUtils();
 FileUtils(fs::path);
 
-bool Save(void* buffer); 
+int Size();
 void Close();
+bool IsOpened();
+fs::path GetName();
+bool Open(fs::path p);
+bool Seek(off_t offset);
+bool Save(void* buffer, int size);
+s32 Read(void* buf, size_t count);
+
 ~FileUtils();
 };
