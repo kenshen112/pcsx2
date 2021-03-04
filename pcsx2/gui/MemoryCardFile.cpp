@@ -371,7 +371,7 @@ void FileMemoryCard::Close()
 		{
 			// Store checksum
 			if (!m_ispsx[slot] && !!m_file[slot].Seek(m_chkaddr))
-				m_file[slot].Save(&m_chksum[slot], 8);
+				m_file[slot].Write(&m_chksum[slot], 8);
 
 			m_file[slot].Close();
 
@@ -422,7 +422,7 @@ bool FileMemoryCard::Create(const wxString& mcdFile, uint sizeInMB)
 
 	for (uint i = 0; i < (MC2_MBSIZE * sizeInMB) / sizeof(m_effeffs); i++)
 	{
-		if (fp.Save(m_effeffs, sizeof(m_effeffs)) == 0)
+		if (fp.Write(m_effeffs, sizeof(m_effeffs)) == 0)
 			return false;
 	}
 	return true;
@@ -516,7 +516,7 @@ s32 FileMemoryCard::Save(uint slot, const u8* src, u32 adr, int size)
 	if (!Seek(mcfp, adr))
 		return 0;
 
-	int status = mcfp.Save(m_currentdata.GetPtr(), size);
+	int status = mcfp.Write(m_currentdata.GetPtr(), size);
 
 	if (status)
 	{
@@ -548,7 +548,7 @@ s32 FileMemoryCard::EraseBlock(uint slot, u32 adr)
 
 	if (!Seek(mcfp, adr))
 		return 0;
-	return mcfp.Save(m_effeffs, sizeof(m_effeffs)) != 0;
+	return mcfp.Write(m_effeffs, sizeof(m_effeffs)) != 0;
 }
 
 u64 FileMemoryCard::GetCRC(uint slot)

@@ -1,4 +1,7 @@
 #include "LinuxFileUtils.h"
+#include <errno.h>
+#include <stdio.h>
+#include <string.h>
 
 bool LinuxFileUtils::Open(fs::path p)
 {
@@ -8,24 +11,30 @@ bool LinuxFileUtils::Open(fs::path p)
  
     if (descriptor < 0)
     {
-        Console.Error("File Open ERROR: " + errno);
+        Console.Error("File Open ERROR: %s", strerror(errno));
         return false;
     }
     else
     {
-        uint fileSize = lseek(descriptor, 0, SEEK_END);
-        if (lockf(descriptor, LOCK_EX|LOCK_NB, fileSize) < 0)
+        int fileSize = lseek(descriptor, 0, SEEK_END);
+        if (lockf(descriptor, F_LOCK, fileSize) < 0)
         {
-            Console.Error("Lock ERROR: " + errno);
+            Console.Error("Lock ERROR: %s", strerror(errno));
             return false;
         }
         return true;
     }
+    return descriptor;
 }
 
-void LinuxFileUtils::Close()
+bool LinuxFileUtils::Close()
 {
-   int state = close(descriptor);
+   if (close(descriptor) < 0)
+   {
+       Console.Error("Close Error: %s", strerror(errno));
+       return false;
+   }
+   return true;
 }
 
 fs::path LinuxFileUtils::GetName()
@@ -33,18 +42,25 @@ fs::path LinuxFileUtils::GetName()
     return currentPath; 
 }
 
-bool LinuxFileUtils::Save(void* buffer, int size)
+bool LinuxFileUtils::Write(void* buffer, int &size)
 {
-    // Linux Write uses a generic
-    int isWrite = write(descriptor, buffer, size);
-    if (isWrite < 0)
+    if (buffer != nullptr)
     {
-        Console.Error("Write Error: " + errno);
-        return false;
+        // Linux Write uses a generic
+        if (write(descriptor, buffer, size) < 0)
+        {
+            Console.Error("Write Error: %s", strerror(errno));
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
     else
     {
-        return true;
+        Console.Error("Buffer Nullptr: ", strerror(errno));
+        return false;
     }
 }
 
@@ -55,12 +71,28 @@ bool LinuxFileUtils::IsOpened()
 
 bool LinuxFileUtils::Seek(off_t offset)
 {
-    lseek(descriptor, offset, SEEK_CUR);
+    if (lseek(descriptor, offset, SEEK_SET) < 0)
+    {
+        Console.Error("Seek Error: ", strerror(errno));
+        return false;
+    }
+    return true;
 }
 
 s32 LinuxFileUtils::Read(void* buf, size_t count)
 {
-    return read(descriptor, buf, count);
+    if (buf != nullptr)
+    {
+        data = read(descriptor, buf, count);
+        if (data < 0)
+        {
+            Console.Error("Read Error: %s", strerror(errno));
+            return -1; 
+        }
+            
+        return data;
+   }
+   return -1;
 }
 
 int LinuxFileUtils::Size()

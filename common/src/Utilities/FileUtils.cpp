@@ -39,16 +39,18 @@ bool FileUtils::Open(fs::path p)
 
     if (fileStream != nullptr)
     {
-        if (!fileStream->Open(p))
+        if (fileStream->Open(p) != true)
         {
             fileStream = nullptr;
             return false;
         }
+        return true;
     }
     else
     {
-        return true;
+        return false;
     }
+    return false;
 }
 
 int FileUtils::Size()
@@ -56,19 +58,19 @@ int FileUtils::Size()
     return fileStream->Size();
 }
 
-bool FileUtils::Save(void* buffer, int size)
+bool FileUtils::Write(void* buffer, int size)
 {
-    return fileStream->Save(buffer, size); 
+    return fileStream->Write(buffer, size); 
 }
 
 bool FileUtils::Seek(off_t offset)
 {
-    fileStream->Seek(offset);
+    return fileStream->Seek(offset);
 }
 
-void FileUtils::Close()
+bool FileUtils::Close()
 {
-    fileStream->Close();
+    return fileStream->Close();
 }
 
 s32 FileUtils::Read(void* buff, size_t size)
@@ -83,5 +85,5 @@ bool FileUtils::IsOpened()
 
 FileUtils::~FileUtils()
 {
-    //delete fileStream; // This calls destructor
+    delete fileStream; // This calls destructor
 }
