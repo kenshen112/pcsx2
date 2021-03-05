@@ -9,7 +9,7 @@
 class FileUtils
 {
 private:
-    FileUtilsInterface *fileStream;
+    std::unique_ptr<FileUtilsInterface> fileStream;
     bool isInit = false;
 
 public:

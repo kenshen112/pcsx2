@@ -8,7 +8,7 @@ class LinuxFileUtils : public FileUtilsInterface
 private:
 int descriptor = -1;
 ssize_t data;
-
+bool isOpened;
 public:
 int Size() override;
 bool Close() override;

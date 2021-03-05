@@ -7,12 +7,12 @@ bool LinuxFileUtils::Open(fs::path p)
 {
     currentPath = p;
     
-    descriptor = open(currentPath.c_str(), O_CREAT|O_WRONLY);
+    descriptor = open(currentPath.c_str(), O_CREAT|O_RDWR);
  
     if (descriptor < 0)
     {
         Console.Error("File Open ERROR: %s", strerror(errno));
-        return false;
+        isOpened = false;
     }
     else
     {
@@ -20,11 +20,11 @@ bool LinuxFileUtils::Open(fs::path p)
         if (lockf(descriptor, F_LOCK, fileSize) < 0)
         {
             Console.Error("Lock ERROR: %s", strerror(errno));
-            return false;
+            isOpened = false;
         }
-        return true;
+        isOpened = true;
     }
-    return descriptor;
+    return isOpened;
 }
 
 bool LinuxFileUtils::Close()
@@ -34,6 +34,7 @@ bool LinuxFileUtils::Close()
        Console.Error("Close Error: %s", strerror(errno));
        return false;
    }
+   isOpened = false;
    return true;
 }
 
@@ -66,7 +67,7 @@ bool LinuxFileUtils::Write(void* buffer, int &size)
 
 bool LinuxFileUtils::IsOpened()
 {
-    return descriptor;
+    return isOpened;
 }
 
 bool LinuxFileUtils::Seek(off_t offset)

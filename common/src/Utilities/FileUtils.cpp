@@ -9,9 +9,9 @@ FileUtils::FileUtils()
 FileUtils::FileUtils(fs::path p)
 {
     #ifdef __linux__
-    fileStream = new LinuxFileUtils();
+    fileStream = std::make_unique<LinuxFileUtils>();
     #elif _WIN32
-    fileStream = new WindowsFileUtils();
+    fileStream = std::make_unique<WindowsFileUtils>();
     #endif
 
     if (fileStream != nullptr)
@@ -32,9 +32,9 @@ fs::path FileUtils::GetName()
 bool FileUtils::Open(fs::path p)
 {
     #ifdef __linux__
-    fileStream = new LinuxFileUtils();
+    fileStream = std::make_unique<LinuxFileUtils>();
     #elif _WIN32
-    fileStream = new WindowsFileUtils();
+    fileStream = std::make_unique<WindowsFileUtils>();
     #endif
 
     if (fileStream != nullptr)
@@ -85,5 +85,4 @@ bool FileUtils::IsOpened()
 
 FileUtils::~FileUtils()
 {
-    delete fileStream; // This calls destructor
 }
