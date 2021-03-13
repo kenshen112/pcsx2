@@ -157,7 +157,7 @@ fs::path Path::GetExecutableDirectory()
 	return exePath.parent_path();
 }
 
-fs::path Path::getPath(fs::path p, fs::path b, bool isPort)
+fs::path Path::getPath(const fs::path& p, const fs::path& b, bool isPort)
 {
     if (isPort)
     {
