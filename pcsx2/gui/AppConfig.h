@@ -149,6 +149,7 @@ public:
 		BITFIELD32()
 			bool
 				UseDefaultBios:1,
+				UseDefaultPlugins: 1,
 				UseDefaultSnapshots:1,
 				UseDefaultSavestates:1,
 				UseDefaultMemoryCards:1,
@@ -160,6 +161,7 @@ public:
 
 		fs::path
 			Bios,
+			Plugins,
 			Snapshots,
 			Savestates,
 			MemoryCards,
