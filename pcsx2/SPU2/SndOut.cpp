@@ -95,6 +95,7 @@ SndOutModule* mods[] =
 #if defined(__linux__) /* && defined(__ALSA__)*/
 		AlsaOut,
 #endif
+		CubebOut,
 		nullptr // signals the end of our list
 };
 

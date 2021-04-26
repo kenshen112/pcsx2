@@ -255,6 +255,7 @@ set(pcsx2SPU2Sources
 	SPU2/Reverb.cpp
 	SPU2/SndOut.cpp
 	SPU2/SndOut_SDL.cpp
+	SPU2/SndOut_Cubeb.cpp
 	SPU2/spu2freeze.cpp
 	SPU2/spu2sys.cpp
 	SPU2/Timestretcher.cpp

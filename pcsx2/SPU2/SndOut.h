@@ -675,6 +675,7 @@ extern SndOutModule* const SDLOut;
 #ifdef __linux__
 extern SndOutModule* AlsaOut;
 #endif
+extern SndOutModule* CubebOut;
 
 extern SndOutModule* mods[];
 
