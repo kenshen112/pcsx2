@@ -65,6 +65,9 @@ if(ACTUALLY_ENABLE_TESTS)
     add_subdirectory(tests/ctest)
 endif()
 
+ # 3rdpary Libraries
+ add_subdirectory(3rdparty/cubeb EXCLUDE_FROM_ALL)
+
 #-------------------------------------------------------------------------------
 
 # Install some files to ease package creation

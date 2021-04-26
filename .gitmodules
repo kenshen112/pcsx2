@@ -13,3 +13,6 @@
 [submodule "3rdparty/libchdr/libchdr"]
 	path = 3rdparty/libchdr/libchdr
 	url = https://github.com/rtissera/libchdr.git
+[submodule "3rdparty/sanitizers-cmake"]
+	path = 3rdparty/sanitizers-cmake
+	url = git://github.com/arsenm/sanitizers-cmake.git
