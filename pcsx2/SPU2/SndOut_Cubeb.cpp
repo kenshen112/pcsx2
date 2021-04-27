@@ -10,12 +10,10 @@
 
 long DataCallback(cubeb_stream * stm, void * user, const void * input_buffer, void * output_buffer, long nframes)
 {
-    StereoOut32* out = (StereoOut32*)output_buffer;
+    StereoOut16* out = (StereoOut16*)output_buffer;
+    //Console.Warning("Packet Size: %02d", nframes);
+    SndBuffer::ReadSamples(out, nframes);
 
-    for (u32 i = 0; i < nframes; i += SndOutPacketSize)
-    {
-        SndBuffer::ReadSamples(&out[i]);
-    }
     return nframes;
 }
 void StateCallback(cubeb_stream * stm, void * user, cubeb_state state)
@@ -30,7 +28,7 @@ class SndCubeb : public SndOutModule
     private:
 
     int rv;
-    int volume = 50;
+    int volume = 25;
     u32 channels;
     u32 rate;
     u32 latency_frames;
@@ -65,9 +63,9 @@ class SndCubeb : public SndOutModule
 
         started = true; 
 
-        outParams.rate = rate;
+        outParams.rate = 48000; // ToDo, change for psx
         outParams.channels = 2;// = channels; for when we add dolby digital
-        outParams.format = CUBEB_SAMPLE_FLOAT32NE;
+        outParams.format = CUBEB_SAMPLE_S16LE;
         outParams.layout = CUBEB_LAYOUT_STEREO;
 
         if (cubeb_get_min_latency(api, &outParams, &latency_frames) != CUBEB_OK)
@@ -76,12 +74,13 @@ class SndCubeb : public SndOutModule
             return CUBEB_ERROR;
         }
 
-        cubeb_stream_set_volume(stream, volume);
-        if(cubeb_stream_init(api, &stream, "PCSX2 Audio", nullptr, nullptr, nullptr, &outParams, latency_frames, DataCallback, StateCallback, this) != CUBEB_OK)
+        if(cubeb_stream_init(api, &stream, "PCSX2 Audio", nullptr, nullptr, nullptr, &outParams, latency_frames, DataCallback, StateCallback, nullptr) != CUBEB_OK)
         {
             DevCon.Error("FAILED STREAM");
             return CUBEB_ERROR;
         }
+
+        cubeb_stream_set_volume(stream, volume);
         cubeb_stream_start(stream);
         return CUBEB_OK;
     }
@@ -123,6 +122,7 @@ class SndCubeb : public SndOutModule
 
     void Close() override
     {
+        cubeb_stream_stop(stream);
         cubeb_stream_destroy(stream);
         cubeb_destroy(api);
     }

@@ -56,7 +56,7 @@ namespace
 		assert(len / sizeof(StereoOut_SDL) == samples);
 
 		for (Uint16 i = 0; i < samples; i += SndOutPacketSize)
-			SndBuffer::ReadSamples(&out[i]);
+			SndBuffer::ReadSamples(&out[i], len);
 	}
 } // namespace
 

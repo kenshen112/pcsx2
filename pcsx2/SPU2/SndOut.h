@@ -625,7 +625,7 @@ public:
 	// the sample output is determined by the SndOutVolumeShift, which is the number of bits
 	// to shift right to get a 16 bit result.
 	template <typename T>
-	static void ReadSamples(T* bData);
+	static void ReadSamples(T* bData, int);
 };
 
 class SndOutModule
