@@ -1,28 +1,26 @@
-#include "cubeb/cubeb.h"
 #include "PrecompiledHeader.h"
 #include "Global.h"
 #include "SndOut.h"
+#if defined(__linux__) || defined(__APPLE__)
+#include "Linux/Dialogs.h"
+#elif defined(_WIN32)
+#include "Windows/Dialogs.h"
+#endif
+#include "cubeb/cubeb.h"
 
 long DataCallback(cubeb_stream * stm, void * user, const void * input_buffer, void * output_buffer, long nframes)
 {
-    StereoOutFloat* in  = new StereoOutFloat[SndOutPacketSize];
-    StereoOutFloat* out = (StereoOutFloat*)output_buffer;
+    StereoOut32* out = (StereoOut32*)output_buffer;
 
-    for (u16 i = 0; i < nframes; i += SndOutPacketSize)
+    for (u32 i = 0; i < nframes; i += SndOutPacketSize)
     {
-        //SndBuffer::ReadSamples(in);
-        for (int c = 0; c < 2; ++c) 
-        {
-            out[2 * i + c] = in[i];
-        }
-
+        SndBuffer::ReadSamples(&out[i]);
     }
-    delete in;
     return nframes;
 }
 void StateCallback(cubeb_stream * stm, void * user, cubeb_state state)
 {
-        printf("state=%d\n", state);
+    printf("state=%d\n", state);
 }
 
 class SndCubeb : public SndOutModule
@@ -38,6 +36,7 @@ class SndCubeb : public SndOutModule
     u32 latency_frames;
     u64 ts;
 
+    std::string m_api;
     bool started;
 
     cubeb* api;
@@ -51,9 +50,9 @@ class SndCubeb : public SndOutModule
 
     s32 Init() override
     {
-        std::cout << "CUBEB AUDIO" << std::endl;
+        ReadSettings(); // To select Cubeb API
 
-        if (cubeb_init(&api, "PCSX2", NULL) != CUBEB_OK) // The inital startup of the underlying cubeb struct
+        if (cubeb_init(&api, "PCSX2", m_api.c_str()) != CUBEB_OK) // The inital startup of the underlying cubeb struct
         {
             DevCon.Error("INIT FAILED!");
             return CUBEB_ERROR;
@@ -67,15 +66,14 @@ class SndCubeb : public SndOutModule
         started = true; 
 
         outParams.rate = rate;
-        outParams.channels = 2;
-        outParams.format = CUBEB_SAMPLE_S16NE;
+        outParams.channels = 2;// = channels; for when we add dolby digital
+        outParams.format = CUBEB_SAMPLE_FLOAT32NE;
         outParams.layout = CUBEB_LAYOUT_STEREO;
 
         if (cubeb_get_min_latency(api, &outParams, &latency_frames) != CUBEB_OK)
         {
             DevCon.Error("LATENCY NOT DETECTED!");
             return CUBEB_ERROR;
-
         }
 
         cubeb_stream_set_volume(stream, volume);
@@ -96,14 +94,21 @@ class SndCubeb : public SndOutModule
 
     void WriteSettings() const override
     {
+        // TODO USE TOWXSTRING
+        CfgWriteStr(L"CUBEB", L"HostApi", wxString(m_api.c_str(), wxConvUTF8));
     }
 
     void ReadSettings() override
     {
+        wxString api(L"EMPTYEMPTYEMPTY");
+        CfgReadStr(L"CUBEB", L"HostApi", api, L"pulse");
+        SetApiSettings(api);
     }
 
     void SetApiSettings(wxString api) override
     {
+        // ToDo change to, FromWxString
+        m_api = std::string(api.utf8_str());
     }
 
     const wchar_t* GetIdent() const override
@@ -118,7 +123,8 @@ class SndCubeb : public SndOutModule
 
     void Close() override
     {
-        //delete api;
+        cubeb_stream_destroy(stream);
+        cubeb_destroy(api);
     }
 };
 

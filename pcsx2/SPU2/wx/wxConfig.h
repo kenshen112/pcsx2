@@ -79,10 +79,11 @@ public:
 
 class Dialog : public wxDialog
 {
-	wxBoxSizer *m_top_box, *m_portaudio_box, *m_sdl_box;
-	wxChoice *m_module_select, *m_portaudio_select, *m_sdl_select;
-	wxStaticText *m_portaudio_text, *m_sdl_text;
-
+	wxBoxSizer *m_top_box, *m_portaudio_box, *m_sdl_box, *m_cubeb_box;
+	wxStaticBoxSizer* m_output_box;
+	wxChoice *m_module_select, *m_portaudio_select, *m_sdl_select, *m_cubeb_select;
+	wxStaticText *m_portaudio_text, *m_sdl_text, *m_cubeb_text;
+	
 	MixerTab* m_mixer_panel;
 	SyncTab* m_sync_panel;
 	DebugTab* m_debug_panel;

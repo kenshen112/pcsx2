@@ -123,4 +123,24 @@ void configure();
 extern wxFileConfig* spuConfig;
 extern bool pathSet;
 extern void initIni();
+
+static std::string cubebApiList[15]
+{
+    "pulse",
+    "pulse-rust",
+    "jack",
+    "alsa",
+    "audiounit",
+    "audiounit-rust",
+    "wasapi",
+    "winmm",
+    "sndio",
+    "sun",
+    "opensl",
+    "oss",
+    "aaudio",
+    "audiotrack",
+    "kai"
+};
+
 #endif // CONFIG_H_INCLUDED

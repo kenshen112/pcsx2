@@ -365,6 +365,7 @@ Dialog::Dialog()
 	module_entries.Add("PortAudio (Cross-platform)");
 #endif
 	module_entries.Add("SDL Audio (Recommended for PulseAudio)");
+	module_entries.Add("Cubeb (FireFox Audio)");
 	m_module_select = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, module_entries);
 	module_box->Add(m_module_select, wxSizerFlags().Centre());
 
@@ -388,6 +389,18 @@ Dialog::Dialog()
 	m_portaudio_box->Add(m_portaudio_select, wxSizerFlags().Centre());
 #endif
 
+	//Cubeb
+	m_cubeb_box = new wxBoxSizer(wxVERTICAL);
+	m_cubeb_text = new wxStaticText(this, wxID_ANY, "CUBEB API");
+	m_cubeb_box->Add(m_cubeb_text, wxSizerFlags().Centre());
+
+	wxArrayString cubebEntries;
+	for (int i = 0; i < 4; i++)
+		cubebEntries.Add(wxString(cubebApiList[i]));
+
+	m_cubeb_select = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, cubebEntries);
+	m_cubeb_box->Add(m_cubeb_text, wxSizerFlags().Centre());
+
 	// SDL
 	m_sdl_box = new wxBoxSizer(wxVERTICAL);
 	m_sdl_text = new wxStaticText(this, wxID_ANY, "SDL API");
@@ -404,6 +417,7 @@ Dialog::Dialog()
 	module_box->Add(m_portaudio_box, wxSizerFlags().Expand());
 #endif
 	module_box->Add(m_sdl_box, wxSizerFlags().Expand());
+	module_box->Add(m_cubeb_box, wxSizerFlags().Expand());
 
 	m_top_box->Add(module_box, wxSizerFlags().Centre().Border(wxALL, 5));
 
@@ -432,34 +446,46 @@ Dialog::~Dialog()
 void Dialog::Reconfigure()
 {
 	const int mod = m_module_select->GetCurrentSelection();
-	bool show_portaudio = false, show_sdl = false;
+	bool show_portaudio = false, show_sdl = false, show_cubeb;
 
-	switch (mod)
+ 	switch (mod)
 	{
 		case 0:
 			show_portaudio = false;
+			show_cubeb = false;
 			show_sdl = false;
 			break;
 
 		case 1:
 			show_portaudio = true;
+			show_cubeb = false;
 			show_sdl = false;
 			break;
 
 		case 2:
 			show_portaudio = false;
+			show_cubeb = false;
 			show_sdl = true;
 			break;
 
+		case 3:	
+			show_portaudio = false;
+			show_cubeb = true;
+			show_sdl = false;
+			break;
 		default:
 			show_portaudio = false;
+			show_cubeb = false;
 			show_sdl = false;
 			break;
 	}
 #ifdef SPU2X_PORTAUDIO
 	m_top_box->Show(m_portaudio_box, show_portaudio, true);
 #endif
-	m_top_box->Show(m_sdl_box, show_sdl, true);
+	if (show_sdl)
+		m_top_box->Show(m_sdl_box, show_sdl, true);
+	else if (show_cubeb)
+		m_top_box->Show(m_cubeb_box, show_cubeb, true);
 
 	// Recalculating both of these accounts for if neither was showing initially.
 	m_top_box->Layout();
@@ -478,11 +504,11 @@ void Dialog::Load()
 	m_portaudio_select->SetSelection(OutputAPI);
 #endif
 	m_sdl_select->SetSelection(SdlOutputAPI);
+	m_cubeb_select->SetSelection(CubebOutputAPI);
 
 	m_mixer_panel->Load();
 	m_sync_panel->Load();
 	m_debug_panel->Load();
-
 	Reconfigure();
 }
 
@@ -502,6 +528,9 @@ void Dialog::Save()
 
 	SdlOutputAPI = m_sdl_select->GetSelection();
 	SDLOut->SetApiSettings(m_sdl_select->GetStringSelection());
+
+	CubebOutputAPI = m_cubeb_select->GetSelection();
+	CubebOut->SetApiSettings(m_cubeb_select->GetStringSelection());
 
 	m_mixer_panel->Save();
 	m_sync_panel->Save();
