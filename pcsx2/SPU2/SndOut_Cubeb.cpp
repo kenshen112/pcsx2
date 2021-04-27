@@ -28,11 +28,10 @@ class SndCubeb : public SndOutModule
     private:
 
     int rv;
-    int volume = 25;
+    int volume = 50;
     u32 channels;
     u32 rate;
     u32 latency_frames;
-    u64 ts;
 
     std::string m_api;
     bool started;
@@ -74,7 +73,7 @@ class SndCubeb : public SndOutModule
             return CUBEB_ERROR;
         }
 
-        if(cubeb_stream_init(api, &stream, "PCSX2 Audio", nullptr, nullptr, nullptr, &outParams, latency_frames, DataCallback, StateCallback, nullptr) != CUBEB_OK)
+        if(cubeb_stream_init(api, &stream, "PCSX2", nullptr, nullptr, nullptr, &outParams, latency_frames, DataCallback, StateCallback, nullptr) != CUBEB_OK)
         {
             DevCon.Error("FAILED STREAM");
             return CUBEB_ERROR;
@@ -101,6 +100,7 @@ class SndCubeb : public SndOutModule
     {
         wxString api(L"EMPTYEMPTYEMPTY");
         CfgReadStr(L"CUBEB", L"HostApi", api, L"pulse");
+        CfgWriteInt(L"MIXING", L"FinalVolume", volume);
         SetApiSettings(api);
     }
 
