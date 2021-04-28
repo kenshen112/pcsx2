@@ -864,7 +864,7 @@ __forceinline
 			// Fixme:
 			// 1. We do not have an AC3 decoder for the bitstream.
 			// 2. Games usually provide a normal ADMA stream as well and want to see it getting read!
-			/*(PlayMode&4) ? StereoOut32::Empty : */ ApplyVolume(Cores[0].ReadInput(), Cores[0].InpVol),
+			(PlayMode & 4) ? StereoOut32::Empty :  ApplyVolume(Cores[0].ReadInput(), Cores[0].InpVol),
 
 			// CDDA is on Core 1:
 			(PlayMode & 8) ? StereoOut32::Empty : ApplyVolume(Cores[1].ReadInput(), Cores[1].InpVol)};
