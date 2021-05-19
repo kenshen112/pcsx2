@@ -120,11 +120,6 @@ wxString Path::Normalize(const wxDirName &src)
     return wxDirName(src).Normalize().ToString();
 }
 
-std::string Path::MakeAbsolute(const std::string &src)
-{
-    return ghc::filesystem::absolute(src);
-}
-
 fs::path Path::Combine(const fs::path &srcPath, const fs::path &srcFile)
 {
     return (srcPath / srcFile).make_preferred();
@@ -146,11 +141,6 @@ std::string Path::ReplaceFilename(const wxString &src, const wxString &newfilena
     return std::string(jojo.GetFullPath().ToUTF8());
 }
 
-std::string Path::GetFilename(const std::string &src)
-{
-    return fs::path(src).filename();
-}
-
 wxString Path::GetFilenameWithoutExt(const wxString &src)
 {
     return wxFileName(src).GetName();
@@ -169,7 +159,7 @@ fs::path Path::GetExecutableDirectory()
 
 // returns the base/root directory of the given path.
 // Example /this/that/something.txt -> dest == "/"
-std::string Path::GetRootDirectory(const wxString &src)
+fs::path Path::GetRootDirectory(const wxString &src)
 {
     size_t pos = src.find_first_of(wxFileName::GetPathSeparators());
     if (pos == 0)

@@ -25,15 +25,13 @@ namespace Path
 
 	extern wxString Normalize(const wxString& srcpath);
 	extern wxString Normalize(const wxDirName& srcpath);
-	extern std::string MakeAbsolute(const std::string& srcpath);
 
 	extern fs::path Combine(const fs::path& srcPath, const fs::path& srcFile);
 	extern std::string ReplaceExtension(const wxString& src, const wxString& ext);
 	extern std::string ReplaceFilename(const wxString& src, const wxString& newfilename);
-	extern std::string GetFilename(const std::string& src);
 	extern std::string GetDirectory(const std::string& src);
 	extern wxString GetFilenameWithoutExt(const wxString& src);
-	extern std::string GetRootDirectory(const wxString& src);
+	extern fs::path GetRootDirectory(const wxString& src);
 	extern fs::path GetExecutableDirectory();
 	extern wxString ToWxString(const fs::path&);
 	extern bool CreateFolder(const fs::path& path);
