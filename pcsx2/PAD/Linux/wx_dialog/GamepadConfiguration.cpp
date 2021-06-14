@@ -114,7 +114,7 @@ void GamepadConfiguration::OnSliderReleased(wxCommandEvent& event)
 
 		// convert in a float value between 0 and 1, and run rumble feedback.
 		// 0 to 1 scales to 0x0 to 0x7FFF
-		s_vgamePad[m_pad_id]->TestForce(m_sl_rumble_intensity->GetValue() / (float)0x7FFF);
+		s_vgamePad[m_joy_map->GetSelection()]->TestForce(m_sl_rumble_intensity->GetValue() / (float)0x7FFF);
 	}
 	else if (sl_id == joy_slider_id)
 	{
@@ -135,8 +135,9 @@ void GamepadConfiguration::OnCheckboxChange(wxCommandEvent& event)
 		g_conf.pad_options[m_pad_id].forcefeedback = (m_cb_rumble->GetValue()) ? (u32)1 : (u32)0;
 		if (m_cb_rumble->GetValue())
 		{
-			s_vgamePad[m_pad_id]->TestForce();
+			s_vgamePad[m_joy_map->GetSelection()]->TestForce();
 			m_sl_rumble_intensity->Enable();
+
 		}
 		else
 		{
@@ -154,7 +155,8 @@ void GamepadConfiguration::OnChoiceChange(wxCommandEvent& event)
 	int id = choice_tmp->GetSelection();
 	if (id != wxNOT_FOUND)
 	{
-		g_conf.set_joy_uid(m_pad_id, GamePad::index_to_uid(id));
+		
+		g_conf.set_joy_uid(m_pad_id, GamePad::index_to_uid(m_joy_map->GetSelection()));
 	}
 }
 
