@@ -33,12 +33,13 @@
 #include <SDL.h>
 #include <SDL_audio.h>
 typedef StereoOut16 StereoOut_SDL;
+typedef Stereo51Out16Dpl StereoOut_SDL_Dolby;
 
 namespace
 {
 	/* Since spu2 only ever outputs stereo, we don't worry about emitting surround sound
 	 * even though SDL2 supports it */
-	const Uint8 channels = 2;
+	const Uint8 channels = 6;
 	/* SDL2 supports s32 audio */
 	/* Samples should vary from [512,8192] according to SDL spec. Take note this is the desired
 	 * sample count and SDL may provide otherwise. Pulseaudio will cut this value in half if
@@ -50,13 +51,23 @@ namespace
 
 	void callback_fillBuffer(void* userdata, Uint8* stream, int len)
 	{
-		StereoOut16* out = (StereoOut16*)stream;
+		StereoOut16 *out = (StereoOut16 *)stream;
+		Stereo51Out16Dpl *dOut = (Stereo51Out16Dpl *)stream;
 
 		// Length should always be samples in bytes.
 		assert(len / sizeof(StereoOut_SDL) == samples);
 
 		for (Uint16 i = 0; i < samples; i += SndOutPacketSize)
-			SndBuffer::ReadSamples(&out[i]);
+		{
+			switch (dolbyEnabled)
+			{
+				case 0:
+					SndBuffer::ReadSamples(&out[i]);
+					break;
+				case 1:
+					SndBuffer::ReadSamples(&dOut[i]);
+			}
+		}
 	}
 } // namespace
 

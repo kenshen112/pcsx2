@@ -118,6 +118,7 @@ __aligned(4) volatile s32 SndBuffer::m_wpos;
 bool SndBuffer::m_underrun_freeze;
 StereoOut32* SndBuffer::sndTempBuffer = nullptr;
 StereoOut16* SndBuffer::sndTempBuffer16 = nullptr;
+Stereo51Out32Dpl* SndBuffer::sndTempBufferDolby = nullptr;
 int SndBuffer::sndTempProgress = 0;
 
 int GetAlignedBufferSize(int comp)
@@ -452,6 +453,77 @@ void SndBuffer::Write(const StereoOut32& Sample)
 		return;
 
 	sndTempBuffer[sndTempProgress++] = Sample;
+
+	// If we haven't accumulated a full packet yet, do nothing more:
+	if (sndTempProgress < SndOutPacketSize)
+		return;
+	sndTempProgress = 0;
+
+	//Don't play anything directly after loading a savestate, avoids static killing your speakers.
+	if (ssFreeze > 0)
+	{
+		ssFreeze--;
+		// Play silence
+		std::fill_n(sndTempBuffer, SndOutPacketSize, StereoOut32{});
+	}
+#ifndef __POSIX__
+	if (dspPluginEnabled)
+	{
+		// Convert in, send to winamp DSP, and convert out.
+
+		int ei = m_dsp_progress;
+		for (int i = 0; i < SndOutPacketSize; ++i, ++ei)
+		{
+			sndTempBuffer16[ei] = sndTempBuffer[i].DownSample();
+		}
+		m_dsp_progress += DspProcess((s16*)sndTempBuffer16 + m_dsp_progress, SndOutPacketSize);
+
+		// Some ugly code to ensure full packet handling:
+		ei = 0;
+		while (m_dsp_progress >= SndOutPacketSize)
+		{
+			for (int i = 0; i < SndOutPacketSize; ++i, ++ei)
+			{
+				sndTempBuffer[i] = sndTempBuffer16[ei].UpSample();
+			}
+
+			if (SynchMode == 0) // TimeStrech on
+				timeStretchWrite();
+			else
+				_WriteSamples(sndTempBuffer, SndOutPacketSize);
+
+			m_dsp_progress -= SndOutPacketSize;
+		}
+
+		// copy any leftovers to the front of the dsp buffer.
+		if (m_dsp_progress > 0)
+		{
+			memcpy(sndTempBuffer16, &sndTempBuffer16[ei],
+				   sizeof(sndTempBuffer16[0]) * m_dsp_progress);
+		}
+	}
+#endif
+	else
+	{
+		if (SynchMode == 0) // TimeStrech on
+			timeStretchWrite();
+		else
+			_WriteSamples(sndTempBuffer, SndOutPacketSize);
+	}
+}
+
+void SndBuffer::Write(const Stereo51Out32Dpl& Sample)
+{
+	// Log final output to wavefile.
+	//WaveDump::WriteCore(1, CoreSrc_External, Sample);
+
+	if (WavRecordEnabled)
+		//RecordWrite(Sample.DownSample());
+
+	if (mods[OutputModule] == &NullOut) // null output doesn't need buffering or stretching! :p
+		return;
+
+	sndTempBufferDolby[sndTempProgress++] = Sample;
 
 	// If we haven't accumulated a full packet yet, do nothing more:
 	if (sndTempProgress < SndOutPacketSize)

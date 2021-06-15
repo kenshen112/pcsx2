@@ -41,6 +41,7 @@ MixerTab::MixerTab(wxWindow* parent)
 
 	effect_check = new wxCheckBox(this, wxID_ANY, "Disable Effects Processing (Speedup)");
 	dealias_check = new wxCheckBox(this, wxID_ANY, "Use the de-alias filter (Overemphasizes the highs) ");
+	dolby_enable = new wxCheckBox(this, wxID_ANY, "Enable Dolby Audio");
 
 	// Latency Slider
 	const int min_latency = SynchMode == 0 ? LATENCY_MIN_TIMESTRETCH : LATENCY_MIN;
@@ -68,6 +69,7 @@ MixerTab::MixerTab(wxWindow* parent)
 	top_box->Add(m_inter_select, wxSizerFlags().Centre());
 	top_box->Add(effect_check, wxSizerFlags().Centre());
 	top_box->Add(dealias_check, wxSizerFlags().Centre());
+	top_box->Add(dolby_enable, wxSizerFlags().Centre());
 	top_box->Add(m_latency_box, wxSizerFlags().Expand());
 	top_box->Add(m_volume_box, wxSizerFlags().Expand());
 	top_box->Add(m_audio_box, wxSizerFlags().Expand());
@@ -81,6 +83,7 @@ void MixerTab::Load()
 
 	effect_check->SetValue(EffectsDisabled);
 	dealias_check->SetValue(postprocess_filter_dealias);
+	dolby_enable->SetValue(dolbyEnabled);
 	m_audio_select->SetSelection(numSpeakers);
 
 	m_volume_slider->SetValue(FinalVolume * 100);
@@ -92,6 +95,7 @@ void MixerTab::Save()
 	Interpolation = m_inter_select->GetSelection();
 	EffectsDisabled = effect_check->GetValue();
 	postprocess_filter_dealias = dealias_check->GetValue();
+	dolbyEnabled = dolby_enable->GetValue();
 
 	numSpeakers = m_audio_select->GetSelection();
 

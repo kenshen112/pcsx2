@@ -567,6 +567,7 @@ private:
 	static float lastPct;
 
 	static StereoOut32* sndTempBuffer;
+	static Stereo51Out32Dpl* sndTempBufferDolby;
 	static StereoOut16* sndTempBuffer16;
 
 	static int sndTempProgress;
@@ -576,6 +577,7 @@ private:
 	static int m_timestretch_writepos;
 
 	static StereoOut32* m_buffer;
+	static Stereo51Out32Dpl* m_buffer_dolby;
 	static s32 m_size;
 
 	static __aligned(4) volatile s32 m_rpos;
@@ -617,6 +619,7 @@ public:
 	static void Init();
 	static void Cleanup();
 	static void Write(const StereoOut32& Sample);
+	static void Write(const Stereo51Out32Dpl& Sample);
 	static s32 Test();
 	static void ClearContents();
 
@@ -679,6 +682,8 @@ extern SndOutModule* AlsaOut;
 extern SndOutModule* mods[];
 
 // =====================================================================================================
+
+extern bool dolbyEnabled;
 
 extern bool WavRecordEnabled;
 

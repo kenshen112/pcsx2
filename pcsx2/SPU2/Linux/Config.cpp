@@ -39,6 +39,7 @@ int Interpolation = 5;
 		5. Gaussian interpolation
 */
 
+bool dolbyEnabled = false;
 bool EffectsDisabled = false;
 float FinalVolume; // global
 bool AdvancedVolumeControl;
@@ -87,6 +88,8 @@ void ReadSettings()
 
 	Interpolation = CfgReadInt(L"MIXING", L"Interpolation", 5);
 	EffectsDisabled = CfgReadBool(L"MIXING", L"Disable_Effects", false);
+	dolbyEnabled = CfgReadBool(L"MIXING", L"DolbyEnabled", false);
+
 	postprocess_filter_dealias = CfgReadBool(L"MIXING", L"DealiasFilter", false);
 	FinalVolume = ((float)CfgReadInt(L"MIXING", L"FinalVolume", 100)) / 100;
 	if (FinalVolume > 1.0f)
@@ -109,6 +112,7 @@ void ReadSettings()
 	VolumeAdjustSL = powf(10, VolumeAdjustSLdb / 10);
 	VolumeAdjustSR = powf(10, VolumeAdjustSRdb / 10);
 	VolumeAdjustLFE = powf(10, VolumeAdjustLFEdb / 10);
+
 
 	wxString temp;
 
@@ -188,6 +192,7 @@ void WriteSettings()
 	}
 
 	CfgWriteInt(L"MIXING", L"Interpolation", Interpolation);
+	CfgWriteBool(L"MIXING", L"DolbyEnabled", dolbyEnabled);
 	CfgWriteBool(L"MIXING", L"Disable_Effects", EffectsDisabled);
 	CfgWriteBool(L"MIXING", L"DealiasFilter", postprocess_filter_dealias);
 	CfgWriteInt(L"MIXING", L"FinalVolume", (int)(FinalVolume * 100 + 0.5f));
