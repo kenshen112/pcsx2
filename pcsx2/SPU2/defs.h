@@ -49,6 +49,31 @@ struct V_VolumeLR
 	void DebugDump(FILE* dump, const char* title);
 };
 
+struct V_Volume51
+{
+	static V_Volume51 Max;
+
+	s32 Left;
+	s32 Right;
+	s32 Center;
+	s32 LFE;
+	s32 LeftBack;
+	s32 RightBack;
+
+	V_Volume51() = default;
+	V_Volume51(s32 LR, s32 center, s32 lfe, s32 lBack, s32 rBack)
+		: Left(LR),
+		Right(LR), 
+		Center(center),
+		LFE (lfe),
+		LeftBack(lBack),
+		RightBack(rBack)
+	{
+	}
+
+	void DebugDump(FILE* dump, const char* title);
+};
+
 struct V_VolumeSlide
 {
 	// Holds the "original" value of the volume for this voice, prior to slides.
@@ -93,6 +118,42 @@ public:
 	{
 		Left.Update();
 		Right.Update();
+	}
+
+	void DebugDump(FILE* dump, const char* title);
+};
+
+struct V_VolumeSlide51
+{
+	static V_VolumeSlide51 Max;
+
+	V_VolumeSlide Left;
+	V_VolumeSlide Right;
+	V_VolumeSlide Center;
+	V_VolumeSlide LFE;
+	V_VolumeSlide LeftB;
+	V_VolumeSlide RightB;
+
+public:
+	V_VolumeSlide51() = default;
+	V_VolumeSlide51(s16 regval, s32 bothval)
+		: Left(regval, bothval)
+		, Right(regval, bothval)
+		, Center(regval, bothval)
+		, LFE(regval, bothval)
+		, LeftB(regval, bothval)
+		, RightB(regval, bothval)
+	{
+	}
+
+	void Update()
+	{
+		Left.Update();
+		Right.Update();
+		Center.Update();
+		LFE.Update();
+		LeftB.Update();
+		RightB.Update();
 	}
 
 	void DebugDump(FILE* dump, const char* title);
@@ -352,6 +413,7 @@ struct V_CoreGates
 		{
 			s16 InpL; // Sound Data Input to Direct Output (Left)
 			s16 InpR; // Sound Data Input to Direct Output (Right)
+			s16 InpC; // Sound Data Input to Direct Output (Center)
 			s16 SndL; // Voice Data to Direct Output (Left)
 			s16 SndR; // Voice Data to Direct Output (Right)
 			s16 ExtL; // External Input to Direct Output (Left)
@@ -386,10 +448,14 @@ struct V_Core
 	V_CoreGates DryGate;
 	V_CoreGates WetGate;
 
+	V_VolumeSlide51 Master51Vol;
 	V_VolumeSlideLR MasterVol; // Master Volume
 	V_VolumeLR ExtVol;         // Volume for External Data Input
+	V_Volume51 Ext51Vol;         // Volume for External Data Input
 	V_VolumeLR InpVol;         // Volume for Sound Data Input
+	V_Volume51 Inp51Vol;         // Volume for Sound Data Input
 	V_VolumeLR FxVol;          // Volume for Output from Effects
+	V_Volume51 Fx51Vol;
 
 	V_Voice Voices[NumVoices];
 
@@ -489,7 +555,8 @@ struct V_Core
 	//  Mixer Section
 	// --------------------------------------------------------------------------------------
 
-	StereoOut32 Mix(const VoiceMixSet& inVoices, const StereoOut32& Input, const StereoOut32& Ext);
+	StereoOut32 MixStereo(const VoiceMixSet& inVoices, const StereoOut32& Input, const StereoOut32& Ext);
+	Stereo51Out32Dpl MixDolby(const VoiceMixSet& inVoices, const Stereo51Out32Dpl& Input, const Stereo51Out32Dpl& Ext);
 	void Reverb_AdvanceBuffer();
 	StereoOut32 DoReverb(const StereoOut32& Input);
 	s32 RevbGetIndexer(s32 offset);
@@ -498,6 +565,7 @@ struct V_Core
 	StereoOut32 ReverbUpsample(bool phase);
 
 	StereoOut32 ReadInput();
+	Stereo51Out32Dpl ReadInputDolby();
 	StereoOut32 ReadInput_HiFi();
 
 	// --------------------------------------------------------------------------

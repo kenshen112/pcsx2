@@ -356,6 +356,63 @@ struct Stereo51Out32Dpl
 	s32 LFE;
 	s32 LeftBack;
 	s32 RightBack;
+	static Stereo51Out32Dpl Empty;
+
+	Stereo51Out32Dpl()
+		: Left(0),
+		Right(0),
+		Center(0),
+		LFE(0),
+		LeftBack(0),
+		RightBack(0)
+	{
+
+	}
+
+		Stereo51Out32Dpl(s32 left, s32 right, s32 center, s32 lfe, s32 lBack, s32 rBack)
+		: Left(left),
+		Right(right),
+		Center(center),
+		LFE(lfe),
+		LeftBack(lBack),
+		RightBack(rBack)
+	{
+
+	}
+
+	Stereo51Out32Dpl operator*(const int& factor) const
+	{
+		return Stereo51Out32Dpl(
+			Left * factor,
+			Right * factor,
+			Center * factor,
+			LFE * factor,
+			LeftBack * factor,
+			RightBack * factor);
+	}
+
+	Stereo51Out32Dpl& operator*=(const int& factor)
+	{
+		Left *= factor;
+		Right *= factor;
+		return *this;
+	}
+
+	Stereo51Out32Dpl operator+(const Stereo51Out32Dpl& right) const
+	{
+		return Stereo51Out32Dpl(
+			Left + right.Left,
+			Right + right.Right,
+			Center + right.Center,
+			LFE + right.LFE,
+			LeftBack + right.LeftBack,
+			RightBack + right.RightBack);
+	}
+
+	Stereo51Out32Dpl operator/(int src) const
+	{
+		return Stereo51Out32Dpl(Left / src, Right / src, Center / src, LFE / src, LeftBack / src, RightBack / src);
+	}
 
 	void ResampleFrom(const StereoOut32& src)
 	{

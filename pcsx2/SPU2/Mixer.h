@@ -132,3 +132,4 @@ extern void Mix();
 extern s32 clamp_mix(s32 x, u8 bitshift = 0);
 
 extern StereoOut32 clamp_mix(const StereoOut32& sample, u8 bitshift = 0);
+extern Stereo51Out32Dpl clamp_mix(const Stereo51Out32Dpl& sample, u8 bitshift = 0);
