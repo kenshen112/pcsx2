@@ -151,7 +151,6 @@ void ProcessDplSample32(const StereoOut32& src, Stereo51Out32Dpl* s)
 
 	s->Left = (s32)(L * GainL) + CX; // +15.16 = +31, can grow to +32 if (GainL + AddCLR)>255
 	s->Right = (s32)(R * GainR) + CX;
-	s->Center = (s32)(C * GainC); // +15.16 = +31
 	s->LFE = (s32)(SUB * GainLFE);
 	s->LeftBack = (s32)(S * GainSL);
 	s->RightBack = (s32)(S * GainSR);
@@ -164,7 +163,6 @@ void ProcessDplSample16(const StereoOut32& src, Stereo51Out16Dpl* s)
 
 	s->Left = ss.Left >> 16;
 	s->Right = ss.Right >> 16;
-	s->Center = ss.Center >> 16;
 	s->LFE = ss.LFE >> 16;
 	s->LeftBack = ss.LeftBack >> 16;
 	s->RightBack = ss.RightBack >> 16;

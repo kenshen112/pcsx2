@@ -123,42 +123,6 @@ public:
 	void DebugDump(FILE* dump, const char* title);
 };
 
-struct V_VolumeSlide51
-{
-	static V_VolumeSlide51 Max;
-
-	V_VolumeSlide Left;
-	V_VolumeSlide Right;
-	V_VolumeSlide Center;
-	V_VolumeSlide LFE;
-	V_VolumeSlide LeftB;
-	V_VolumeSlide RightB;
-
-public:
-	V_VolumeSlide51() = default;
-	V_VolumeSlide51(s16 regval, s32 bothval)
-		: Left(regval, bothval)
-		, Right(regval, bothval)
-		, Center(regval, bothval)
-		, LFE(regval, bothval)
-		, LeftB(regval, bothval)
-		, RightB(regval, bothval)
-	{
-	}
-
-	void Update()
-	{
-		Left.Update();
-		Right.Update();
-		Center.Update();
-		LFE.Update();
-		LeftB.Update();
-		RightB.Update();
-	}
-
-	void DebugDump(FILE* dump, const char* title);
-};
-
 struct V_ADSR
 {
 	union
@@ -448,7 +412,6 @@ struct V_Core
 	V_CoreGates DryGate;
 	V_CoreGates WetGate;
 
-	V_VolumeSlide51 Master51Vol;
 	V_VolumeSlideLR MasterVol; // Master Volume
 	V_VolumeLR ExtVol;         // Volume for External Data Input
 	V_Volume51 Ext51Vol;         // Volume for External Data Input
@@ -556,7 +519,7 @@ struct V_Core
 	// --------------------------------------------------------------------------------------
 
 	StereoOut32 MixStereo(const VoiceMixSet& inVoices, const StereoOut32& Input, const StereoOut32& Ext);
-	Stereo51Out32Dpl MixDolby(const VoiceMixSet& inVoices, const Stereo51Out32Dpl& Input, const Stereo51Out32Dpl& Ext);
+	Stereo51Out32DplII MixDolby(const VoiceMixSet& inVoices, const StereoOut32& Input, const StereoOut32& Ext);
 	void Reverb_AdvanceBuffer();
 	StereoOut32 DoReverb(const StereoOut32& Input);
 	s32 RevbGetIndexer(s32 offset);
@@ -565,7 +528,7 @@ struct V_Core
 	StereoOut32 ReverbUpsample(bool phase);
 
 	StereoOut32 ReadInput();
-	Stereo51Out32Dpl ReadInputDolby();
+	Stereo51Out32DplII ReadInputDolby();
 	StereoOut32 ReadInput_HiFi();
 
 	// --------------------------------------------------------------------------

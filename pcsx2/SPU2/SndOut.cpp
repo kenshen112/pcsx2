@@ -118,7 +118,7 @@ __aligned(4) volatile s32 SndBuffer::m_wpos;
 bool SndBuffer::m_underrun_freeze;
 StereoOut32* SndBuffer::sndTempBuffer = nullptr;
 StereoOut16* SndBuffer::sndTempBuffer16 = nullptr;
-Stereo51Out32Dpl* SndBuffer::sndTempBufferDolby = nullptr;
+Stereo51Out32DplII* SndBuffer::sndTempBufferDolby = nullptr;
 int SndBuffer::sndTempProgress = 0;
 
 int GetAlignedBufferSize(int comp)
@@ -512,7 +512,7 @@ void SndBuffer::Write(const StereoOut32& Sample)
 	}
 }
 
-void SndBuffer::Write(const Stereo51Out32Dpl& Sample)
+void SndBuffer::Write(const Stereo51Out32DplII& Sample)
 {
 	// Log final output to wavefile.
 	//WaveDump::WriteCore(1, CoreSrc_External, Sample);

@@ -176,9 +176,11 @@ StereoOut32 V_Core::ReadInput()
 	return retval;
 }
 
-Stereo51Out32Dpl V_Core::ReadInputDolby()
+// Should this be StereoOut pro logic II? This is for SPDIF Core 0
+
+Stereo51Out32DplII V_Core::ReadInputDolby()
 {
-	Stereo51Out32Dpl retval;
+	Stereo51Out32DplII retval;
 	s16 ReadIndex = OutPos;
 
 	for (int i = 0; i < 2; i++)
@@ -188,7 +190,7 @@ Stereo51Out32Dpl V_Core::ReadInputDolby()
 	// PlayMode & 2 is Bypass Mode, so it doesn't go through the SPU
 	if (Index == 1 || (Index == 0 && (PlayMode & 2) == 0))
 	{
-		retval = Stereo51Out32Dpl(
+		retval = Stereo51Out32DplII(
 			(s32)(*GetMemPtr(0x2000 + (Index << 10) + ReadIndex)),
 			(s32)(*GetMemPtr(0x2200 + (Index << 10) + ReadIndex)),
 			(s32)(*GetMemPtr(0x2200 + (Index << 10) + ReadIndex)),

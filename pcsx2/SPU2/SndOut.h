@@ -302,6 +302,63 @@ struct Stereo51Out32DplII
 	s32 LFE;
 	s32 LeftBack;
 	s32 RightBack;
+	static Stereo51Out32DplII Empty;
+
+	Stereo51Out32DplII()
+	: Left(0),
+	Right(0),
+	Center(0),
+	LFE(0),
+	LeftBack(0),
+	RightBack(0)
+	{
+
+	}
+
+	Stereo51Out32DplII(s32 left, s32 right, s32 center, s32 lfe, s32 lBack, s32 rBack)
+	: Left(left),
+	Right(right),
+	Center(center),
+	LFE(lfe),
+	LeftBack(lBack),
+	RightBack(rBack)
+	{
+
+	}
+
+	Stereo51Out32DplII operator*(const int& factor) const
+	{
+		return Stereo51Out32DplII(
+			Left * factor,
+			Right * factor,
+			Center * factor,
+			LFE * factor,
+			LeftBack * factor,
+			RightBack * factor);
+	}
+
+	Stereo51Out32DplII& operator*=(const int& factor)
+	{
+		Left *= factor;
+		Right *= factor;
+		return *this;
+	}
+
+	Stereo51Out32DplII operator+(const Stereo51Out32DplII& right) const
+	{
+		return Stereo51Out32DplII(
+			Left + right.Left,
+			Right + right.Right,
+			Center + right.Center,
+			LFE + right.LFE,
+			LeftBack + right.LeftBack,
+			RightBack + right.RightBack);
+	}
+
+	Stereo51Out32DplII operator/(int src) const
+	{
+		return Stereo51Out32DplII(Left / src, Right / src, Center / src, LFE / src, LeftBack / src, RightBack / src);
+	}
 
 	void ResampleFrom(const StereoOut32& src)
 	{
@@ -352,7 +409,6 @@ struct Stereo51Out32Dpl
 {
 	s32 Left;
 	s32 Right;
-	s32 Center;
 	s32 LFE;
 	s32 LeftBack;
 	s32 RightBack;
@@ -361,7 +417,6 @@ struct Stereo51Out32Dpl
 	Stereo51Out32Dpl()
 		: Left(0),
 		Right(0),
-		Center(0),
 		LFE(0),
 		LeftBack(0),
 		RightBack(0)
@@ -369,10 +424,9 @@ struct Stereo51Out32Dpl
 
 	}
 
-		Stereo51Out32Dpl(s32 left, s32 right, s32 center, s32 lfe, s32 lBack, s32 rBack)
+		Stereo51Out32Dpl(s32 left, s32 right, s32 lfe, s32 lBack, s32 rBack)
 		: Left(left),
 		Right(right),
-		Center(center),
 		LFE(lfe),
 		LeftBack(lBack),
 		RightBack(rBack)
@@ -385,7 +439,6 @@ struct Stereo51Out32Dpl
 		return Stereo51Out32Dpl(
 			Left * factor,
 			Right * factor,
-			Center * factor,
 			LFE * factor,
 			LeftBack * factor,
 			RightBack * factor);
@@ -403,7 +456,6 @@ struct Stereo51Out32Dpl
 		return Stereo51Out32Dpl(
 			Left + right.Left,
 			Right + right.Right,
-			Center + right.Center,
 			LFE + right.LFE,
 			LeftBack + right.LeftBack,
 			RightBack + right.RightBack);
@@ -411,7 +463,7 @@ struct Stereo51Out32Dpl
 
 	Stereo51Out32Dpl operator/(int src) const
 	{
-		return Stereo51Out32Dpl(Left / src, Right / src, Center / src, LFE / src, LeftBack / src, RightBack / src);
+		return Stereo51Out32Dpl(Left / src, Right / src, LFE / src, LeftBack / src, RightBack / src);
 	}
 
 	void ResampleFrom(const StereoOut32& src)
@@ -427,7 +479,6 @@ struct Stereo51Out32Dpl
 		Right = (s32)(Right * VolumeAdjustFR);
 		LeftBack = (s32)(LeftBack * VolumeAdjustBL);
 		RightBack = (s32)(RightBack * VolumeAdjustBR);
-		Center = (s32)(Center * VolumeAdjustC);
 		LFE = (s32)(LFE * VolumeAdjustLFE);
 	}
 };
@@ -624,7 +675,7 @@ private:
 	static float lastPct;
 
 	static StereoOut32* sndTempBuffer;
-	static Stereo51Out32Dpl* sndTempBufferDolby;
+	static Stereo51Out32DplII* sndTempBufferDolby;
 	static StereoOut16* sndTempBuffer16;
 
 	static int sndTempProgress;
@@ -634,7 +685,7 @@ private:
 	static int m_timestretch_writepos;
 
 	static StereoOut32* m_buffer;
-	static Stereo51Out32Dpl* m_buffer_dolby;
+	static Stereo51Out32DplII* m_buffer_dolby;
 	static s32 m_size;
 
 	static __aligned(4) volatile s32 m_rpos;
@@ -676,7 +727,7 @@ public:
 	static void Init();
 	static void Cleanup();
 	static void Write(const StereoOut32& Sample);
-	static void Write(const Stereo51Out32Dpl& Sample);
+	static void Write(const Stereo51Out32DplII& Sample);
 	static s32 Test();
 	static void ClearContents();
 

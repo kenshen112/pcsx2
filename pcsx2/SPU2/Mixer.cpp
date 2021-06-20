@@ -78,16 +78,16 @@ __forceinline
 		GetClamped(sample.Right, -(0x7f00 << bitshift), 0x7f00 << bitshift));
 }
 
-Stereo51Out32Dpl clamp_mix(const Stereo51Out32Dpl& sample, u8 bitshift)
+Stereo51Out32DplII clamp_mix(const Stereo51Out32DplII& sample, u8 bitshift)
 {
 	// We should clampify between -0x8000 and 0x7fff, however some audio output
 	// modules or sound drivers could (will :p) overshoot with that. So giving it a small safety.
 
-	return Stereo51Out32Dpl(
+	return Stereo51Out32DplII(
 		GetClamped(sample.Left, -(0x7f00 << bitshift), 0x7f00 << bitshift),
 		GetClamped(sample.Right, -(0x7f00 << bitshift), 0x7f00 << bitshift), 
+		GetClamped(sample.LFE, -(0x7f00 << bitshift), 0x7f00 << bitshift),
 		GetClamped(sample.Center, -(0x7f00 << bitshift), 0x7f00 << bitshift), 
-		GetClamped(sample.LFE, -(0x7f00 << bitshift), 0x7f00 << bitshift), 
 		GetClamped(sample.LeftBack, -(0x7f00 << bitshift), 0x7f00 << bitshift), 
 		GetClamped(sample.RightBack, -(0x7f00 << bitshift), 0x7f00 << bitshift));
 }
@@ -334,9 +334,9 @@ static __forceinline StereoOut32 ApplyVolume(const StereoOut32& data, const V_Vo
 		ApplyVolume(data.Right, volume.Right.Value));
 }
 
-static __forceinline Stereo51Out32Dpl ApplyVolume(const Stereo51Out32Dpl& data, const V_Volume51& volume)
+static __forceinline Stereo51Out32DplII ApplyVolume(const Stereo51Out32DplII& data, const V_Volume51& volume)
 {
-	return Stereo51Out32Dpl(
+	return Stereo51Out32DplII(
 		ApplyVolume(data.Left, volume.Left),
 		ApplyVolume(data.Right, volume.Right),
 		ApplyVolume(data.Center, volume.Center),
@@ -345,16 +345,6 @@ static __forceinline Stereo51Out32Dpl ApplyVolume(const Stereo51Out32Dpl& data, 
 		ApplyVolume(data.RightBack, volume.RightBack));
 }
 
-static __forceinline Stereo51Out32Dpl ApplyVolume(const Stereo51Out32Dpl& data, const V_VolumeSlide51& volume)
-{
-	return Stereo51Out32Dpl(
-		ApplyVolume(data.Left, volume.Left.Value),
-		ApplyVolume(data.Right, volume.Right.Value),
-		ApplyVolume(data.Center, volume.Center.Value),
-		ApplyVolume(data.LFE, volume.LFE.Value),
-		ApplyVolume(data.LeftBack, volume.LeftB.Value),
-		ApplyVolume(data.RightBack, volume.RightB.Value));
-}
 static void __forceinline UpdatePitch(uint coreidx, uint voiceidx)
 {
 	V_Voice& vc(Cores[coreidx].Voices[voiceidx]);
@@ -805,7 +795,7 @@ StereoOut32 V_Core::MixStereo(const VoiceMixSet& inVoices, const StereoOut32& In
 	return TD + ApplyVolume(RV, FxVol);
 }
 
-Stereo51Out32Dpl V_Core::MixDolby(const VoiceMixSet& inVoices, const Stereo51Out32Dpl& Input, const Stereo51Out32Dpl& Ext)
+Stereo51Out32DplII V_Core::MixDolby(const VoiceMixSet& inVoices, const StereoOut32& Input, const StereoOut32& Ext)
 {
 	MasterVol.Update();
 	UpdateNoise(*this);
@@ -827,13 +817,16 @@ Stereo51Out32Dpl V_Core::MixDolby(const VoiceMixSet& inVoices, const Stereo51Out
 
 	// Mix in the Input data
 
-	Stereo51Out32Dpl TD(
+	Stereo51Out32DplII TD;
+	ProcessDplIISample32(Input, &TD);
+
+	/*Stereo51Out32DplII TD(
 		Input.Left & DryGate.InpL,
 		Input.Right & DryGate.InpR,
 		Input.Center & DryGate.InpC,
 		Input.LFE & DryGate.ExtL,
 		Input.LeftBack & DryGate.SndL,
-		Input.RightBack & DryGate.SndR);
+		Input.RightBack & DryGate.SndR);*/
 
 	// Mix in the Voice data
 	TD.Left += Voices.Dry.Left & DryGate.SndL;
@@ -874,7 +867,7 @@ Stereo51Out32Dpl V_Core::MixDolby(const VoiceMixSet& inVoices, const Stereo51Out
 	if (!FxEnable || EffectsEndA >= 0x100000)
 		return TD;
 
-	Stereo51Out32Dpl TW;
+	Stereo51Out32DplII TW;
 
 	// Mix Input, Voice, and External data:
 
@@ -978,9 +971,9 @@ StereoOut32 Apply_Dealias_Filter(StereoOut32& SoundStream)
 	return SoundStream;
 }
 
-Stereo51Out32Dpl Apply_Dealias_Filter(Stereo51Out32Dpl& SoundStream)
+Stereo51Out32DplII Apply_Dealias_Filter(Stereo51Out32DplII& SoundStream)
 {
-	static Stereo51Out32Dpl Old = Stereo51Out32Dpl::Empty;
+	static Stereo51Out32DplII Old = Stereo51Out32DplII::Empty;
 
 	s32 l, r, c, lfe, lB, rB;
 
@@ -1023,9 +1016,14 @@ static int p_cachestat_counter = 0;
 #ifndef __POSIX__
 __forceinline
 #endif
-/*	void
-	Mix()
+void Mix()
 {
+
+	if (dolbyEnabled)
+	{
+		mix_dplII();
+	}
+
 	// Note: Playmode 4 is SPDIF, which overrides other inputs.
 	StereoOut32 InputData[2] =
 		{
@@ -1046,7 +1044,7 @@ __forceinline
 	MixCoreVoices(VoiceData[0], 0);
 	MixCoreVoices(VoiceData[1], 1);
 
-	StereoOut32 Ext(Cores[0].Mix(VoiceData[0], InputData[0], StereoOut32::Empty));
+	StereoOut32 Ext(Cores[0].MixStereo(VoiceData[0], InputData[0], StereoOut32::Empty));
 
 	if ((PlayMode & 4) || (Cores[0].Mute != 0))
 		Ext = StereoOut32::Empty;
@@ -1062,7 +1060,7 @@ __forceinline
 	WaveDump::WriteCore(0, CoreSrc_External, Ext);
 
 	Ext = ApplyVolume(Ext, Cores[1].ExtVol);
-	StereoOut32 Out(Cores[1].Mix(VoiceData[1], InputData[1], Ext));
+	StereoOut32 Out(Cores[1].MixStereo(VoiceData[1], InputData[1], Ext));
 
 	if (PlayMode & 8)
 	{
@@ -1131,83 +1129,78 @@ __forceinline
 					g_counter_cache_ignores = 0;
 		}
 	}
-}*/
+}
 
-void Mix()
+void mix_dplII()
 {
+
+	if (dolbyEnabled)
+	{
+		mix_dplII();
+	}
+
 	// Note: Playmode 4 is SPDIF, which overrides other inputs.
-	Stereo51Out32Dpl InputData[2] =
+	StereoOut32 InputData[2] =
 		{
 			// SPDIF is on Core 0:
 			// Fixme:
 			// 1. We do not have an AC3 decoder for the bitstream.
 			// 2. Games usually provide a normal ADMA stream as well and want to see it getting read!
-			(PlayMode & 4) ? Stereo51Out32Dpl::Empty :  ApplyVolume(Cores[0].ReadInputDolby(), Cores[0].Inp51Vol),
+			(PlayMode & 4) ? StereoOut32::Empty :  ApplyVolume(Cores[0].ReadInput(), Cores[0].InpVol),
 
 			// CDDA is on Core 1:
-			(PlayMode & 8) ? Stereo51Out32Dpl::Empty : ApplyVolume(Cores[1].ReadInputDolby(), Cores[1].Inp51Vol)};
+			(PlayMode & 8) ? StereoOut32::Empty : ApplyVolume(Cores[1].ReadInput(), Cores[1].InpVol)};
 
-	//WaveDump::WriteCore(0, CoreSrc_Input, InputData[0]);
-	//WaveDump::WriteCore(1, CoreSrc_Input, InputData[1]);
+	WaveDump::WriteCore(0, CoreSrc_Input, InputData[0]);
+	WaveDump::WriteCore(1, CoreSrc_Input, InputData[1]);
 
 	// Todo: Replace me with memzero initializer!
 	VoiceMixSet VoiceData[2] = {VoiceMixSet::Empty, VoiceMixSet::Empty}; // mixed voice data for each core.
 	MixCoreVoices(VoiceData[0], 0);
 	MixCoreVoices(VoiceData[1], 1);
 
-	Stereo51Out32Dpl Ext(Cores[0].MixDolby(VoiceData[0], InputData[0], Stereo51Out32Dpl::Empty));
+	StereoOut32 Ext(Cores[0].MixStereo(VoiceData[0], InputData[0], StereoOut32::Empty));
 
 	if ((PlayMode & 4) || (Cores[0].Mute != 0))
-		Ext = Stereo51Out32Dpl::Empty;
+		Ext = StereoOut32::Empty;
 	else
 	{
-		Ext = clamp_mix(ApplyVolume(Ext, Cores[0].Master51Vol));
+		Ext = clamp_mix(ApplyVolume(Ext, Cores[0].MasterVol));
 	}
 
 	// Commit Core 0 output to ram before mixing Core 1:
 	spu2M_WriteFast(0x800 + OutPos, Ext.Left);
 	spu2M_WriteFast(0xA00 + OutPos, Ext.Right);
 
-	//WaveDump::WriteCore(0, CoreSrc_External, Ext);
+	WaveDump::WriteCore(0, CoreSrc_External, Ext);
 
-	Ext = ApplyVolume(Ext, Cores[1].Ext51Vol);
-	Stereo51Out32Dpl Out(Cores[1].MixDolby(VoiceData[1], InputData[1], Ext));
+	Ext = ApplyVolume(Ext, Cores[1].ExtVol);
+	Stereo51Out32DplII Out(Cores[1].MixDolby(VoiceData[1], InputData[1], Ext));
 
-	if (PlayMode & 8)
-	{
-		// Experimental CDDA support
-		// The CDDA overrides all other mixer output.  It's a direct feed!
-
-		//Out = Cores[1].ReadInput_HiFi();
-		//WaveLog::WriteCore( 1, "CDDA-32", OutL, OutR );
-	}
-	else
-	{
-		Out.Left = MulShr32(Out.Left << SndOutVolumeShift, Cores[1].MasterVol.Left.Value);
-		Out.Right = MulShr32(Out.Right << SndOutVolumeShift, Cores[1].MasterVol.Right.Value);
+	Out.Left = MulShr32(Out.Left << SndOutVolumeShift, Cores[1].MasterVol.Left.Value);
+	Out.Right = MulShr32(Out.Right << SndOutVolumeShift, Cores[1].MasterVol.Right.Value);
 
 #ifdef DEBUG_KEYS
-		if (postprocess_filter_enabled)
+	if (postprocess_filter_enabled)
 #endif
+	{
+		if (postprocess_filter_dealias)
 		{
-			if (postprocess_filter_dealias)
-			{
-				// Dealias filter emphasizes the highs too much.
-				Out = Apply_Dealias_Filter(Out);
-			}
-			//Out = Apply_Frequency_Response_Filter(Out);
+			// Dealias filter emphasizes the highs too much.
+			Out = Apply_Dealias_Filter(Out);
 		}
-
-		// Final Clamp!
-		// Like any good audio system, the PS2 pumps the volume and incurs some distortion in its
-		// output, giving us a nice thumpy sound at times.  So we add 1 above (2x volume pump) and
-		// then clamp it all here.
-
-		// Edit: I'm sorry Jake, but I know of no good audio system that arbitrary distorts and clips
-		// output by design.
-		// Good thing though that this code gets the volume exactly right, as per tests :)
-		Out = clamp_mix(Out, SndOutVolumeShift);
+			//Out = Apply_Frequency_Response_Filter(Out);
 	}
+
+	// Final Clamp!
+	// Like any good audio system, the PS2 pumps the volume and incurs some distortion in its
+	// output, giving us a nice thumpy sound at times.  So we add 1 above (2x volume pump) and
+	// then clamp it all here.
+
+	// Edit: I'm sorry Jake, but I know of no good audio system that arbitrary distorts and clips
+	// output by design.
+	// Good thing though that this code gets the volume exactly right, as per tests :)
+	Out = clamp_mix(Out, SndOutVolumeShift);
 
 	// Configurable output volume
 	Out.Left *= FinalVolume;
