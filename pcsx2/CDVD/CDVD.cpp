@@ -16,6 +16,7 @@
 #include "PrecompiledHeader.h"
 #include "IopCommon.h"
 #include "AppConfig.h"
+#include "Utilities/PathUtils.h"
 
 #include <memory>
 #include <ctype.h>
