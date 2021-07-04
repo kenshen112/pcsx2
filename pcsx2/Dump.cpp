@@ -208,7 +208,7 @@ void iDumpBlock(u32 ee_pc, u32 ee_size, uptr x86_pc, u32 x86_size)
 
 	DbgCon.WriteLn( Color_Gray, "dump block %x:%x (x86:0x%x)", ee_pc, ee_end, x86_pc );
 
-	Path::CreateFolder(g_Conf->Folders.Logs);
+	fs::create_directories(g_Conf->Folders.Logs);
 	fs::path dump_path = Path::Combine(g_Conf->Folders.Logs, Path::FromWxString(wxsFormat(L"R5900dump_%.8X:%.8X.txt", ee_pc, ee_end)));
 	wxString dump_filename = Path::ToWxString(dump_path);
 	AsciiFile eff( dump_filename, L"w" );
@@ -273,7 +273,7 @@ void iDumpBlock( int startpc, u8 * ptr )
 
 	DbgCon.WriteLn( Color_Gray, "dump1 %x:%x, %x", startpc, pc, cpuRegs.cycle );
 
-	Path::CreateFolder(g_Conf->Folders.Logs);
+	fs::create_directories(g_Conf->Folders.Logs);
 	AsciiFile eff(
 		Path::ToWxString(Path::Combine(g_Conf->Folders.Logs, Path::FromWxString(wxsFormat(L"R5900dump%.8X.txt", startpc)))), L"w");
 

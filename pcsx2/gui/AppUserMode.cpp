@@ -77,7 +77,7 @@ bool Pcsx2App::TestUserPermissionsRights(const fs::path& testFolder)
 		fs::path folder = Path::Combine(testFolder, PermissionFolders[i]);
 
 		if (!fs::exists(folder))
-			if (!Path::CreateFolder(folder))
+			if (!fs::create_directories(folder))
 				ErrorFolders.push_back(folder.string());
 	}
 
@@ -251,7 +251,7 @@ void Pcsx2App::Save(const fs::path& fileName)
 {
 	if (!fs::exists(fileName.parent_path().make_preferred()))
 	{
-		Path::CreateFolder(fileName.parent_path().make_preferred());
+		fs::create_directories(fileName.parent_path().make_preferred());
 	} 
 
 	if (stream)

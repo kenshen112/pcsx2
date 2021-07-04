@@ -51,7 +51,7 @@ AppGameDatabase& AppGameDatabase::LoadFromFile(const fs::path& _file)
 	}
 
 
-	if (!Path::DoesExist(file))
+	if (!fs::exists(file))
 	{
 		Console.Error(L"[GameDB] Database Not Found! [%s]", WX_STR(Path::ToWxString(file)));
 		return *this;

@@ -11,7 +11,6 @@ namespace fs = ghc::filesystem;
 
 namespace Path
 {
-	extern bool IsRelative(const std::string& path);
 	/**
 	 * @brief Indicates whether dir2 is contained within dir1
 	 * @param dir1 Directory that may or may not contain the second directory
@@ -29,15 +28,9 @@ namespace Path
 	extern fs::path Combine(const fs::path& srcPath, const fs::path& srcFile);
 	extern std::string ReplaceExtension(const wxString& src, const wxString& ext);
 	extern std::string ReplaceFilename(const wxString& src, const wxString& newfilename);
-	extern std::string GetDirectory(const std::string& src);
 	extern wxString GetFilenameWithoutExt(const wxString& src);
 	extern fs::path GetRootDirectory(const wxString& src);
 	extern fs::path GetExecutableDirectory();
 	extern wxString ToWxString(const fs::path&);
-	extern bool CreateFolder(const fs::path& path);
 	extern fs::path FromWxString(const wxString&);
-	// Is the folder empty
-	extern bool Empty(std::string);
-	// Does the path exist
-	extern bool DoesExist(const fs::path& path);
 } // namespace Path

@@ -736,11 +736,11 @@ void AppApplySettings( const AppConfig* oldconf )
 	// Ensure existence of necessary documents folders.
 	// Other parts of PCSX2 rely on them.
 
-	Path::CreateFolder(g_Conf->Folders.MemoryCards);
-	Path::CreateFolder(g_Conf->Folders.Savestates);
-	Path::CreateFolder(g_Conf->Folders.Snapshots);
-	Path::CreateFolder(g_Conf->Folders.Cheats);
-	Path::CreateFolder(g_Conf->Folders.CheatsWS);
+	fs::create_directories(g_Conf->Folders.MemoryCards);
+	fs::create_directories(g_Conf->Folders.Savestates);
+	fs::create_directories(g_Conf->Folders.Snapshots);
+	fs::create_directories(g_Conf->Folders.Cheats);
+	fs::create_directories(g_Conf->Folders.CheatsWS);
 	
 
 

@@ -467,7 +467,7 @@ void MainEmuFrame::_DoBootCdvd()
 	{
 		bool selector = g_Conf->CurrentIso.empty();
 
-		if (!selector && !Path::DoesExist(g_Conf->CurrentIso))
+		if (!selector && !fs::exists(g_Conf->CurrentIso))
 		{
 			// User has an iso selected from a previous run, but it doesn't exist anymore.
 			// Issue a courtesy popup and then an Iso Selector to choose a new one.

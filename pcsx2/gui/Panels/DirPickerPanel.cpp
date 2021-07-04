@@ -261,7 +261,7 @@ void Panels::DirPickerPanel::Apply()
 {
 	fs::path path = Path::FromWxString(GetPath().ToString());
 
-	if (!Path::DoesExist(path))
+	if (!fs::exists(path))
 	{
 		wxDialogWithHelpers dialog( NULL, _("Create folder?") );
 		dialog += dialog.Heading(AddAppName(_("A configured folder does not exist.  Should %s try to create it?")));
@@ -272,7 +272,7 @@ void Panels::DirPickerPanel::Apply()
 			throw Exception::CannotApplySettings( this );
 	}
 
-	Path::CreateFolder(path);
+	fs::create_directories(path);
 	g_Conf->Folders.Set( m_FolderId, path , m_checkCtrl ? m_checkCtrl->GetValue() : false );
 }
 

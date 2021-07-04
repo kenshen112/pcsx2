@@ -401,7 +401,7 @@ public:
 
 	bool HasSettingsOverride() const
 	{
-		return Path::DoesExist(SettingsFolder) || VmSettingsFile.IsOk();
+		return fs::exists(SettingsFolder) || VmSettingsFile.IsOk();
 	}
 };
 
