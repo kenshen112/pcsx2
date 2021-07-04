@@ -76,7 +76,7 @@ bool Pcsx2App::TestUserPermissionsRights(const fs::path& testFolder)
 	{
 		fs::path folder = Path::Combine(testFolder, PermissionFolders[i]);
 
-		if (!Path::DoesExist(folder))
+		if (!fs::exists(folder))
 			if (!Path::CreateFolder(folder))
 				ErrorFolders.push_back(folder.string());
 	}
@@ -249,7 +249,7 @@ bool Pcsx2App::Load(const fs::path& fileName)
 
 void Pcsx2App::Save(const fs::path& fileName)
 {
-	if (!Path::DoesExist(fileName.parent_path().make_preferred()))
+	if (!fs::exists(fileName.parent_path().make_preferred()))
 	{
 		Path::CreateFolder(fileName.parent_path().make_preferred());
 	} 
@@ -283,10 +283,10 @@ bool Pcsx2App::OpenInstallSettingsFile()
 
 	InstallFolder = Path::FromWxString((wxFileName(wxStandardPaths::Get().GetExecutablePath())).GetPath());
 
-	fs::path usermodeFile = (Path::FromWxString(GetAppName()) / "-reg.yaml");
+	fs::path usermodeFile = (Path::FromWxString(GetAppName()).concat("-reg.yaml"));
 	usermodePath = (usrlocaldir / usermodeFile); 
 
-	if (!Path::DoesExist(usermodePath))
+	if (!fs::exists(usermodePath))
 	{
 		CustomDocumentsFolder = PathDefs::AppRoot();
 
